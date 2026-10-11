@@ -1,6 +1,7 @@
-import { readFileSync, statSync } from "node:fs";
+import { readFileSync, realpathSync, statSync } from "node:fs";
 import path from "node:path";
 import type { Point, Polygon, Project, Underlay } from "@arquitecto/core";
+import { safeJoin } from "../safe-path.js";
 import { parseDxf, placePoint, type DxfDrawing } from "./dxf.js";
 import { imageSize } from "./image-size.js";
 
@@ -46,7 +47,11 @@ function readSource(fp: string, kind: Underlay["kind"]): CacheEntry {
 
 /** Đường dẫn tuyệt đối của file nguồn underlay. */
 export function underlaySourcePath(u: Underlay, projectDir: string): string {
-  return path.join(underlayDir(projectDir), u.source);
+  // M1: dentro de .arquitecto/underlay también tras resolver symlinks (el modelo pudo venir de disco sin pasar por ops)
+  const dir = realpathSync(underlayDir(projectDir));
+  const fp = realpathSync(safeJoin(dir, u.source));
+  if (!fp.startsWith(dir + path.sep)) throw new Error(`Underlay fuera de ${dir}: ${JSON.stringify(u.source)}.`);
+  return fp;
 }
 
 /** Bản vẽ DXF của underlay ĐÃ ĐẶT về mm model — nuôi cả render lẫn dò tường. */

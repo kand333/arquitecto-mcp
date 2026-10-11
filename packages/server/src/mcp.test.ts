@@ -141,9 +141,9 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
       "0", "LINE", "10", "110", "20", "0", "11", "110", "21", "2800",
       "0", "ENDSEC", "0", "EOF",
     ].join("\n");
-    const { mkdtempSync, writeFileSync: wf } = await import("node:fs");
-    const { tmpdir } = await import("node:os");
-    const src = path.join(mkdtempSync(path.join(tmpdir(), "arquitecto-dxf-")), "nha-cu.dxf");
+    const { writeFileSync: wf } = await import("node:fs");
+    // M1: underlay_import solo acepta archivos dentro de la carpeta del proyecto
+    const src = path.join(store.baseDir, "nha-cu.dxf");
     wf(src, dxf, "utf8");
 
     const imp = await client.callTool({ name: "underlay_import", arguments: { path: src } });
@@ -256,5 +256,30 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
     const r = await client.callTool({ name: "validate", arguments: {} });
     expect(r.isError).toBe(true);
     expect(textOf(r)).toContain("project_new");
+  });
+});
+
+// ── M1: underlay_import solo dentro del proyecto y ≤20 MB (docs/security-tests/M1.md) ──
+
+describe("M1 — underlay_import confinado", () => {
+  it("archivo fuera de la carpeta del proyecto → error; >20 MB → error", async () => {
+    const { client, store } = await connect();
+    await client.callTool({ name: "project_new", arguments: { name: "Nhà anh Ba", template: "nha-ong-4x16-2t" } });
+    const { mkdtempSync: mk, writeFileSync: wf } = await import("node:fs");
+    const { tmpdir: td } = await import("node:os");
+    const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64");
+    const outside = path.join(mk(path.join(td(), "arquitecto-m1-")), "ajeno.png");
+    wf(outside, png);
+    const cal = { a: [0, 0], b: [1, 0], mm: 4000 };
+    const r1 = await client.callTool({ name: "underlay_import", arguments: { path: outside, calibrate: cal } });
+    expect(r1.isError).toBe(true);
+    expect(textOf(r1)).toMatch(/fuera del directorio/);
+    expect(store.current.underlay).toBeUndefined();
+
+    const big = path.join(store.baseDir, "grande.png");
+    wf(big, Buffer.concat([png, Buffer.alloc(20 * 1024 * 1024)]));
+    const r2 = await client.callTool({ name: "underlay_import", arguments: { path: big, calibrate: cal } });
+    expect(r2.isError).toBe(true);
+    expect(textOf(r2)).toMatch(/20 MB/);
   });
 });

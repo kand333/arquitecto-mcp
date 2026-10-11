@@ -265,3 +265,27 @@ describe("A2 — IDs con formato seguro", () => {
     expect(findInvalidId(q)).toBe("../evil");
   });
 });
+
+// ── M1: underlay.source (docs/security-tests/M1.md) ─────────────────
+
+describe("M1 — underlay.source es solo un nombre de archivo", () => {
+  const addU = (source: string): Op => ({
+    op: "add", entity: "underlay", data: { id: "U1", kind: "image", source, scale: 1, origin: [0, 0] },
+  });
+
+  it("add/update con una ruta en source → OPS-08", () => {
+    const p = loadNhaOng4x16();
+    for (const s of ["../../secreto.png", "..\\secreto.png", "a/b.png", "C:\\x.png", "/etc/x.png", "..", "."]) {
+      const r = applyOps(p, p.meta.revision, [addU(s)]);
+      expect(r.ok, JSON.stringify(s)).toBe(false);
+      if (!r.ok) expect(r.errors[0]!.rule).toBe("OPS-08");
+    }
+    const ok = applyOps(p, p.meta.revision, [addU("plano.png")]);
+    expect(ok.ok).toBe(true);
+    if (ok.ok) {
+      const up = applyOps(ok.project, ok.revision, [{ op: "update", entity: "underlay", id: "U1", data: { source: "../x.png" } }]);
+      expect(up.ok).toBe(false);
+      if (!up.ok) expect(up.errors[0]!.rule).toBe("OPS-08");
+    }
+  });
+});

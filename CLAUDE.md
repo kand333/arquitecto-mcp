@@ -24,5 +24,5 @@
 
 ## Seguridad
 - Editor (`live.ts`, A1): escucha solo en `127.0.0.1`; WS y `/share`, `/share/rotate`, `/plan`, `/so-sanh` exigen `?token=` (propietario = escritura, link compartido = solo lectura); Host y Origin deben ser `localhost`/`127.0.0.1:<port>`. Toda ruta o cliente nuevo debe respetarlo.
-- IDs (A2): `isValidId` (core) en todo `add` y al cargar de disco; toda escritura de exportes pasa por `safeJoin` (`server/src/safe-path.ts`). `readVariant` exige slug `^[a-z0-9-]+$` (M2); `openProject` solo dentro de `baseDir` (M3). Pendiente M1 (underlay).
+- IDs (A2): `isValidId` (core) en todo `add` y al cargar de disco; toda escritura de exportes pasa por `safeJoin` (`server/src/safe-path.ts`). `readVariant` exige slug `^[a-z0-9-]+$` (M2); `openProject` solo dentro de `baseDir` (M3). Underlay (M1): `source` = nombre de archivo simple, lectura confinada con `realpath` a `.arquitecto/underlay`, `underlay_import` solo dentro del proyecto y ≤20 MB.
 - En E2, cada fix lleva un test que primero falla; el output rojo y el verde se guardan en `docs/security-tests/<id>.md`.

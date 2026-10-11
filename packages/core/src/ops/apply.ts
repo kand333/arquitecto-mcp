@@ -216,6 +216,11 @@ function applyRecord(draft: Project, op: Op, kind: "style" | "finish"): Issue | 
   return null;
 }
 
+/** M1: un nombre de archivo simple — sin separadores, sin unidad (":"), sin "." ni "..". */
+function isPlainFileName(s: unknown): s is string {
+  return typeof s === "string" && s.length > 0 && !/[\\/:]/.test(s) && s !== "." && s !== "..";
+}
+
 /** Underlay là SINGLETON: chỉ một bản đồ lại, id cố định "U1". */
 function applyUnderlay(draft: Project, op: Op): Issue | null {
   if (op.op === "add") {
@@ -228,8 +233,8 @@ function applyUnderlay(draft: Project, op: Op): Issue | null {
     if (d.kind !== "dxf" && d.kind !== "image") {
       return issue("OPS-08", "block", ["U1"], `Underlay cần data.kind = "dxf" | "image".`);
     }
-    if (typeof d.source !== "string" || d.source.length === 0) {
-      return issue("OPS-08", "block", ["U1"], "Underlay thiếu data.source (file trong .arquitecto/underlay/).");
+    if (!isPlainFileName(d.source)) {
+      return issue("OPS-08", "block", ["U1"], "Underlay: data.source debe ser solo un nombre de archivo dentro de .arquitecto/underlay/.");
     }
     if (typeof d.scale !== "number" || !(d.scale > 0)) {
       return issue("OPS-08", "block", ["U1"], "Underlay cần data.scale > 0 (mm model trên một đơn vị nguồn).");
@@ -248,6 +253,9 @@ function applyUnderlay(draft: Project, op: Op): Issue | null {
       return issue("OPS-03", "block", [op.id], `Không được đổi id qua update (${op.id} → ${String(op.data.id)}).`);
     }
     const merged = { ...draft.underlay, ...structuredClone(op.data), id: op.id } as typeof draft.underlay;
+    if (!isPlainFileName(merged.source)) {
+      return issue("OPS-08", "block", [op.id], "Underlay: data.source debe ser solo un nombre de archivo dentro de .arquitecto/underlay/.");
+    }
     if (merged.level !== undefined && !draft.levels.some((l) => l.id === merged.level)) {
       return issue("OPS-05", "block", [op.id], `Underlay trỏ level không tồn tại: ${String(merged.level)}.`);
     }

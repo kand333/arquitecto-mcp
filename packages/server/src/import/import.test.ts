@@ -163,3 +163,21 @@ describe("loadUnderlay + render — nền mờ dưới mặt bằng", () => {
     expect(loadUnderlay(p, dir)).toBeNull();
   });
 });
+
+// ── M1: lectura confinada a .arquitecto/underlay (docs/security-tests/M1.md) ──
+
+describe("M1 — loadUnderlay no lee fuera de .arquitecto/underlay", () => {
+  const PNG1 = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64");
+
+  it("source manipulado en un modelo cargado de disco → null; un source válido sí se lee", () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "arquitecto-m1-"));
+    mkdirSync(path.join(dir, ".arquitecto", "underlay"), { recursive: true });
+    writeFileSync(path.join(dir, "secreto.png"), PNG1);
+    writeFileSync(path.join(dir, ".arquitecto", "underlay", "plano.png"), PNG1);
+    const p = loadNhaOng4x16();
+    p.underlay = { id: "U1", kind: "image", source: "../../secreto.png", origin: [0, 0], scale: 1 };
+    expect(loadUnderlay(p, dir)).toBeNull();
+    p.underlay = { id: "U1", kind: "image", source: "plano.png", origin: [0, 0], scale: 1 };
+    expect(loadUnderlay(p, dir)?.image?.wpx).toBe(1);
+  });
+});

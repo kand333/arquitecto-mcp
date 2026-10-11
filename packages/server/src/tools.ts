@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
@@ -38,6 +38,9 @@ type ToolResult = {
   >;
   isError?: boolean;
 };
+
+/** M1: tope de tamaño para underlay_import (se copia a .arquitecto/underlay y se incrusta como data URI). */
+const UNDERLAY_MAX_BYTES = 20 * 1024 * 1024;
 
 const text = (t: string): ToolResult => ({ content: [{ type: "text", text: t }] });
 const fail = (e: unknown): ToolResult => ({
@@ -668,7 +671,7 @@ ${vNote}`);
       description:
         "Đặt DXF (bản CAD cũ) hoặc ảnh PNG/JPEG (chụp/scan mặt bằng) làm lớp MỜ dưới mặt bằng để dựng model theo — underlay là giàn giáo, KHÔNG vào bản vẽ xuất. Tỷ lệ: DXF thường tự suy từ $INSUNITS; nếu không (và luôn luôn với ảnh) hỏi người dùng MỘT đoạn đã biết chiều dài thật rồi truyền calibrate {a,b,mm} — a/b theo đơn vị nguồn (DXF unit / pixel ảnh; chỉ dùng KHOẢNG CÁCH nên đo hệ trục nào cũng được). Sau import: render_plan soi vị trí, chỉnh chỗ đặt bằng apply_ops update underlay U1 (origin/rotation/scale/opacity/level; origin ảnh = góc dưới-trái), DXF thì underlay_trace để dò tường. Xóa: apply_ops delete underlay U1.",
       inputSchema: {
-        path: z.string().describe("Đường dẫn file .dxf/.png/.jpg (tuyệt đối, hoặc tương đối thư mục dự án)"),
+        path: z.string().describe("Ruta del archivo .dxf/.png/.jpg DENTRO de la carpeta del proyecto (absoluta o relativa), máx. 20 MB"),
         scale: z.number().positive().optional().describe("mm model trên MỘT đơn vị nguồn (DXF unit / pixel). Bỏ trống = calibrate hoặc $INSUNITS"),
         calibrate: z
           .object({
@@ -687,8 +690,9 @@ ${vNote}`);
     (args) => {
       try {
         const p = store.current;
-        const src = path.isAbsolute(args.path) ? args.path : path.resolve(store.baseDir, args.path);
+        const src = safeJoin(store.baseDir, args.path); // M1: solo archivos dentro de la carpeta del proyecto
         if (!existsSync(src)) return fail(new Error(`Không thấy file: ${src}`));
+        if (statSync(src).size > UNDERLAY_MAX_BYTES) return fail(new Error("El archivo supera 20 MB."));
         const ext = path.extname(src).toLowerCase();
         const kind = ext === ".dxf" ? "dxf" : [".png", ".jpg", ".jpeg"].includes(ext) ? "image" : null;
         if (!kind) return fail(new Error(`Chỉ nhận .dxf / .png / .jpg — nhận được "${ext}". PDF thì chụp/scan ra ảnh trước.`));
