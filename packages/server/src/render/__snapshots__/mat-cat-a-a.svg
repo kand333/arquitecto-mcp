@@ -209,7 +209,7 @@ text{font-family:'Be Vietnam Pro','Segoe UI',Arial,sans-serif;fill:#000;stroke:n
 <line x1="263" y1="270" x2="413" y2="270" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
 <line x1="263" y1="280" x2="413" y2="280" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
 <line x1="367" y1="248" x2="367" y2="290" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="266" y="255.6" font-size="3.4" text-anchor="start" dominant-baseline="middle" class="b">NHÀ ỐNG 4×16M — 2 TẦNG 3PN</text>
+<text x="266" y="255.6" font-size="3.4" text-anchor="start" dominant-baseline="middle" class="b">CASA DE PRUEBA 4×16 M — 2 PISOS, 3 DORMITORIOS</text>
 <text x="370" y="255.6" font-size="3.4" text-anchor="start" dominant-baseline="middle" class="b">KT-04</text>
 <text x="266" y="266.6" font-size="3" text-anchor="start" dominant-baseline="middle" class="b">MẶT CẮT A-A</text>
 <text x="370" y="266.6" font-size="2.8" text-anchor="start" dominant-baseline="middle">TỶ LỆ 1:50</text>
@@ -218,5 +218,6 @@ text{font-family:'Be Vietnam Pro','Segoe UI',Arial,sans-serif;fill:#000;stroke:n
 <text x="266" y="286.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">Kiểm: ................</text>
 <text x="370" y="286.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">arquitecto/0.1</text>
 <text x="10" y="284.6" font-size="2" text-anchor="start" dominant-baseline="middle">Bản vẽ concept — không thay thế hồ sơ thiết kế có chữ ký KTS hành nghề.</text>
+<text x="10" y="287.4" font-size="2" text-anchor="start" dominant-baseline="middle">⚠ Một số số liệu tiêu chuẩn đang ở mức tham khảo (chưa đối chiếu văn bản gốc).</text>
 </g>
 </svg>

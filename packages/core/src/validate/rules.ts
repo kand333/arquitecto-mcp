@@ -1,9 +1,6 @@
 import type { Severity } from "../issues.js";
 import type { Project } from "../types.js";
 import geoJson from "../../rules/geo.json" with { type: "json" };
-import stdJson from "../../rules/std-vn.json" with { type: "json" };
-import lobanJson from "../../rules/loban.json" with { type: "json" };
-import plnJson from "../../rules/pln.json" with { type: "json" };
 import genericJson from "../../rules/std-generic.json" with { type: "json" };
 import ukJson from "../../rules/uk-approved-docs.json" with { type: "json" };
 import clJson from "../../rules/cl.json" with { type: "json" };
@@ -32,9 +29,6 @@ export type RuleDef = {
   evaluator?: string;
 };
 
-export type CungDef = { name: string; good: boolean };
-export type RulerDef = { label: string; cycle: number; cungs: CungDef[] };
-
 /** Loại pack — core luôn chạy; các loại còn lại chọn theo region/config. */
 export type PackKind = "core" | "standard" | "planning" | "customs";
 
@@ -42,36 +36,22 @@ export type PackMeta = {
   id: string;
   title: string;
   kind: PackKind;
-  /** Vùng áp dụng (vd. "vn", "generic"); bỏ trống ở core (áp mọi nơi). */
+  /** Región de aplicación (p. ej. "cl", "generic"); vacía en el núcleo (aplica en todas). */
   region?: string;
   /** Văn bản chuẩn gốc — hiển thị/tra cứu. */
   standard?: string;
 };
 
-export type RulePack = PackMeta & {
-  rules: RuleDef[];
-  rulers?: Record<string, RulerDef>;
-};
+export type RulePack = PackMeta & { rules: RuleDef[] };
 
-type PackJson = { pack: PackMeta; rules: RuleDef[]; rulers?: Record<string, RulerDef> };
+type PackJson = { pack: PackMeta; rules: RuleDef[] };
 
 function toPack(j: PackJson): RulePack {
-  return { ...j.pack, rules: j.rules, ...(j.rulers ? { rulers: j.rulers } : {}) };
+  return { ...j.pack, rules: j.rules };
 }
 
-const loban = lobanJson as PackJson & { rulers: Record<string, RulerDef> };
-
-/**
- * Pack đóng gói sẵn = bộ chuẩn Việt Nam + lõi hình học. Thứ tự [geo, std-vn,
- * loban, pln] được GIỮ NGUYÊN để validateProject của project VN (không khai
- * config) ra kết quả byte-identical như trước khi có rule-pack.
- */
-export const BUILTIN_PACKS: RulePack[] = [
-  toPack(geoJson as PackJson),
-  toPack(stdJson as PackJson),
-  toPack(loban),
-  toPack(plnJson as PackJson),
-];
+/** Pack empaquetado de núcleo: la geometría corre en toda región. Los packs normativos se registran abajo por región. */
+export const BUILTIN_PACKS: RulePack[] = [toPack(geoJson as PackJson)];
 
 /** Registry = builtin + pack đăng ký thêm (cộng đồng/region khác). */
 const registry = new Map<string, RulePack>(BUILTIN_PACKS.map((p) => [p.id, p]));
@@ -88,10 +68,9 @@ export function listPacks(): RulePack[] {
   return [...registry.values()];
 }
 
-// Pack MẪU ngoài bộ VN — chứng minh cơ chế chọn pack (region "generic").
-// Region thật (UK/US…) sẽ đăng ký y hệt qua quy trình contributor (docs/13).
+// Pack de muestra (región "generic"): prueba el mecanismo de selección de packs.
 registerPack(toPack(genericJson as PackJson));
-// UK Approved Documents (P9) — pack region thật đầu tiên ngoài VN.
+// UK Approved Documents (P9): segunda región, se conserva para probar la arquitectura multirregión.
 registerPack(toPack(ukJson as PackJson));
 // Chile — OGUC (E4 MVP): citas y estado de validación en docs/oguc-sources.md.
 registerPack(toPack(clJson as PackJson));
@@ -105,8 +84,7 @@ export type RegionDef = {
   /** Đơn vị HIỂN THỊ — model LUÔN mm số nguyên (ADR-04). "imperial" chờ region US. */
   units: "metric" | "imperial";
   /**
-   * Pack áp mặc định cho region, THEO THỨ TỰ CHẠY (mô-đun phong tục như loban
-   * cũng nằm đây — kind "customs" đã khai trong pack header). Core geo luôn chạy.
+   * Packs que aplica la región, EN ORDEN DE EJECUCIÓN. El núcleo geo corre siempre.
    */
   packs: string[];
   /** Tiền tệ dự toán; bỏ trống = region chưa có bảng đơn giá (estimate chỉ trả khối lượng). */
@@ -127,16 +105,6 @@ export function listRegions(): RegionDef[] {
   return [...regions.values()];
 }
 
-// VN — đóng gói lại hiện trạng. Thứ tự [std-vn, loban, pln] GIỮ NGUYÊN như
-// BUILTIN_PACKS để validate của project VN byte-identical (invariant P6).
-registerRegion({
-  id: "vn",
-  title: "Việt Nam",
-  units: "metric",
-  packs: ["std-vn", "loban", "pln"],
-  currency: { code: "VND", symbol: "₫", locale: "vi-VN" },
-});
-
 // UK (England) — pack Approved Documents (chọn theo Phụ lục A doc 12: văn bản
 // mở dưới OGL). Chưa có bảng đơn giá → estimate degrade thành khối lượng.
 registerRegion({
@@ -146,7 +114,7 @@ registerRegion({
   packs: ["uk-approved-docs"],
 });
 
-// Chile — sin currency hasta la tabla CLP/UF (E4b): el presupuesto entrega solo cantidades.
+// Chile — región por defecto. La moneda vive en la tabla de precios (rules/don-gia-cl.json, UF).
 registerRegion({
   id: "cl",
   title: "Chile",
@@ -155,7 +123,6 @@ registerRegion({
 });
 
 export const ALL_RULES: RuleDef[] = BUILTIN_PACKS.flatMap((p) => p.rules);
-export const RULERS: { thong_thuy: RulerDef; khoi_xay: RulerDef; ban_tho: RulerDef } = loban.rulers as never;
 
 const builtinById = new Map(ALL_RULES.map((r) => [r.id, r]));
 
@@ -171,12 +138,11 @@ export function getRule(id: string): RuleDef | undefined {
 }
 
 /**
- * Chọn pack áp cho một project:
- * - Core pack (geo) LUÔN chạy — hình học đúng ở mọi nơi.
- * - config.packs khai tường minh → dùng đúng danh sách đó.
- * - Ngược lại suy từ config.region (mặc định "vn"): region ĐÃ ĐĂNG KÝ → đúng
- *   danh sách + thứ tự trong RegionDef (P9); region lạ → mọi pack cùng region.
- * Project không khai config → đúng bộ VN builtin theo thứ tự cũ.
+ * Packs que aplican a un proyecto:
+ * - El núcleo (geo) corre SIEMPRE.
+ * - config.packs explícito → exactamente esa lista.
+ * - Si no, según config.region (por defecto "cl"): región registrada → su lista y orden
+ *   (RegionDef); región desconocida → todos los packs con esa región.
  */
 export function packsFor(p: Project): RulePack[] {
   const cfg = p.config;
@@ -187,7 +153,7 @@ export function packsFor(p: Project): RulePack[] {
       .map((id) => getPack(id))
       .filter((pk): pk is RulePack => pk != null && pk.kind !== "core");
   } else {
-    const region = cfg?.region ?? "vn";
+    const region = cfg?.region ?? "cl";
     const def = getRegion(region);
     selected = def
       ? def.packs
@@ -226,9 +192,8 @@ export function activeRules(p?: Project): RuleDef[] {
 }
 
 /**
- * Rules còn ⚠ chưa đối chiếu văn bản gốc — renderer in chú thích khi > 0.
- * Truyền project để soi đúng bộ pack đang áp (P9 — pack region khác có thể
- * chưa verify); không truyền = bộ builtin VN như cũ.
+ * Reglas activas sin validación documental (verified:false): el render pone la nota ⚠ si hay alguna.
+ * Con proyecto, según sus packs; sin proyecto, solo el núcleo empaquetado.
  */
 export function unverifiedRules(p?: Project): RuleDef[] {
   return activeRules(p).filter((r) => r.source?.verified === false);

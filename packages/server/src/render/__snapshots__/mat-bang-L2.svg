@@ -327,15 +327,15 @@ text{font-family:'Be Vietnam Pro','Segoe UI',Arial,sans-serif;fill:#000;stroke:n
 <line x1="378" y1="174.6" x2="374" y2="174.6" stroke="#000" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"/>
 <polygon points="378,171 379.1,174 376.9,174" fill="#000"/>
 <text x="378" y="177.2" font-size="3.5" text-anchor="middle" dominant-baseline="middle" class="b">A</text>
-<text data-id="R8" x="101.65" y="148.5" font-size="3.5" text-anchor="middle" dominant-baseline="middle">NGỦ CHÍNH</text>
+<text data-id="R8" x="101.65" y="148.5" font-size="3.5" text-anchor="middle" dominant-baseline="middle">DORMITORIO PRINCIPAL</text>
 <text data-id="R8" x="101.65" y="153.1" font-size="2.5" text-anchor="middle" dominant-baseline="middle">16.8m²</text>
-<text data-id="R9" x="216.267" y="143.3" font-size="3.5" text-anchor="middle" dominant-baseline="middle">SẢNH THỜ + HÀNH LANG</text>
+<text data-id="R9" x="216.267" y="143.3" font-size="3.5" text-anchor="middle" dominant-baseline="middle">VESTÍBULO + PASILLO</text>
 <text data-id="R9" x="216.267" y="147.9" font-size="2.5" text-anchor="middle" dominant-baseline="middle">13.6m²</text>
 <text data-id="R10" x="283.9" y="159.6" font-size="2.4" text-anchor="middle" dominant-baseline="middle">WC 2</text>
 <text data-id="R10" x="283.9" y="163" font-size="2" text-anchor="middle" dominant-baseline="middle">3.3m²</text>
-<text data-id="R11" x="324.8" y="148.5" font-size="3.5" text-anchor="middle" dominant-baseline="middle">NGỦ CON</text>
+<text data-id="R11" x="324.8" y="148.5" font-size="3.5" text-anchor="middle" dominant-baseline="middle">DORMITORIO HIJOS</text>
 <text data-id="R11" x="324.8" y="153.1" font-size="2.5" text-anchor="middle" dominant-baseline="middle">9.0m²</text>
-<text data-id="R12" x="358.95" y="148.5" font-size="2.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 358.95 148.5)">GIẾNG TRỜI SAU</text>
+<text data-id="R12" x="358.95" y="148.5" font-size="2.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 358.95 148.5)">PATIO DE LUZ POSTERIOR</text>
 <text data-id="R12" x="362.35" y="148.5" font-size="2" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 362.35 148.5)">2.4m²</text>
 <polygon points="100.25,158 103.05,158 101.65,159.6" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="101.65" y="156.8" font-size="2.5" text-anchor="middle" dominant-baseline="middle">+3.600</text>
@@ -347,15 +347,16 @@ text{font-family:'Be Vietnam Pro','Segoe UI',Arial,sans-serif;fill:#000;stroke:n
 <line x1="263" y1="270" x2="413" y2="270" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
 <line x1="263" y1="280" x2="413" y2="280" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
 <line x1="367" y1="248" x2="367" y2="290" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="266" y="255.6" font-size="3.4" text-anchor="start" dominant-baseline="middle" class="b">NHÀ ỐNG 4×16M — 2 TẦNG 3PN</text>
+<text x="266" y="255.6" font-size="3.4" text-anchor="start" dominant-baseline="middle" class="b">CASA DE PRUEBA 4×16 M — 2 PISOS, 3 DORMITORIOS</text>
 <text x="370" y="255.6" font-size="3.4" text-anchor="start" dominant-baseline="middle" class="b">KT-01</text>
-<text x="266" y="266.6" font-size="3" text-anchor="start" dominant-baseline="middle" class="b">MẶT BẰNG TẦNG 2</text>
+<text x="266" y="266.6" font-size="3" text-anchor="start" dominant-baseline="middle" class="b">MẶT BẰNG PISO 2</text>
 <text x="370" y="266.6" font-size="2.8" text-anchor="start" dominant-baseline="middle">TỶ LỆ 1:50</text>
 <text x="266" y="276.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">Thiết kế: Arquitecto AI + anh Ba</text>
 <text x="370" y="276.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">Ngày: 13/07/2026</text>
 <text x="266" y="286.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">Kiểm: ................</text>
 <text x="370" y="286.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">arquitecto/0.1</text>
 <text x="10" y="284.6" font-size="2" text-anchor="start" dominant-baseline="middle">Bản vẽ concept — không thay thế hồ sơ thiết kế có chữ ký KTS hành nghề.</text>
+<text x="10" y="287.4" font-size="2" text-anchor="start" dominant-baseline="middle">⚠ Một số số liệu tiêu chuẩn đang ở mức tham khảo (chưa đối chiếu văn bản gốc).</text>
 <circle cx="401" cy="19" r="6.5" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
 <line x1="404.677" y1="22.677" x2="397.323" y2="15.323" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
 <polygon points="397.323,15.323 400.859,16.596 398.596,18.859" fill="#000"/>

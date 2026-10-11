@@ -1,16 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { registerAsset } from "../../src/catalog.js";
-import { loadCasa2Pisos, loadDepto2d, loadDetachedUk, loadCasa1Piso, loadCasaPrueba2p, loadNhaVuon } from "../../src/fixture.js";
+import { loadCasa1Piso, loadCasa2Pisos, loadCasaPrueba2p, loadDepto2d, loadDetachedUk } from "../../src/fixture.js";
 import { applyOps } from "../../src/ops/apply.js";
 import { estimateCost } from "../../src/estimate.js";
 import type { Issue, Severity } from "../../src/issues.js";
 import type { Project } from "../../src/types.js";
 import { validateProject } from "../../src/validate/engine.js";
-import { activeRules, getRegion, unverifiedRules, packsFor, registerPack, getPack, type RulePack } from "../../src/validate/rules.js";
-import { cungAt, nearestGood } from "../../src/validate/loban.js";
-import { RULERS } from "../../src/validate/rules.js";
+import { activeRules, getPack, getRegion, packsFor, registerPack, unverifiedRules, type RulePack } from "../../src/validate/rules.js";
 
-/** Mutation → validate; kiểm rule nổ đúng chỗ phạm và im ở fixture chuẩn. */
+/** Mutación → validate; la regla debe saltar donde se infringe y callar en la fixture limpia. */
 function violate(mutate: (p: Project) => void): Issue[] {
   const p = loadCasaPrueba2p();
   mutate(p);
@@ -19,60 +16,99 @@ function violate(mutate: (p: Project) => void): Issue[] {
 
 function expectRule(issues: Issue[], rule: string, severity?: Severity): Issue {
   const found = issues.find((i) => i.rule === rule && (severity === undefined || i.severity === severity));
-  expect(found, `kỳ vọng ${rule}${severity ? `/${severity}` : ""} trong: ${issues.map((i) => `${i.rule}/${i.severity}`).join(", ") || "(rỗng)"}`).toBeDefined();
+  expect(found, `se esperaba ${rule}${severity ? `/${severity}` : ""} en: ${issues.map((i) => `${i.rule}/${i.severity}`).join(", ") || "(vacío)"}`).toBeDefined();
   return found!;
 }
 
-describe("bộ rule — tổng quan", () => {
-  it("≥ 20 rules active, DoD P1", () => {
-    expect(activeRules().length).toBeGreaterThanOrEqual(20);
+/** Golden: sin hallazgos de severidad block/error/warn (los CL-INDET informativos son esperables). */
+const serious = (issues: Issue[]): Issue[] => issues.filter((i) => i.severity !== "info");
+
+/**
+ * Pack de TEST (región "lib"): reutiliza los parámetros de referencia del upstream solo para seguir
+ * probando la biblioteca de evaluadores STD-* y PLN-06 (que ningún pack chileno usa todavía).
+ * NO es una norma: no tiene `source` y no se registra fuera de este archivo.
+ */
+const LIB: RulePack = {
+  id: "test-lib",
+  title: "Pack de test de evaluadores",
+  kind: "standard",
+  region: "lib",
+  rules: [
+    { id: "STD-01", title: "Superficie mínima", severity: "warn", params: { ngu_don: 9, ngu_doi: 12, khach: 13, bep_an: 12, wc: 3, kho: 3 }, message: "Recinto {ten} ({room}) {area}m², mínimo {min}m² ({loai})." },
+    { id: "STD-02", title: "Ancho mínimo", severity: "warn", params: { min: 2100 }, message: "Recinto {ten} ({room}) ancho {width}mm < {min}mm." },
+    { id: "STD-03", title: "Altura libre", severity: "error", params: { phong_o: 2600, bep_an: 2600, wc: 2300, kho: 2200 }, message: "{ten} ({room}): altura libre en {level} = {clear}mm < {min}mm." },
+    { id: "STD-04", title: "Pasillo", severity: "error", params: { min: 1000 }, message: "Pasillo {ten} ({room}) ancho {width}mm < {min}mm." },
+    { id: "STD-05", title: "Puertas", severity: "error", params: { chinh: 800, chinh_khuyen: 900, phong: 700, wc: 600 }, message: "Puerta {opening} ({loai}) ancho {width}mm < {min}mm." },
+    { id: "STD-06", title: "Escalera", severity: "error", params: { riser_min: 50, riser_max: 220, riser_khuyen: 190, tread_min: 250, ve_min: 700, ve_khuyen: 900, buoc_min: 550, buoc_max: 700 }, message: "Escalera {stair}: {detail}." },
+    { id: "STD-08", title: "Antepecho", severity: "warn", params: { sill_min: 900 }, message: "Ventana {opening} antepecho {sill}mm < {min}mm en {level}." },
+    { id: "STD-09", title: "Luz natural", severity: "warn", message: "Recinto {ten} ({room}) sin ventana ni patio de luz." },
+    { id: "STD-10", title: "Baño a cocina", severity: "warn", message: "La puerta {opening} del baño abre a la cocina ({room})." },
+    { id: "STD-11", title: "Holguras de mobiliario", severity: "info", params: { giuong: 600, bep_truoc: 900, bon_cau_truoc: 500 }, message: "{item}: {detail}." },
+    { id: "PLN-06", title: "Voladizo", severity: "error", message: "{slab} sobresale {vuon}mm del deslinde — máximo {max}mm." },
+  ],
+};
+registerPack(LIB);
+
+const asLib = (p: Project): Project => { p.config = { ...p.config, region: "lib" }; return p; };
+function violateLib(mutate: (p: Project) => void, load: () => Project = loadCasaPrueba2p): Issue[] {
+  const p = asLib(load());
+  mutate(p);
+  return validateProject(p);
+}
+
+describe("conjunto de reglas — panorama", () => {
+  it("un proyecto sin config usa la región Chile: solo GEO + CL", () => {
+    const ids = activeRules(loadCasaPrueba2p()).map((r) => r.id);
+    expect(ids.length).toBeGreaterThanOrEqual(15);
+    expect(ids.every((id) => id.startsWith("GEO-") || id.startsWith("CL-"))).toBe(true);
   });
 
-  it("fixture chuẩn hoàn toàn sạch (0 issue) — golden", () => {
-    expect(validateProject(loadCasaPrueba2p())).toEqual([]);
+  it("fixture de prueba sin hallazgos block/error/warn — golden", () => {
+    expect(serious(validateProject(loadCasaPrueba2p()))).toEqual([]);
   });
 
-  it("toàn bộ rule đã đối chiếu nguồn (verified) — hết cờ ⚠ từ 13/07/2026", () => {
+  it("sin proyecto solo queda el núcleo empaquetado (geo), todo verificado", () => {
+    expect(activeRules().every((r) => r.id.startsWith("GEO-"))).toBe(true);
     expect(unverifiedRules()).toEqual([]);
   });
 });
 
-describe("GEO — hình học/topology (case phạm; case đạt = fixture golden)", () => {
-  it("GEO-01: cửa trượt ra ngoài tường", () => {
+describe("GEO — geometría/topología (caso que infringe; el que cumple = fixture golden)", () => {
+  it("GEO-01: puerta desplazada fuera del muro", () => {
     const issues = violate((p) => { p.openings.find((o) => o.id === "D1")!.offset = 3000; });
     const i = expectRule(issues, "GEO-01", "block");
     expect(i.message).toContain("D1");
   });
 
-  it("GEO-02: hai opening chồng nhau trên một tường", () => {
+  it("GEO-02: dos vanos superpuestos en un muro", () => {
     const issues = violate((p) => {
       p.openings.push({ id: "D99", wall: "W1", kind: "door", style: "DP", offset: 1000, width: 1200, height: 2100, sill: 0 });
     });
     expectRule(issues, "GEO-02", "block");
   });
 
-  it("GEO-03: hai tường song song đè nhau", () => {
+  it("GEO-03: dos muros paralelos montados", () => {
     const issues = violate((p) => {
       p.walls.push({ id: "W99", level: "L1", from: [0, 150], to: [4000, 150], thickness: 220, kind: "gach" });
     });
     expectRule(issues, "GEO-03", "error");
   });
 
-  it("GEO-04: nội thất đè nhau", () => {
+  it("GEO-04: muebles montados", () => {
     const issues = violate((p) => {
       p.furniture.push({ id: "F99", level: "L1", asset: "sofa-3s-01", at: [700, 3350], rotation: 90 });
     });
     expectRule(issues, "GEO-04", "error");
   });
 
-  it("GEO-05: polygon tự cắt", () => {
+  it("GEO-05: polígono autointersectado", () => {
     const issues = violate((p) => {
       p.rooms.find((r) => r.id === "R1")!.polygon = [[0, 0], [1000, 1000], [1000, 0], [0, 1000]];
     });
     expectRule(issues, "GEO-05", "block");
   });
 
-  it("GEO-06: cung mở cửa vướng nội thất", () => {
+  it("GEO-06: el barrido de la puerta choca con un mueble", () => {
     const issues = violate((p) => {
       p.furniture.push({ id: "F99", level: "L1", asset: "tu-ao-1m", at: [720, 13200], rotation: 0 });
     });
@@ -80,12 +116,12 @@ describe("GEO — hình học/topology (case phạm; case đạt = fixture golde
     expect(i.entities).toContain("D3");
   });
 
-  it("GEO-07: xóa lỗ thang trên sàn L2", () => {
+  it("GEO-07: sin vano de escalera en la losa de L2", () => {
     const issues = violate((p) => { p.slabs.find((s) => s.id === "SL2")!.holes = []; });
     expectRule(issues, "GEO-07", "warn");
   });
 
-  it("GEO-08: tường vượt ranh đất (error) — khoảng lùi đã tách sang PLN-01", () => {
+  it("GEO-08: muro fuera del deslinde (error)", () => {
     const out = violate((p) => {
       p.walls.push({ id: "W99", level: "L1", from: [3890, 15000], to: [4400, 15000], thickness: 110, kind: "gach" });
     });
@@ -93,21 +129,21 @@ describe("GEO — hình học/topology (case phạm; case đạt = fixture golde
   });
 });
 
-describe("PLN — quy hoạch địa phương (params từ brief, không khai = không kiểm)", () => {
-  it("PLN-01: khoảng lùi trước — tường mặt tiền phạm; tổng quát cho cả đất méo", () => {
+describe("CL-CIP — valores del CIP declarados (reutilizan PLN-01…05)", () => {
+  it("CL-CIP-ANT: antejardín; generalizado a terrenos irregulares", () => {
     const issues = violate((p) => { p.brief.dat!.quy_hoach!.khoang_lui_truoc = 500; });
-    const i = expectRule(issues, "PLN-01", "error");
-    expect(i.message).toContain("khoảng lùi trước 500mm");
-    // lùi 100 thì W1 (tim 110, dày 220 → mép 0) vẫn phạm; nhưng nếu chỉ 0 thì im
-    expect(violate((p) => { p.brief.dat!.quy_hoach!.khoang_lui_truoc = 0; }).filter((x) => x.rule === "PLN-01")).toEqual([]);
+    const i = expectRule(issues, "CL-CIP-ANT", "error");
+    expect(i.message).toContain("antejardín de 500mm");
+    // 0 = no declarado → indeterminado, nunca error
+    expect(violate((p) => { p.brief.dat!.quy_hoach!.khoang_lui_truoc = 0; }).filter((x) => x.rule === "CL-CIP-ANT")).toEqual([]);
   });
 
-  it("PLN-02: khoảng lùi sau — cạnh sau tự nhận là cạnh xa mặt tiền nhất; tường hông chạm ranh cũng phạm", () => {
+  it("CL-CIP-FON: el deslinde de fondo es el más lejano al frente; un muro lateral que llega al fondo también infringe", () => {
     const issues = violate((p) => { p.brief.dat!.quy_hoach!.khoang_lui_sau = 400; });
-    const i = expectRule(issues, "PLN-02", "error");
-    expect(i.message).toContain("khoảng lùi sau 400mm"); // W4 tim y=15890 cách ranh sau 110
-    expect(issues.some((x) => x.rule === "PLN-02" && x.entities.includes("W2"))).toBe(true); // tường hông chạy suốt tới ranh sau
-    // nhà đã lùi thật (tường duy nhất cách ranh sau 8m) → im
+    const i = expectRule(issues, "CL-CIP-FON", "error");
+    expect(i.message).toContain("distanciamiento de 400mm");
+    expect(issues.some((x) => x.rule === "CL-CIP-FON" && x.entities.includes("W2"))).toBe(true);
+    // casa realmente retirada (único muro a 8 m del fondo) → sin error
     const ok = violate((p) => {
       p.brief.dat!.quy_hoach!.khoang_lui_sau = 400;
       p.openings = [];
@@ -115,62 +151,40 @@ describe("PLN — quy hoạch địa phương (params từ brief, không khai = 
       p.stairs = [];
       p.walls = [{ id: "W1", level: "L1", from: [220, 110], to: [3780, 110], thickness: 220, kind: "gach" }];
     });
-    expect(ok.filter((x) => x.rule === "PLN-02")).toEqual([]);
+    expect(ok.filter((x) => x.rule === "CL-CIP-FON")).toEqual([]);
   });
 
-  it("PLN-03: mật độ xây dựng — fixture phủ ~100% lô nên max 80% là nổ", () => {
-    const issues = violate((p) => { p.brief.dat!.quy_hoach!.mat_do_max = 80; });
-    expectRule(issues, "PLN-03", "error");
-    expect(violate((p) => { p.brief.dat!.quy_hoach!.mat_do_max = 100; }).filter((x) => x.rule === "PLN-03")).toEqual([]);
+  it("CL-CIP-COS: la fixture cubre ~100 % del sitio; máximo 80 % infringe, 100 % no", () => {
+    expectRule(violate((p) => { p.brief.dat!.quy_hoach!.mat_do_max = 80; }), "CL-CIP-COS", "error");
+    expect(violate((p) => { p.brief.dat!.quy_hoach!.mat_do_max = 100; }).filter((x) => x.rule === "CL-CIP-COS")).toEqual([]);
   });
 
-  it("PLN-04: số tầng — fixture 2 tầng, max 1 là nổ, max 4 (fixture khai) thì im", () => {
-    const issues = violate((p) => { p.brief.dat!.quy_hoach!.tang_max = 1; });
-    const i = expectRule(issues, "PLN-04", "error");
+  it("CL-CIP-PIS: fixture de 2 pisos; máximo 1 infringe, el 4 declarado en la fixture no", () => {
+    const i = expectRule(violate((p) => { p.brief.dat!.quy_hoach!.tang_max = 1; }), "CL-CIP-PIS", "error");
     expect(i.message).toContain("2");
-    expect(validateProject(loadCasaPrueba2p()).filter((x) => x.rule === "PLN-04")).toEqual([]); // tang_max=4 sẵn trong fixture
+    expect(validateProject(loadCasaPrueba2p()).filter((x) => x.rule === "CL-CIP-PIS")).toEqual([]);
   });
 
-  it("PLN-05: chiều cao đỉnh công trình — fixture +7000", () => {
-    const issues = violate((p) => { p.brief.dat!.quy_hoach!.chieu_cao_max = 6500; });
-    const i = expectRule(issues, "PLN-05", "error");
+  it("CL-CIP-ALT: cota superior +7000", () => {
+    const i = expectRule(violate((p) => { p.brief.dat!.quy_hoach!.chieu_cao_max = 6500; }), "CL-CIP-ALT", "error");
     expect(i.message).toContain("7000");
-    expect(violate((p) => { p.brief.dat!.quy_hoach!.chieu_cao_max = 7000; }).filter((x) => x.rule === "PLN-05")).toEqual([]);
-  });
-
-  it("PLN-06: ô văng vươn ra ranh trước quá mức khai; vươn trong mức thì im", () => {
-    const canopy = (p: Project, vuon: number): void => {
-      p.slabs.push({ id: "SL99", level: "L2", kind: "canopy", outline: [[220, -vuon], [3780, -vuon], [3780, 300], [220, 300]], thickness: 100 });
-    };
-    const issues = violate((p) => {
-      p.brief.dat!.quy_hoach!.o_vang_max = 600;
-      canopy(p, 1000);
-    });
-    const i = expectRule(issues, "PLN-06", "error");
-    expect(i.message).toContain("SL99");
-    expect(
-      violate((p) => {
-        p.brief.dat!.quy_hoach!.o_vang_max = 600;
-        canopy(p, 500);
-      }).filter((x) => x.rule === "PLN-06"),
-    ).toEqual([]);
+    expect(violate((p) => { p.brief.dat!.quy_hoach!.chieu_cao_max = 7000; }).filter((x) => x.rule === "CL-CIP-ALT")).toEqual([]);
   });
 });
 
-describe("STD — tiêu chuẩn kích thước VN", () => {
-  it("STD-01: phòng ngủ đơn < 9m² (TCVN 13967 Bảng 1) | STD-02: bề rộng < 2100", () => {
-    const issues = violate((p) => {
+describe("Biblioteca de evaluadores STD-* y PLN-06 (pack de test, no normativo)", () => {
+  it("STD-01: dormitorio simple < 9m² | STD-02: ancho < 2100", () => {
+    const issues = violateLib((p) => {
       p.rooms.find((r) => r.id === "R5")!.polygon = [[220, 12475], [2200, 12475], [2200, 15005], [220, 15005]];
-      p.furniture = p.furniture.filter((f) => !["F8", "F9"].includes(f.id)); // dọn đồ cho khỏi nhiễu GEO
+      p.furniture = p.furniture.filter((f) => !["F8", "F9"].includes(f.id)); // sin muebles que ensucien GEO
     });
     const i = expectRule(issues, "STD-01", "warn");
     expect(i.message).toContain("9m²");
     expectRule(issues, "STD-02", "warn");
   });
 
-  it("STD-01: phòng ngủ có giường đôi đòi 12m²", () => {
-    const issues = violate((p) => {
-      // chuyển giường đôi 1m8 vào phòng bà (9.0m² — đủ cho giường đơn, thiếu cho giường đôi)
+  it("STD-01: dormitorio con cama doble exige 12m²", () => {
+    const issues = violateLib((p) => {
       p.furniture = p.furniture.filter((f) => !["F8", "F9"].includes(f.id));
       p.furniture.push({ id: "F98", level: "L1", asset: "giuong-1m8", at: [2680, 14005], rotation: 90 });
     });
@@ -179,147 +193,99 @@ describe("STD — tiêu chuẩn kích thước VN", () => {
     expect(i.entities).toContain("R5");
   });
 
-  it("STD-03: hạ chiều cao tầng → cao thông thủy thiếu", () => {
-    const issues = violate((p) => { p.levels.find((l) => l.id === "L1")!.height = 2600; });
-    const i = expectRule(issues, "STD-03", "error");
+  it("STD-03: bajar la altura del piso → altura libre insuficiente", () => {
+    const i = expectRule(violateLib((p) => { p.levels.find((l) => l.id === "L1")!.height = 2600; }), "STD-03", "error");
     expect(i.message).toContain("2480");
   });
 
-  it("STD-04: hành lang < 1000 (đường thoát nạn 13967)", () => {
-    const issues = violate((p) => {
+  it("STD-04: pasillo < 1000", () => {
+    expectRule(violateLib((p) => {
       p.rooms.find((r) => r.id === "R3")!.polygon = [[220, 7520], [920, 7520], [920, 12365], [220, 12365]];
-    });
-    expectRule(issues, "STD-04", "error");
+    }), "STD-04", "error");
   });
 
-  it("STD-05: cửa phòng < 700 (error) + cửa chính 800–900 (info khuyến nghị)", () => {
-    const err = violate((p) => { p.openings.find((o) => o.id === "D3")!.width = 650; });
-    expectRule(err, "STD-05", "error");
-    const info = violate((p) => { p.openings.find((o) => o.id === "D1")!.width = 850; });
-    expectRule(info, "STD-05", "info");
+  it("STD-05: puerta interior < 700 (error) + puerta principal 800–900 (info recomendado)", () => {
+    expectRule(violateLib((p) => { p.openings.find((o) => o.id === "D3")!.width = 650; }), "STD-05", "error");
+    expectRule(violateLib((p) => { p.openings.find((o) => o.id === "D1")!.width = 850; }), "STD-05", "info");
   });
 
-  it("STD-06: mặt bậc < 250 (error) + vế 700–900 (warn) + bậc > 190 (warn khuyến khích)", () => {
-    const err = violate((p) => { p.stairs[0]!.tread = 240; });
-    expectRule(err, "STD-06", "error");
-    const warn = violate((p) => { p.stairs[0]!.width = 850; p.stairs[0]!.landing = 860; });
-    expectRule(warn, "STD-06", "warn");
-    const riser = violate((p) => { p.stairs[0]!.steps = 18; }); // 3600/18 = 200 ∈ (190, 220]
-    const i = expectRule(riser, "STD-06", "warn");
-    expect(i.message).toContain("khuyến khích");
+  it("STD-06: huella < 250 (error) + tramo 700–900 (warn) + contrahuella > 190 (warn recomendado)", () => {
+    expectRule(violateLib((p) => { p.stairs[0]!.tread = 240; }), "STD-06", "error");
+    expectRule(violateLib((p) => { p.stairs[0]!.width = 850; p.stairs[0]!.landing = 860; }), "STD-06", "warn");
+    const i = expectRule(violateLib((p) => { p.stairs[0]!.steps = 18; }), "STD-06", "warn"); // 3600/18 = 200 ∈ (190, 220]
+    expect(i.message).toContain("se recomienda");
   });
 
-  it("STD-08: bậu cửa sổ thấp ở tầng 2 (warn) — tầng 1 thì không", () => {
-    const warn = violate((p) => { p.openings.find((o) => o.id === "S4")!.sill = 500; });
-    expectRule(warn, "STD-08", "warn");
-    const ok = violate((p) => { p.openings.find((o) => o.id === "S1")!.sill = 500; });
-    expect(ok.filter((i) => i.rule === "STD-08")).toEqual([]);
+  it("STD-08: antepecho bajo en el piso 2 (warn); en el piso 1 no", () => {
+    expectRule(violateLib((p) => { p.openings.find((o) => o.id === "S4")!.sill = 500; }), "STD-08", "warn");
+    expect(violateLib((p) => { p.openings.find((o) => o.id === "S1")!.sill = 500; }).filter((i) => i.rule === "STD-08")).toEqual([]);
   });
 
-  it("STD-09: phòng ngủ mất cửa sổ → thiếu sáng", () => {
-    const issues = violate((p) => { p.openings = p.openings.filter((o) => o.id !== "S4"); });
-    const i = expectRule(issues, "STD-09", "warn");
+  it("STD-09: dormitorio sin ventana → sin luz natural; en la cocina es info", () => {
+    const i = expectRule(violateLib((p) => { p.openings = p.openings.filter((o) => o.id !== "S4"); }), "STD-09", "warn");
     expect(i.entities).toContain("R11");
+    expectRule(violateLib((p) => { p.openings = p.openings.filter((o) => o.id !== "S3"); }, loadCasa1Piso), "STD-09", "info");
   });
 
-  it("STD-10: cửa WC mở thẳng vào khu bếp", () => {
-    const issues = violate((p) => { p.rooms.find((r) => r.id === "R3")!.use = "bep-an"; });
-    expectRule(issues, "STD-10", "warn");
+  it("STD-10: puerta de baño que abre a la cocina", () => {
+    expectRule(violateLib((p) => { p.rooms.find((r) => r.id === "R3")!.use = "bep-an"; }), "STD-10", "warn");
   });
 
-  it("STD-11: bàn chắn trước bếp (warn) + giường bít cả hai hông (info)", () => {
-    const bep = violate((p) => {
+  it("STD-11: mesa frente a la cocina (warn) + cama sin paso a ningún costado (info)", () => {
+    expectRule(violateLib((p) => {
       p.furniture.push({ id: "F99", level: "L1", asset: "ban-an-4", at: [2600, 5555], rotation: 90 });
-    });
-    expectRule(bep, "STD-11", "warn");
-    const giuong = violate((p) => {
+    }), "STD-11", "warn");
+    expectRule(violateLib((p) => {
       p.furniture.push({ id: "F98", level: "L1", asset: "ban-hoc", at: [2780, 13445], rotation: 0 });
-    });
-    expectRule(giuong, "STD-11", "info");
+    }), "STD-11", "info");
   });
 
-  // STD-12 cũ (tầng + mật độ) đã chuyển thành PLN-03/PLN-04 — xem describe PLN
-});
-
-describe("LBB — thước Lỗ Ban (advisory, bật qua brief)", () => {
-  it("toán thước: cung + gợi ý số đẹp gần nhất", () => {
-    expect(cungAt(1620, RULERS.thong_thuy)).toMatchObject({ name: "Quý Nhân", good: true });
-    expect(cungAt(700, RULERS.thong_thuy).good).toBe(false);
-    const s = nearestGood(700, RULERS.thong_thuy);
-    expect(s.suggest).toBe(750);
-    expect(s.cung).toBe("Thiên Tài");
+  it("STD-05: la puerta principal de una casa retirada dentro del sitio se reconoce como principal", () => {
+    const i = expectRule(violateLib((p) => { p.openings.find((o) => o.id === "D1")!.width = 750; }, loadCasa2Pisos), "STD-05", "error");
+    expect(i.message).toContain("puerta principal");
   });
 
-  it("LBB-01 + LBB-03: cửa rơi cung xấu → info + gợi ý", () => {
-    const issues = violate((p) => { p.openings.find((o) => o.id === "D3")!.width = 700; });
-    expectRule(issues, "LBB-01", "info");
-    const goiY = expectRule(issues, "LBB-03", "info");
-    expect(goiY.message).toContain("750");
+  it("PLN-06: voladizo que sobresale más de lo permitido; dentro del margen no", () => {
+    const canopy = (p: Project, vuon: number): void => {
+      p.slabs.push({ id: "SL99", level: "L2", kind: "canopy", outline: [[220, -vuon], [3780, -vuon], [3780, 300], [220, 300]], thickness: 100 });
+    };
+    const i = expectRule(violateLib((p) => { p.brief.dat!.quy_hoach!.o_vang_max = 600; canopy(p, 1000); }), "PLN-06", "error");
+    expect(i.message).toContain("SL99");
+    expect(violateLib((p) => { p.brief.dat!.quy_hoach!.o_vang_max = 600; canopy(p, 500); }).filter((x) => x.rule === "PLN-06")).toEqual([]);
   });
 
-  it("LBB-02: khối xây (tủ bếp) cạnh rơi cung xấu theo 42.9", () => {
-    registerAsset({ id: "tu-bep-xau", label: "Tủ bếp thử", labelEn: "Test kitchen cabinet", category: "tu-bep-duoi", footprint: { w: 1000, d: 500, h: 850 } });
-    const issues = violate((p) => {
-      p.furniture.push({ id: "F96", level: "L1", asset: "tu-bep-xau", at: [1500, 6900], rotation: 0 });
-    });
-    const i = expectRule(issues, "LBB-02", "info");
-    expect(i.message).toContain("42.9");
-  });
-
-  it("LBB-04: bàn thờ đo bằng thước 38.8 (Đinh Lan), cạnh xấu → info; bàn thờ catalog thì đẹp", () => {
-    expect(cungAt(1070, RULERS.ban_tho)).toMatchObject({ name: "Hưng", good: true });
-    expect(cungAt(610, RULERS.ban_tho)).toMatchObject({ name: "Quan", good: true });
-    registerAsset({ id: "ban-tho-xau", label: "Bàn thờ thử", labelEn: "Test altar", category: "ban-tho", footprint: { w: 830, d: 460, h: 1200 } });
-    const issues = violate((p) => {
-      p.furniture.push({ id: "F97", level: "L2", asset: "ban-tho-xau", at: [2200, 6400], rotation: 90 });
-    });
-    const i = expectRule(issues, "LBB-04", "info");
-    expect(i.message).toContain("38.8");
-    expectRule(issues, "LBB-03", "info");
-  });
-
-  it("tắt Lỗ Ban trong brief → LBB im lặng tuyệt đối", () => {
-    const issues = violate((p) => {
-      p.brief.phong_thuy = { lo_ban: false };
-      p.openings.find((o) => o.id === "D3")!.width = 700;
-    });
-    expect(issues.filter((i) => i.rule.startsWith("LBB"))).toEqual([]);
+  it("PLN-06: el alero del techo hacia una calle también cuenta", () => {
+    const i = expectRule(violateLib((p) => {
+      p.roofs![0]!.outline = [[2490, -2000], [10510, -2000], [10510, 12910], [2490, 12910]]; // o_vang_max 1200 en la fixture
+    }, loadCasa2Pisos), "PLN-06", "error");
+    expect(i.message).toContain("RF1");
   });
 });
 
-describe("P6 — kiến trúc rule-pack (doc 12)", () => {
-  it("project VN (không khai config) chọn đúng bộ builtin theo thứ tự cũ", () => {
-    const packs = packsFor(loadCasaPrueba2p());
-    expect(packs.map((p) => p.id)).toEqual(["geo", "std-vn", "loban", "pln"]);
+describe("P6 — arquitectura de packs", () => {
+  it("proyecto sin config → núcleo + packs de Chile", () => {
+    expect(packsFor(loadCasaPrueba2p()).map((p) => p.id)).toEqual(["geo", "cl-oguc", "cl-cip"]);
   });
 
-  it("golden bất biến: pack-aware default == builtin (validate fixture vẫn sạch)", () => {
-    // đã có test 0-issue ở trên; ở đây chốt activeRules(project) == activeRules() cho VN.
-    expect(activeRules(loadCasaPrueba2p()).map((r) => r.id)).toEqual(activeRules().map((r) => r.id));
-  });
-
-  it("region ngoài VN: bỏ toàn bộ TCVN/Lỗ Ban/PLN, chỉ còn lõi geo + pack region đó", () => {
+  it("región generic: solo núcleo + pack de muestra", () => {
     const p = loadCasaPrueba2p();
     p.config = { region: "generic" };
     const ids = activeRules(p).map((r) => r.id);
-    expect(ids.some((id) => id.startsWith("GEO-"))).toBe(true); // lõi luôn chạy
-    expect(ids.some((id) => id.startsWith("STD-"))).toBe(false);
-    expect(ids.some((id) => id.startsWith("LBB-"))).toBe(false);
-    expect(ids.some((id) => id.startsWith("PLN-"))).toBe(false);
-    expect(ids).toContain("GEN-CEIL-01"); // pack mẫu region generic
+    expect(ids.some((id) => id.startsWith("GEO-"))).toBe(true);
+    expect(ids.some((id) => id.startsWith("CL-"))).toBe(false);
+    expect(ids).toContain("GEN-CEIL-01");
   });
 
-  it("pack mẫu tái dùng evaluator STD-03: chỉ nổ khi region generic được chọn", () => {
-    // Hạ trần tầng trệt xuống dưới 2400 → GEN-CEIL-01 phải nổ; STD-03 (VN) thì không (pack không chọn).
+  it("el pack de muestra reutiliza el evaluador STD-03 solo cuando se elige su región", () => {
     const p = loadCasaPrueba2p();
     p.config = { region: "generic" };
     p.levels.find((l) => l.id === "L1")!.height = 2200;
     const issues = validateProject(p);
     expectRule(issues, "GEN-CEIL-01", "warn");
-    expect(issues.some((i) => i.rule === "STD-03")).toBe(false);
+    expect(issues.some((i) => i.rule === "CL-ALT-01")).toBe(false);
   });
 
-  it("config.packs = [] → chỉ còn core geo (pack chuẩn tắt hết, hình học vẫn kiểm)", () => {
+  it("config.packs = [] → solo el núcleo geo", () => {
     const p = loadCasaPrueba2p();
     p.config = { packs: [] };
     const ids = activeRules(p).map((r) => r.id);
@@ -327,95 +293,54 @@ describe("P6 — kiến trúc rule-pack (doc 12)", () => {
     expect(ids.every((id) => id.startsWith("GEO-"))).toBe(true);
   });
 
-  it("lọc theo typology: rule gắn typologies chỉ chạy khi project khai đúng typology", () => {
+  it("filtro por tipología: la regla con typologies solo corre si el proyecto la declara", () => {
     const testPack: RulePack = {
-      id: "test-typ",
-      title: "Test typology filter",
-      kind: "standard",
-      region: "test", // khác "vn" nên không lọt vào default → không đụng golden
-      rules: [
-        {
-          id: "TST-VILLA-01",
-          title: "Chỉ áp cho biệt thự",
-          severity: "warn",
-          evaluator: "STD-03",
-          typologies: ["biet-thu"],
-          params: { phong_o: 2400 },
-          source: { verified: false },
-          message: "test {room}",
-        },
-      ],
+      id: "test-typ", title: "Test typology filter", kind: "standard", region: "test",
+      rules: [{ id: "TST-VILLA-01", title: "Solo casas", severity: "warn", evaluator: "STD-03", typologies: ["biet-thu"], params: { phong_o: 2400 }, source: { verified: false }, message: "test {room}" }],
     };
     registerPack(testPack);
     expect(getPack("test-typ")).toBeDefined();
-
     const base = loadCasaPrueba2p();
     base.config = { region: "test" };
-    // Không khai typology → rule gắn typologies bị lọc bỏ.
     expect(activeRules(base).some((r) => r.id === "TST-VILLA-01")).toBe(false);
-    // Khai đúng typology → rule vào danh sách active.
     base.config = { region: "test", typology: "biet-thu" };
     expect(activeRules(base).some((r) => r.id === "TST-VILLA-01")).toBe(true);
   });
 });
 
-describe("P7 — mái dốc, đa mặt tiền, địa hình (doc 12)", () => {
-  /** Mutation trên fixture BIỆT THỰ (lô góc 2 mặt tiền, đất dốc, mái hip). */
-  function violateVilla(mutate: (p: Project) => void): Issue[] {
+describe("P7 — techos inclinados, varios frentes, terreno", () => {
+  it("casa-2-pisos sin hallazgos block/error/warn — golden P7", () => {
+    expect(serious(validateProject(loadCasa2Pisos()))).toEqual([]);
+  });
+
+  it("CL-CIP-DIS: muro que invade el distanciamiento del deslinde #1 (frente secundario)", () => {
     const p = loadCasa2Pisos();
-    mutate(p);
-    return validateProject(p);
-  }
-
-  it("fixture biệt thự hoàn toàn sạch (0 issue) — golden P7", () => {
-    expect(validateProject(loadCasa2Pisos())).toEqual([]);
+    for (const w of p.walls.filter((x) => x.from[0] === 9800 && x.to[0] === 9800)) {
+      w.from = [11500, w.from[1]];
+      w.to = [11500, w.to[1]];
+    }
+    expect(expectRule(validateProject(p), "CL-CIP-DIS", "error").message).toContain("#1");
   });
 
-  it("PLN-07: tường phạm khoảng lùi cạnh #1 (mặt tiền phụ lô góc)", () => {
-    // đẩy tường Đông sát ranh phải (setback cạnh 1 = 2000)
-    const issues = violateVilla((p) => {
-      for (const w of p.walls.filter((x) => x.from[0] === 9800 && x.to[0] === 9800)) {
-        w.from = [11500, w.from[1]];
-        w.to = [11500, w.to[1]];
-      }
-    });
-    const i = expectRule(issues, "PLN-07", "error");
-    expect(i.message).toContain("#1");
+  it("CL-CIP-ALT: la cumbrera del techo cuenta en la altura, medida desde el nivel del frente", () => {
+    const p = loadCasa2Pisos();
+    p.roofs![0]!.pitch = 50;
+    expectRule(validateProject(p), "CL-CIP-ALT", "error");
   });
 
-  it("PLN-06: đuôi mái vươn quá o_vang_max về cạnh street được kiểm", () => {
-    const issues = violateVilla((p) => {
-      // kéo mép mái vươn 2000mm ra ngoài ranh trước (y âm) — o_vang_max 1200
-      p.roofs![0]!.outline = [[2490, -2000], [10510, -2000], [10510, 12910], [2490, 12910]];
-    });
-    const i = expectRule(issues, "PLN-06", "error");
-    expect(i.message).toContain("RF1");
+  it("GEO-05: contorno de techo autointersectado", () => {
+    const p = loadCasa2Pisos();
+    p.roofs![0]!.outline = [[2490, 2490], [10510, 12910], [10510, 2490], [2490, 12910]];
+    expectRule(validateProject(p), "GEO-05");
   });
 
-  it("PLN-05: đỉnh nóc mái tính vào chiều cao, đo từ cốt đất mặt tiền", () => {
-    const issues = violateVilla((p) => {
-      p.roofs![0]!.pitch = 50; // nóc vọt lên ~11.8m + đất −238 → vượt 12000
-    });
-    expectRule(issues, "PLN-05", "error");
+  it("CL-VEN-01: una ventana hacia el patio dentro del sitio cuenta como exterior; sin ella, error", () => {
+    const p = loadCasa2Pisos();
+    p.openings = p.openings.filter((o) => o.id !== "S5");
+    expect(expectRule(validateProject(p), "CL-VEN-01", "error").message).toContain("Dormitorio 2");
   });
 
-  it("GEO-05: outline mái tự cắt bị bắt", () => {
-    const issues = violateVilla((p) => {
-      p.roofs![0]!.outline = [[2490, 2490], [10510, 12910], [10510, 2490], [2490, 12910]];
-    });
-    expectRule(issues, "GEO-05");
-  });
-
-  it("STD-09 (P7): cửa sổ mở ra SÂN TRONG LÔ được tính là lấy sáng (biệt thự lùi ranh)", () => {
-    // fixture sạch chứng minh điều này; đối chứng: bịt hết cửa sổ ngủ 2 → nổ
-    const issues = violateVilla((p) => {
-      p.openings = p.openings.filter((o) => o.id !== "S5");
-    });
-    const i = expectRule(issues, "STD-09", "warn");
-    expect(i.message).toContain("Ngủ 2");
-  });
-
-  it("ops: add/update/delete roof đi qua apply_ops như mọi entity, undo được cấu trúc", () => {
+  it("ops: add/update/delete de techo pasan por apply_ops como cualquier entidad", () => {
     const p = loadCasa2Pisos();
     const r1 = applyOps(p, 1, [{ op: "update", entity: "roof", id: "RF1", data: { pitch: 25 } }], { validate: validateProject });
     expect(r1.ok).toBe(true);
@@ -427,7 +352,7 @@ describe("P7 — mái dốc, đa mặt tiền, địa hình (doc 12)", () => {
     }
   });
 
-  it("file cũ KHÔNG có mảng roofs: add roof vẫn chạy (tự khởi tạo)", () => {
+  it("archivo antiguo SIN arreglo roofs: add roof igual funciona (se inicializa)", () => {
     const p = loadCasaPrueba2p();
     expect(p.roofs).toBeUndefined();
     const r = applyOps(p, 1, [{
@@ -439,91 +364,66 @@ describe("P7 — mái dốc, đa mặt tiền, địa hình (doc 12)", () => {
   });
 });
 
-describe("P8 — thư viện template (doc 12): mỗi fixture một golden", () => {
-  it("nhà cấp 4 sạch (1 tầng, gable tôn, không thang)", () => {
-    expect(validateProject(loadCasa1Piso())).toEqual([]);
+describe("P8 — plantillas: cada fixture es un golden", () => {
+  it("casa-1-piso sin hallazgos block/error/warn", () => {
+    expect(serious(validateProject(loadCasa1Piso()))).toEqual([]);
   });
 
-  it("nhà vườn sạch (lô méo + terrain, hip ngói, mật độ thấp)", () => {
-    expect(validateProject(loadNhaVuon())).toEqual([]);
-  });
-
-  it("căn hộ sạch (không lô đất — boundary là khung có sẵn; không roof/thang)", () => {
+  it("depto-2d sin hallazgos block/error/warn (sin terreno, sin techo ni escalera)", () => {
     const p = loadDepto2d();
     expect(p.roofs).toBeUndefined();
     expect(p.stairs).toEqual([]);
-    expect(validateProject(p)).toEqual([]);
+    expect(serious(validateProject(p))).toEqual([]);
   });
 
-  it("đối chứng cấp 4: bỏ cửa sổ bếp → STD-09; bóp hành lang → STD-04", () => {
-    const p1 = loadCasa1Piso();
-    p1.openings = p1.openings.filter((o) => o.id !== "S3");
-    expectRule(validateProject(p1), "STD-09", "info");
-
-    const p2 = loadCasa1Piso();
-    p2.rooms.find((r) => r.id === "R3")!.polygon = [[1110, 7000], [8890, 7000], [8890, 7900], [1110, 7900]];
-    expectRule(validateProject(p2), "STD-04", "error");
-  });
-
-  it("đối chứng nhà vườn: mật độ 30% — phình sàn gấp rưỡi là nổ PLN-03", () => {
-    const p = loadNhaVuon();
-    p.slabs[0]!.outline = [[2000, 3000], [15500, 3000], [15500, 19000], [2000, 19000]];
-    expectRule(validateProject(p), "PLN-03", "error");
+  it("contraste casa-1-piso: pasillo angosto → STD-04 (pack de test)", () => {
+    expectRule(violateLib((p) => {
+      p.rooms.find((r) => r.id === "R3")!.polygon = [[1110, 7000], [8890, 7000], [8890, 7900], [1110, 7900]];
+    }, loadCasa1Piso), "STD-04", "error");
   });
 });
 
-describe("P9 — lớp region (doc 12): UK Approved Documents, DoD không TCVN/Lỗ Ban/VND", () => {
-  it("region registry: vn đóng gói đúng thứ tự builtin; uk có pack riêng", () => {
-    expect(getRegion("vn")!.packs).toEqual(["std-vn", "loban", "pln"]);
+describe("P9 — capa de regiones: Chile por defecto, UK como segunda región de prueba", () => {
+  it("registro de regiones: sin vn; uk y cl con sus packs", () => {
+    expect(getRegion("vn")).toBeUndefined();
     expect(getRegion("uk")!.packs).toEqual(["uk-approved-docs"]);
-    expect(getRegion("vn")!.currency!.code).toBe("VND");
-    expect(getRegion("uk")!.currency).toBeUndefined();
+    expect(getRegion("cl")!.packs).toEqual(["cl-oguc", "cl-cip"]);
   });
 
-  it("fixture detached UK sạch (0 issue) — golden P9", () => {
+  it("fixture UK limpia (0 issues) — golden P9", () => {
     expect(validateProject(loadDetachedUk())).toEqual([]);
   });
 
-  it("DoD: project region uk KHÔNG thấy rule TCVN/Lỗ Ban/PLN — chỉ GEO core + UK", () => {
+  it("DoD: un proyecto uk no ve reglas chilenas — solo GEO + UK", () => {
     const ids = activeRules(loadDetachedUk()).map((r) => r.id);
     expect(ids.length).toBeGreaterThan(0);
     expect(ids.every((id) => id.startsWith("GEO-") || id.startsWith("UK-"))).toBe(true);
   });
 
-  it("DoD: estimate region uk không một đồng VND — chỉ khối lượng + ghi chú đóng góp", () => {
+  it("DoD: presupuesto uk sin tabla → solo cantidades", () => {
     const est = estimateCost(loadDetachedUk());
     expect(est.items).toEqual([]);
     expect(est.total).toBeNull();
-    expect(est.quantities.san_thuc_m2).toBeGreaterThan(100); // khối lượng thật vẫn có
+    expect(est.quantities.san_thuc_m2).toBeGreaterThan(100);
     expect(est.ghi_chu.join(" ")).toContain("No hay tabla de precios");
   });
 
-  it("pack UK chưa đối chiếu văn bản → unverifiedRules(p) > 0 (bản vẽ in cờ ⚠); VN vẫn 0", () => {
+  it("packs sin validar → unverifiedRules(p) > 0 (los planos llevan ⚠) en uk y en cl", () => {
     expect(unverifiedRules(loadDetachedUk()).length).toBeGreaterThan(0);
-    expect(unverifiedRules(loadCasaPrueba2p())).toEqual([]);
-    expect(unverifiedRules()).toEqual([]); // không truyền project = builtin như cũ
+    expect(unverifiedRules(loadCasaPrueba2p()).length).toBeGreaterThan(0);
   });
 
-  it("đối chứng UK-STAIR-01 (Part K): riser vượt 220 là nổ; chuẩn VN không dính vào", () => {
+  it("UK-STAIR-01 (Part K): contrahuella sobre 220 infringe", () => {
     const p = loadDetachedUk();
     p.stairs[0]!.steps = 12; // 2700/12 = 225 > 220
     const issues = validateProject(p);
-    const i = expectRule(issues, "UK-STAIR-01", "error");
-    expect(i.message).toContain("225");
-    expect(issues.some((x) => x.rule.startsWith("STD-"))).toBe(false);
+    expect(expectRule(issues, "UK-STAIR-01", "error").message).toContain("225");
+    expect(issues.some((x) => x.rule.startsWith("CL-"))).toBe(false);
   });
 
-  it("đối chứng UK-DOOR-01 (Part M): cửa phòng 700 < 750 nổ (VN 700 lại hợp lệ)", () => {
+  it("UK-DOOR-01 (Part M): puerta interior 700 < 750 infringe", () => {
     const p = loadDetachedUk();
     p.openings.find((o) => o.id === "D2")!.width = 700;
     expectRule(validateProject(p), "UK-DOOR-01", "error");
-  });
-
-  it("STD-05 (P9 fix): cửa chính nhà LÙI TRONG LÔ được nhận là cửa chính (ra sân = ra ngoài)", () => {
-    // biệt thự P7 lùi 3m: bóp D1 xuống 750 < chinh 800 → phải nổ đúng LOẠI cửa chính
-    const p = loadCasa2Pisos();
-    p.openings.find((o) => o.id === "D1")!.width = 750;
-    const i = expectRule(validateProject(p), "STD-05", "error");
-    expect(i.message).toContain("cửa chính");
   });
 });

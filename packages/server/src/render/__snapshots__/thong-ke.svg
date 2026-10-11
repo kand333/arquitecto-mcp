@@ -15,58 +15,58 @@ text{font-family:'Be Vietnam Pro','Segoe UI',Arial,sans-serif;fill:#000;stroke:n
 <text x="22" y="36.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">1</text>
 <text x="37" y="36.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">L1</text>
 <text x="48" y="36.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">R1</text>
-<text x="82" y="36.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Phòng khách</text>
+<text x="82" y="36.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Living</text>
 <text x="160" y="36.4" font-size="2.5" text-anchor="end" dominant-baseline="middle">13.3</text>
 <line x1="16" y1="39" x2="162" y2="39" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="22" y="43.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">2</text>
 <text x="37" y="43.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">L1</text>
 <text x="48" y="43.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">R2</text>
-<text x="82" y="43.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Bếp + ăn</text>
+<text x="82" y="43.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Cocina + comedor</text>
 <text x="160" y="43.4" font-size="2.5" text-anchor="end" dominant-baseline="middle">12.7</text>
 <line x1="16" y1="46" x2="162" y2="46" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="22" y="50.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">3</text>
 <text x="37" y="50.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">L1</text>
 <text x="48" y="50.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">R3</text>
-<text x="82" y="50.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Hành lang</text>
+<text x="82" y="50.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Pasillo</text>
 <text x="160" y="50.4" font-size="2.5" text-anchor="end" dominant-baseline="middle">4.8</text>
 <line x1="16" y1="53" x2="162" y2="53" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="22" y="57.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">4</text>
 <text x="37" y="57.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">L1</text>
 <text x="48" y="57.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">R4</text>
-<text x="82" y="57.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">WC 1</text>
+<text x="82" y="57.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Baño 1</text>
 <text x="160" y="57.4" font-size="2.5" text-anchor="end" dominant-baseline="middle">3.3</text>
 <line x1="16" y1="60" x2="162" y2="60" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="22" y="64.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">5</text>
 <text x="37" y="64.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">L1</text>
 <text x="48" y="64.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">R5</text>
-<text x="82" y="64.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Phòng bà</text>
+<text x="82" y="64.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Dormitorio abuela</text>
 <text x="160" y="64.4" font-size="2.5" text-anchor="end" dominant-baseline="middle">9.0</text>
 <line x1="16" y1="67" x2="162" y2="67" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="22" y="71.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">6</text>
 <text x="37" y="71.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">L1</text>
 <text x="48" y="71.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">R6</text>
-<text x="82" y="71.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Cầu thang</text>
+<text x="82" y="71.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Escalera</text>
 <text x="160" y="71.4" font-size="2.5" text-anchor="end" dominant-baseline="middle">8.3</text>
 <line x1="16" y1="74" x2="162" y2="74" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="22" y="78.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">7</text>
 <text x="37" y="78.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">L1</text>
 <text x="48" y="78.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">R7</text>
-<text x="82" y="78.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Giếng trời sau</text>
+<text x="82" y="78.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Patio de luz posterior</text>
 <text x="160" y="78.4" font-size="2.5" text-anchor="end" dominant-baseline="middle">2.4</text>
 <line x1="16" y1="81" x2="162" y2="81" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="82" y="85.4" font-size="2.5" text-anchor="start" dominant-baseline="middle" class="b">Cộng tầng 1</text>
+<text x="82" y="85.4" font-size="2.5" text-anchor="start" dominant-baseline="middle" class="b">Cộng piso 1</text>
 <text x="160" y="85.4" font-size="2.5" text-anchor="end" dominant-baseline="middle" class="b">53.8</text>
 <line x1="16" y1="88" x2="162" y2="88" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="22" y="92.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">8</text>
 <text x="37" y="92.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">L2</text>
 <text x="48" y="92.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">R8</text>
-<text x="82" y="92.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Ngủ chính</text>
+<text x="82" y="92.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Dormitorio principal</text>
 <text x="160" y="92.4" font-size="2.5" text-anchor="end" dominant-baseline="middle">16.8</text>
 <line x1="16" y1="95" x2="162" y2="95" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="22" y="99.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">9</text>
 <text x="37" y="99.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">L2</text>
 <text x="48" y="99.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">R9</text>
-<text x="82" y="99.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Sảnh thờ + hành lang</text>
+<text x="82" y="99.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Vestíbulo + pasillo</text>
 <text x="160" y="99.4" font-size="2.5" text-anchor="end" dominant-baseline="middle">13.6</text>
 <line x1="16" y1="102" x2="162" y2="102" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="22" y="106.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">10</text>
@@ -78,16 +78,16 @@ text{font-family:'Be Vietnam Pro','Segoe UI',Arial,sans-serif;fill:#000;stroke:n
 <text x="22" y="113.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">11</text>
 <text x="37" y="113.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">L2</text>
 <text x="48" y="113.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">R11</text>
-<text x="82" y="113.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Ngủ con</text>
+<text x="82" y="113.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Dormitorio hijos</text>
 <text x="160" y="113.4" font-size="2.5" text-anchor="end" dominant-baseline="middle">9.0</text>
 <line x1="16" y1="116" x2="162" y2="116" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="22" y="120.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">12</text>
 <text x="37" y="120.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">L2</text>
 <text x="48" y="120.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">R12</text>
-<text x="82" y="120.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Giếng trời sau</text>
+<text x="82" y="120.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Patio de luz posterior</text>
 <text x="160" y="120.4" font-size="2.5" text-anchor="end" dominant-baseline="middle">2.4</text>
 <line x1="16" y1="123" x2="162" y2="123" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="82" y="127.4" font-size="2.5" text-anchor="start" dominant-baseline="middle" class="b">Cộng tầng 2</text>
+<text x="82" y="127.4" font-size="2.5" text-anchor="start" dominant-baseline="middle" class="b">Cộng piso 2</text>
 <text x="160" y="127.4" font-size="2.5" text-anchor="end" dominant-baseline="middle" class="b">45.1</text>
 <line x1="16" y1="130" x2="162" y2="130" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="82" y="134.4" font-size="2.5" text-anchor="start" dominant-baseline="middle" class="b">TỔNG DIỆN TÍCH PHÒNG</text>
@@ -108,35 +108,35 @@ text{font-family:'Be Vietnam Pro','Segoe UI',Arial,sans-serif;fill:#000;stroke:n
 <text x="322" y="28.9" font-size="2.5" text-anchor="middle" dominant-baseline="middle" class="b">Tầng</text>
 <text x="178" y="36.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">D1</text>
 <text x="217" y="36.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">Cửa đi</text>
-<text x="230" y="36.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Cửa chính</text>
+<text x="230" y="36.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Puerta principal</text>
 <text x="285" y="36.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">1620×2360</text>
 <text x="306" y="36.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">1</text>
 <text x="322" y="36.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">L1</text>
 <line x1="176" y1="39" x2="332" y2="39" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="178" y="43.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">D2, D5</text>
 <text x="217" y="43.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">Cửa đi</text>
-<text x="230" y="43.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Cửa WC</text>
+<text x="230" y="43.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Puerta de baño</text>
 <text x="285" y="43.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">720×2100</text>
 <text x="306" y="43.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">2</text>
 <text x="322" y="43.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">L1, L2</text>
 <line x1="176" y1="46" x2="332" y2="46" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="178" y="50.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">D3, D4, D6</text>
 <text x="217" y="50.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">Cửa đi</text>
-<text x="230" y="50.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Cửa phòng</text>
+<text x="230" y="50.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Puerta interior</text>
 <text x="285" y="50.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">800×2100</text>
 <text x="306" y="50.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">3</text>
 <text x="322" y="50.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">L1, L2</text>
 <line x1="176" y1="53" x2="332" y2="53" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="178" y="57.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">S1, S2, S4</text>
 <text x="217" y="57.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">Cửa sổ</text>
-<text x="230" y="57.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Cửa sổ trượt</text>
+<text x="230" y="57.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Ventana corredera</text>
 <text x="285" y="57.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">1240×1400</text>
 <text x="306" y="57.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">3</text>
 <text x="322" y="57.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">L1, L2</text>
 <line x1="176" y1="60" x2="332" y2="60" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="178" y="64.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">S3</text>
 <text x="217" y="64.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">Cửa sổ</text>
-<text x="230" y="64.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Cửa sổ trượt</text>
+<text x="230" y="64.4" font-size="2.5" text-anchor="start" dominant-baseline="middle">Ventana corredera</text>
 <text x="285" y="64.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">1600×1400</text>
 <text x="306" y="64.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">1</text>
 <text x="322" y="64.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">L2</text>
@@ -157,7 +157,7 @@ text{font-family:'Be Vietnam Pro','Segoe UI',Arial,sans-serif;fill:#000;stroke:n
 <line x1="263" y1="270" x2="413" y2="270" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
 <line x1="263" y1="280" x2="413" y2="280" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
 <line x1="367" y1="248" x2="367" y2="290" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="266" y="255.6" font-size="3.4" text-anchor="start" dominant-baseline="middle" class="b">NHÀ ỐNG 4×16M — 2 TẦNG 3PN</text>
+<text x="266" y="255.6" font-size="3.4" text-anchor="start" dominant-baseline="middle" class="b">CASA DE PRUEBA 4×16 M — 2 PISOS, 3 DORMITORIOS</text>
 <text x="370" y="255.6" font-size="3.4" text-anchor="start" dominant-baseline="middle" class="b">KT-05</text>
 <text x="266" y="266.6" font-size="3" text-anchor="start" dominant-baseline="middle" class="b">THỐNG KÊ PHÒNG &amp; CỬA</text>
 <text x="370" y="266.6" font-size="2.8" text-anchor="start" dominant-baseline="middle">TỶ LỆ —</text>
@@ -166,5 +166,6 @@ text{font-family:'Be Vietnam Pro','Segoe UI',Arial,sans-serif;fill:#000;stroke:n
 <text x="266" y="286.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">Kiểm: ................</text>
 <text x="370" y="286.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">arquitecto/0.1</text>
 <text x="10" y="284.6" font-size="2" text-anchor="start" dominant-baseline="middle">Bản vẽ concept — không thay thế hồ sơ thiết kế có chữ ký KTS hành nghề.</text>
+<text x="10" y="287.4" font-size="2" text-anchor="start" dominant-baseline="middle">⚠ Một số số liệu tiêu chuẩn đang ở mức tham khảo (chưa đối chiếu văn bản gốc).</text>
 </g>
 </svg>

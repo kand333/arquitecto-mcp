@@ -52,7 +52,6 @@ const brief = {
   ngan_sach: { muc: "~1.8 tỷ", hoan_thien: "trung bình khá" },
   gu: { phong_cach: "hiện đại tối giản", mau: "trắng - gỗ sáng" },
   uu_tien: ["thông thoáng", "bà nội ngủ tầng trệt", "dễ dọn"],
-  phong_thuy: { lo_ban: true },
 };
 
 // ── PHA B: template gần nhất + biến đổi theo brief

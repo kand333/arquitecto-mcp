@@ -1,5 +1,5 @@
 import { CATALOG, type Asset } from "@arquitecto/core";
-import { LANG, t } from "./i18n.js";
+import { t } from "./i18n.js";
 
 /**
  * Panel catalog nội thất (doc 09 tool 5, P5): tìm + chọn asset để đặt vào
@@ -72,7 +72,7 @@ export class CatalogPanel {
       btn.dataset.asset = a.id;
       const name = document.createElement("span");
       name.className = "cat-name";
-      name.textContent = LANG !== "vi" && a.labelEn ? a.labelEn : a.label; // ES usa el inglés hasta tener nombres en español
+      name.textContent = a.labelEn ?? a.label; // nombres en inglés hasta tener el catálogo en español
       const dims = document.createElement("span");
       dims.className = "cat-dims";
       dims.textContent = `${a.footprint.w}×${a.footprint.d}${a.mountHeight != null ? ` · ${t("catalog.mounted")}` : ""}`;

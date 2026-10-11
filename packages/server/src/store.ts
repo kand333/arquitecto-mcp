@@ -1,7 +1,7 @@
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import {
-  applyOps, findInvalidId, loadCasa2Pisos, loadDepto2d, loadDetachedUk, loadCasa1Piso, loadCasaPrueba2p, loadNhaVuon, setDonGia, validateProject,
+  applyOps, findInvalidId, loadCasa2Pisos, loadDepto2d, loadCasa1Piso, loadCasaPrueba2p, setDonGia, validateProject,
   type ApplyResult, type Issue, type Op, type OpOrigin, type Point, type Project,
 } from "@arquitecto/core";
 import { SoftLocks } from "./locks.js";
@@ -24,42 +24,26 @@ export type StoreEvent =
   | { kind: "project"; reason: "created" | "opened" }; // model thay mới toàn bộ → client cần snapshot
 
 /**
- * Plantillas (P8). `hidden`: legado vietnamita/UK que solo usan los tests — no se
- * ofrece al usuario y se elimina en E4, cuando exista la región "cl".
+ * Plantillas (P8). `hidden`: casa de prueba que usan los tests (store/live/mcp); no se ofrece al usuario.
  */
 export const TEMPLATES: Record<string, { label: string; load: () => Project; hidden?: true }> = {
   "casa-1-piso": { label: "Casa de 1 piso — 2 dormitorios, techo de planchas", load: loadCasa1Piso },
   "casa-2-pisos": { label: "Casa de 2 pisos — techo inclinado, sitio en esquina con pendiente", load: loadCasa2Pisos },
   "depto-2d": { label: "Departamento 2 dormitorios — remodelación dentro de una estructura existente", load: loadDepto2d },
-  "casa-prueba-2p": { label: "Nhà ống 4×16m, 2 tầng, 3PN", load: loadCasaPrueba2p, hidden: true },
-  "nha-vuon": { label: "Nhà vườn — 1 tầng mái ngói", load: loadNhaVuon, hidden: true },
-  "detached-uk": { label: "UK detached — 3 bed gable roof", load: loadDetachedUk, hidden: true },
+  "casa-prueba-2p": { label: "Casa de prueba 4×16 m, 2 pisos (solo tests)", load: loadCasaPrueba2p, hidden: true },
 };
 
-/** Plantillas que se ofrecen al usuario (sin el legado oculto). */
+/** Plantillas que se ofrecen al usuario (sin la casa de prueba). */
 export const VISIBLE_TEMPLATES = Object.keys(TEMPLATES).filter((k) => !TEMPLATES[k]!.hidden);
 
-/** E3: las plantillas visibles cargan fixtures VN (intactas para los tests); al ofrecerlas se traducen sus nombres. */
-const TEMPLATE_ES: Record<string, string> = {
-  "Khách": "Living", "Khách + bếp": "Living + cocina", "Bếp + ăn": "Cocina + comedor",
-  "Ngủ 1": "Dormitorio 1", "Ngủ 2": "Dormitorio 2", "Hành lang": "Pasillo", "Cầu thang": "Escalera",
-  "WC": "Baño", "WC 1": "Baño 1", "Kho": "Bodega",
-  "Tầng 1": "Piso 1", "Tầng 2": "Piso 2", "Căn hộ": "Departamento",
-  "Cửa chính": "Puerta principal", "Cửa vào căn hộ": "Puerta de acceso", "Cửa phòng": "Puerta interior",
-  "Cửa WC": "Puerta de baño", "Cửa sổ trượt": "Ventana corredera",
-  "nhôm kính": "aluminio y vidrio", "gỗ công nghiệp": "madera aglomerada",
-  "nhựa lõi thép": "PVC con refuerzo de acero", "thép chống cháy": "acero cortafuego",
-};
-
-function localizeTemplate(p: Project): void {
-  const es = (s: string): string => TEMPLATE_ES[s] ?? s;
-  for (const l of p.levels) l.name = es(l.name);
-  for (const r of p.rooms) r.name = es(r.name);
-  for (const s of Object.values(p.styles.openings)) {
-    s.label = es(s.label);
-    if (s.material) s.material = es(s.material);
-  }
-  p.brief = {}; // el brief de la plantilla es vietnamita (presupuesto en VND, vecinos…); el real sale de la fase A
+/**
+ * Las plantillas visibles traen datos de ejemplo (brief y valores tipo CIP) que no son del predio
+ * del usuario: se vacían para que las reglas CL-CIP queden indeterminadas hasta que declare su CIP.
+ */
+function clearSampleData(p: Project): void {
+  p.brief = {};
+  delete p.site.setbacks;
+  if (p.site.edges) p.site.edges = p.site.edges.map(({ setback: _ignored, ...rest }) => rest);
 }
 
 /**
@@ -135,14 +119,14 @@ export class ProjectStore {
         throw new Error(`No existe la plantilla "${template}". Disponibles: ${VISIBLE_TEMPLATES.join(", ")}.`);
       }
       p = t.load();
-      if (!t.hidden) localizeTemplate(p);
+      if (!t.hidden) clearSampleData(p);
     } else {
       p = blankProject(brief);
     }
-    // E4: fuera del legado oculto se valida con la región Chile (pack cl-oguc); el legado VN conserva su comportamiento
-    if (!template || !TEMPLATES[template]!.hidden) p.config = { ...p.config, region: p.config?.region ?? "cl" };
+    // región Chile explícita en el archivo (también es la región por defecto del motor)
+    p.config = { ...p.config, region: p.config?.region ?? "cl" };
     // A2: meta.id es un ID (≤32); se recorta aquí y no en slugify, que también nombra variantes
-    p.meta = { ...p.meta, id: slugify(name).slice(0, 32).replace(/-+$/, "") || "du-an", name, revision: 0 };
+    p.meta = { ...p.meta, id: slugify(name).slice(0, 32).replace(/-+$/, "") || "proyecto", name, revision: 0 };
     if (brief) p.brief = structuredClone(brief); // brief từ pha A phỏng vấn — nguồn đối chiếu mọi pha sau
     if (siteBoundary) {
       p.site.boundary = siteBoundary;
@@ -391,7 +375,7 @@ export function slugify(s: string): string {
     .replace(/đ/gi, "d")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "") || "du-an";
+    .replace(/^-+|-+$/g, "") || "proyecto";
 }
 
 /** A2: un modelo cargado de disco no pasó por ops — sus IDs se validan antes de usarlo. */

@@ -47,7 +47,7 @@ export type ProjectMeta = {
  * project không khai config → bộ chuẩn Việt Nam builtin, hành vi như trước.
  */
 export type ProjectConfig = {
-  /** Vùng áp dụng — quyết định bộ rule-pack chuẩn mặc định. Bỏ trống = "vn". */
+  /** Vùng áp dụng — quyết định bộ rule-pack chuẩn mặc định. Vacío = "cl" (Chile). */
   region?: string;
   /** Loại hình nhà (vd. "nha-ong", "biet-thu") — lọc rule gắn `typologies`. */
   typology?: string;
@@ -265,8 +265,6 @@ export type Brief = {
   ngan_sach?: { muc?: string; hoan_thien?: string };
   gu?: { phong_cach?: string; mau?: string; anh_tham_chieu?: string[] };
   uu_tien?: string[];
-  /** Q4 (13/07/2026): hỏi bật/tắt Lỗ Ban ở pha A — lưu tại đây. */
-  phong_thuy?: { lo_ban?: boolean };
 };
 
 /**

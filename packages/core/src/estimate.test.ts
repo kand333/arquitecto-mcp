@@ -1,41 +1,53 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { loadCasaPrueba2p } from "./fixture.js";
 import {
-  computeQuantities, donGiaFor, estimateCost, formatMonto, formatVnd, parseBudgetVnd, parsePresupuesto, setDonGia, suggestFinishLevel,
+  computeQuantities, estimateCost, formatMonto, parsePresupuesto, setDonGia, suggestFinishLevel,
 } from "./estimate.js";
 
-describe("dự toán sơ bộ — khối lượng từ fixture 4×16m", () => {
+/** Coeficientes de PRUEBA (los del upstream): la tabla chilena no los trae, pero el motor los soporta. */
+const COEF_TEST = {
+  he_so_quy_doi: {
+    mong: { label: "Fundaciones", he_so: 0.4 },
+    san: { label: "Losas", he_so: 1 },
+    mai_btct: { label: "Losa de techo", he_so: 0.5 },
+    o_trong_lon: { label: "Vacíos", he_so: 0.5, nguong_m2: 8 },
+  },
+};
+
+describe("presupuesto — cantidades desde la casa de prueba 4×16 m", () => {
+  afterEach(() => setDonGia(null));
   const p = loadCasaPrueba2p();
-  const q = computeQuantities(p);
 
-  it("diện tích quy đổi: móng 40% + 2 sàn + mái ước lệ 50%", () => {
-    const labels = q.dien_tich.map((l) => l.label);
-    expect(labels[0]).toContain("Fundaciones");
-    expect(labels).toContain("Losa Tầng 1");
-    expect(labels).toContain("Losa Tầng 2");
-    expect(labels.some((l) => /techo/i.test(l))).toBe(true);
-
-    // lô 4×16 = 64m²/sàn; móng 64×0.4 = 25.6; mái ước 64×0.5 = 32
-    const mong = q.dien_tich[0]!;
-    expect(mong.dien_tich_m2).toBeCloseTo(64, 0);
-    expect(mong.quy_doi_m2).toBeCloseTo(25.6, 1);
-    const mai = q.dien_tich.find((l) => /techo/i.test(l.label))!;
-    expect(mai.quy_doi_m2).toBeCloseTo(32, 0);
-    expect(mai.uoc_le).toBe(true); // fixture chưa vẽ mái
-    expect(q.ghi_chu.some((g) => g.includes("aún no tiene techo"))).toBe(true);
-
-    // ô trống L2 (thang ~4.5m², giếng trời ~2.4m²) đều < ngưỡng 8m² → sàn tính đủ
-    const sanL2 = q.dien_tich.find((l) => l.label === "Losa Tầng 2")!;
-    expect(sanL2.quy_doi_m2).toBeCloseTo(64, 0);
-    expect(q.tong_quy_doi_m2).toBeCloseTo(25.6 + 64 + 64 + 32, 0);
-
-    // sàn thực trừ hết ô trống
+  it("tabla chilena: solo losas como base, sin coeficientes ajenos; los vacíos se descuentan", () => {
+    const q = computeQuantities(p);
+    expect(q.dien_tich.map((l) => l.label)).toEqual(["Losa Piso 1", "Losa Piso 2"]);
+    expect(q.tong_quy_doi_m2).toBeCloseTo(q.san_thuc_m2, 0);
     expect(q.san_thuc_m2).toBeLessThan(128);
     expect(q.san_thuc_m2).toBeGreaterThan(118);
   });
 
-  it("khối lượng tham khảo: tường/cửa/bậc thang dương và hợp lý", () => {
-    expect(q.tuong_xay_m2).toBeGreaterThan(150); // ~17 tường cao 3.4–3.6m
+  it("con coeficientes declarados: fundaciones 40 % + 2 losas + techo estimado 50 %", () => {
+    setDonGia(COEF_TEST);
+    const q = computeQuantities(p);
+    const labels = q.dien_tich.map((l) => l.label);
+    expect(labels[0]).toBe("Fundaciones");
+    expect(labels).toContain("Losa Piso 1");
+    expect(labels).toContain("Losa Piso 2");
+    // sitio 4×16 = 64 m²/losa; fundaciones 64×0,4 = 25,6; techo estimado 64×0,5 = 32
+    expect(q.dien_tich[0]!.dien_tich_m2).toBeCloseTo(64, 0);
+    expect(q.dien_tich[0]!.quy_doi_m2).toBeCloseTo(25.6, 1);
+    const techo = q.dien_tich.find((l) => l.label === "Losa de techo")!;
+    expect(techo.quy_doi_m2).toBeCloseTo(32, 0);
+    expect(techo.uoc_le).toBe(true); // la fixture no tiene techo dibujado
+    expect(q.ghi_chu.some((g) => g.includes("aún no tiene techo"))).toBe(true);
+    // vacíos de L2 (escalera ~4,5 m², patio ~2,4 m²) bajo el umbral de 8 m² → la losa se cobra completa
+    expect(q.dien_tich.find((l) => l.label === "Losa Piso 2")!.quy_doi_m2).toBeCloseTo(64, 0);
+    expect(q.tong_quy_doi_m2).toBeCloseTo(25.6 + 64 + 64 + 32, 0);
+  });
+
+  it("cantidades de referencia: muros, vanos y peldaños positivos y razonables", () => {
+    const q = computeQuantities(p);
+    expect(q.tuong_xay_m2).toBeGreaterThan(150); // ~17 muros de 3,4–3,6 m
     expect(q.tuong_xay_m2).toBeLessThan(400);
     expect(q.cua_bo).toBe(p.openings.length);
     expect(q.cua_m2).toBeGreaterThan(10);
@@ -43,43 +55,40 @@ describe("dự toán sơ bộ — khối lượng từ fixture 4×16m", () => {
   });
 });
 
-describe("dự toán sơ bộ — chi phí + ngân sách", () => {
+describe("presupuesto — costos y presupuesto del brief (UF)", () => {
+  afterEach(() => setDonGia(null));
   const p = loadCasaPrueba2p();
+  /** Precios de PRUEBA en UF/m² (la tabla empaquetada viene «por completar»). */
+  const PRECIOS = {
+    don_gia_m2: {
+      xay_tho: { label: "Obra gruesa", monto: 10 },
+      hoan_thien: {
+        "co-ban": { label: "Terminaciones básicas", monto: 4 },
+        "trung-binh-kha": { label: "Terminaciones medias", monto: 5 },
+        "cao-cap": { label: "Terminaciones altas", monto: 8 },
+      },
+    },
+  };
 
-  it("mức hoàn thiện suy từ brief ('trung bình khá')", () => {
+  it("nivel de terminaciones desde el brief ('medio')", () => {
     expect(suggestFinishLevel(p)).toBe("trung-binh-kha");
   });
 
-  it("tổng = thô × quy đổi + hoàn thiện × sàn thực; so được với ngân sách brief", () => {
+  it("total = obra gruesa × superficie equivalente + terminaciones × superficie útil; se compara con el brief", () => {
+    setDonGia(PRECIOS);
     const e = estimateCost(p);
     expect(e.items).toHaveLength(2);
-    const tho = e.items[0]!;
-    expect(tho.monto).toBe(Math.round(e.quantities.tong_quy_doi_m2 * donGiaFor(undefined)!.don_gia_m2.xay_tho.monto!));
-    expect(e.total).toBe(e.items[0]!.monto! + e.items[1]!.monto!);
-    // brief fixture: "~1.8 tỷ" — nhà 2 tầng 128m² mức TB khá phải nằm trong ngân sách
-    expect(e.ngan_sach?.monto).toBe(1_800_000_000);
+    expect(e.items[0]!.monto).toBeCloseTo(e.quantities.tong_quy_doi_m2 * 10, 1);
+    expect(e.total).toBeCloseTo(e.items[0]!.monto! + e.items[1]!.monto!, 2);
+    // brief de la fixture: "~3.500 UF"; ~120 m² a 15 UF/m² ≈ 1.900 UF → sobra presupuesto
+    expect(e.ngan_sach?.monto).toBe(3500);
     expect(e.ngan_sach?.diferencia).toBeGreaterThan(0);
     expect(e.ghi_chu.some((g) => g.includes("don-gia.json"))).toBe(true);
   });
 
-  it("mức override đổi đơn giá hoàn thiện", () => {
-    const kha = estimateCost(p, "trung-binh-kha").total!;
-    const sang = estimateCost(p, "cao-cap").total!;
-    expect(sang).toBeGreaterThan(kha);
-  });
-
-  it("parseBudgetVnd: tỷ / triệu / không parse được", () => {
-    expect(parseBudgetVnd("~1.8 tỷ")).toBe(1_800_000_000);
-    expect(parseBudgetVnd("1,5 ty")).toBe(1_500_000_000);
-    expect(parseBudgetVnd("900 triệu")).toBe(900_000_000);
-    expect(parseBudgetVnd("khoảng 2 tỉ đổ lại")).toBe(2_000_000_000);
-    expect(parseBudgetVnd("tùy tình hình")).toBeNull();
-    expect(parseBudgetVnd(undefined)).toBeNull();
-  });
-
-  it("formatVnd đọc được", () => {
-    expect(formatVnd(1_234_000_000)).toBe("1,23 tỷ");
-    expect(formatVnd(850_000_000)).toBe("850 triệu");
+  it("forzar el nivel cambia el precio de terminaciones", () => {
+    setDonGia(PRECIOS);
+    expect(estimateCost(p, "cao-cap").total!).toBeGreaterThan(estimateCost(p, "trung-binh-kha").total!);
   });
 });
 

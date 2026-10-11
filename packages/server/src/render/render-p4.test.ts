@@ -1,8 +1,8 @@
 import { mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
-import { loadCasaPrueba2p } from "@arquitecto/core";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { loadCasaPrueba2p, setDonGia } from "@arquitecto/core";
 import { buildElevationScene } from "./elevation-scene.js";
 import { buildSectionScene, cutIntervals } from "./section-scene.js";
 import { buildScheduleScene } from "./schedule-scene.js";
@@ -132,7 +132,7 @@ describe("P4 — DXF writer (ADR-08: TS thuần)", () => {
   });
 
   it("chữ tiếng Việt giữ nguyên UTF-8, cỡ chữ nhân tỷ lệ", () => {
-    expect(dxf).toContain("PHÒNG KHÁCH");
+    expect(dxf).toContain("LIVING");
     // tên phòng 3.5mm giấy × scale 50 = 175mm model
     expect(dxf).toContain(`\n40\n${3.5 * build.tf.scale}\n`);
     // paper-space (khung tên) không được lọt vào DXF
@@ -140,7 +140,23 @@ describe("P4 — DXF writer (ADR-08: TS thuần)", () => {
   });
 });
 
+/** Precios de prueba (UF/m²): la tabla chilena empaquetada viene «por completar» y sin precios se omite la lámina de presupuesto. */
+const PRECIOS_TEST = {
+  valor_clp: 40_000,
+  don_gia_m2: { xay_tho: { label: "Obra gruesa", monto: 10 }, hoan_thien: { "trung-binh-kha": { label: "Terminaciones medias", monto: 5 } } },
+};
+
 describe("P4 — bộ tờ hồ sơ", () => {
+  beforeEach(() => setDonGia(PRECIOS_TEST));
+  afterEach(() => setDonGia(null));
+
+  it("sin precios (tabla por completar) la lámina de presupuesto se omite y se informa", () => {
+    setDonGia(null);
+    const set = buildSheetSet(p);
+    expect(set.sheets.some((s) => s.id === "estimate")).toBe(false);
+    expect(set.skipped.find((s) => s.id === "estimate")?.reason).toMatch(/por completar/);
+  });
+
   it("trọn bộ: KT-01..KT-06 đúng thứ tự pha E (kèm dự toán)", () => {
     const set = buildSheetSet(p, { date: "13/07/2026" });
     expect(set.sheets.map((s) => `${s.no} ${s.id}`)).toEqual([
@@ -178,6 +194,9 @@ describe("P4 — bộ tờ hồ sơ", () => {
 });
 
 describe("P4 — PDF hồ sơ (Chromium print)", () => {
+  beforeEach(() => setDonGia(PRECIOS_TEST));
+  afterEach(() => setDonGia(null));
+
   it("gộp bộ tờ thành MỘT file PDF nhiều trang A3", async () => {
     const { svgsToPdf, closePdfRenderer } = await import("./pdf.js");
     const set = buildSheetSet(p, { date: "13/07/2026" });

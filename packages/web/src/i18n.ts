@@ -2,96 +2,13 @@
  * i18n del editor web.
  * - Español por defecto (arquitecto-mcp es para Chile). El botón alterna ES/EN.
  * - La elección manual gana: ?lang=… o el botón (se guarda en localStorage).
- * - "vi" es legado del upstream: solo con ?lang=vi explícito; se elimina en E4.
  * - Los planos exportados aún llevan rótulos del upstream (pendiente).
  * Funciona también en Node (tests): localStorage/location están protegidos.
  */
 
-export type Lang = "es" | "en" | "vi";
+export type Lang = "es" | "en";
 
 type Dict = Record<string, string>;
-
-const VI: Dict = {
-  "app.connecting": "đang kết nối…",
-  "conn.on": "trực tiếp",
-  "conn.connecting": "đang nối…",
-  "conn.off": "mất kết nối — tự nối lại…",
-  "view.plan": "Mặt bằng",
-  "view.3d": "3D",
-  "view.split": "Chia đôi",
-  "share.btn": "chia sẻ",
-  "share.title": "Copy link CHỈ-XEM gửi người thân — họ thấy live nhưng không sửa được; thu hồi link: POST /share/rotate",
-  "share.copied": "Đã copy link chỉ-xem — gửi cho người thân cùng ngắm:\n{url}",
-  "share.error": "Không lấy được link chia sẻ — thử tải lại trang.",
-  "lang.title": "Switch interface language to English",
-  "tool.select": "Chọn / di chuyển — kéo tường, cửa, nội thất; đang kéo gõ số để chốt chính xác; Alt bỏ snap; R xoay nội thất đang chọn",
-  "tool.wall": "Vẽ tường — giai đoạn sau",
-  "tool.door": "Đặt cửa đi — giai đoạn sau",
-  "tool.window": "Đặt cửa sổ — giai đoạn sau",
-  "tool.room": "Vẽ phòng — giai đoạn sau",
-  "tool.furniture": "Nội thất — mở catalog, chọn món rồi click vào mặt bằng để đặt; Esc/V để thôi",
-  "tool.measure": "Đo — giai đoạn sau",
-  "tool.locked": "Link chia sẻ chỉ-xem — không sửa được",
-  "pane2d.empty": "Đang chờ dự án — Claude sẽ dựng đến đâu, bản vẽ mọc đến đó.",
-  "pane2d.hint": "kéo đối tượng — di chuyển · gõ số khi kéo — chốt chính xác · Alt — bỏ snap",
-  "fit2d": "khớp khung",
-  "fit2d.title": "Khớp bản vẽ vào khung",
-  "walk.btn": "đi bộ",
-  "walk.title": "Đi bộ trong nhà — WASD di chuyển, chuột nhìn, Shift chạy, Esc thoát",
-  "walk.hint": "WASD — di chuyển · chuột — nhìn · Shift — chạy · Esc — thoát",
-  "sun.btn": "nắng",
-  "sun.title": "Xem nắng theo giờ + tháng (vĩ độ lấy từ brief)",
-  "sun.hour": "giờ",
-  "sun.month": "tháng",
-  "reset3d": "về góc chuẩn",
-  "reset3d.title": "Về góc nhìn mặc định",
-  "hint3d.orbit": "kéo — xoay · lăn — zoom · chuột phải — trượt",
-  "panel.props": "Thuộc tính",
-  "panel.issues": "Kiểm tra",
-  "props.empty": "Chạm một đối tượng trên bản vẽ để xem thông số.",
-  "props.empty.sub": "Kéo để di chuyển — đang kéo thì gõ số là chốt chính xác.",
-  "issues.clean": "Bản vẽ sạch — không có vấn đề nào.",
-  "issues.pending": "Chưa có kết quả kiểm tra.",
-  "footer.levels": "Tầng",
-  "footer.revision": "Revision",
-  "footer.conn": "Kết nối",
-  "footer.claude": "Claude",
-  "footer.undo": "Hoàn tác",
-  "footer.snap": "Snap",
-  "undo.title": "Hoàn tác (Ctrl+Z) — chỉ thao tác của bạn",
-  "redo.title": "Làm lại (Ctrl+Y)",
-  "snap.title": "Bước lưới snap (mm) — 0 là tắt",
-  "toast.claude": "Claude",
-  "toast.user": "Bạn",
-  "toast.reject": "Bị từ chối",
-  "toast.rejectFallback": "Server từ chối thay đổi.",
-  "toast.readonly": "Bạn đang xem qua link chia sẻ — chỉ xem, không sửa được.",
-  "toast.deleteUnsupported": "Chưa hỗ trợ xóa {kind} từ editor.",
-  "viewer.badge": "CHỈ XEM",
-  "hud.typing": "⏎ chốt · Esc xóa",
-  "hud.typable": "gõ số để chốt chính xác",
-  "hud.gap": "khe",
-  "catalog.title": "Nội thất",
-  "catalog.search": "tìm: giường, sofa, xe máy…",
-  "catalog.empty": "Không có asset nào khớp.",
-  "catalog.mounted": "treo",
-  "kind.wall": "Tường",
-  "kind.opening": "Cửa",
-  "kind.slab": "Sàn",
-  "kind.roof": "Mái",
-  "kind.stair": "Thang",
-  "kind.room": "Phòng",
-  "kind.furniture": "Nội thất",
-  "kind.level": "Tầng",
-  "note.place": "đặt {label}",
-  "note.rotate": "xoay {id}",
-  "note.delete": "xóa {id}",
-  "note.drag": "kéo {id}",
-  "note.typed": "{id}: gõ {value}",
-  "note.prop": "sửa {id}.{field}",
-  "note.undo": "hoàn tác: {label}",
-  "note.redo": "làm lại: {label}",
-};
 
 const EN: Dict = {
   "app.connecting": "connecting…",
@@ -257,11 +174,10 @@ const ES: Dict = {
   "note.redo": "rehacer: {label}",
 };
 
-const DICTS: Record<Lang, Dict> = { es: ES, en: EN, vi: VI };
+const DICTS: Record<Lang, Dict> = { es: ES, en: EN };
 
 export const DICT_KEYS = Object.keys(ES);
 export const DICT_EN_KEYS = Object.keys(EN);
-export const DICT_VI_KEYS = Object.keys(VI);
 
 export type DetectInput = {
   /** ?lang de la URL. */
@@ -270,7 +186,7 @@ export type DetectInput = {
   saved?: string | null;
 };
 
-const isLang = (v: string | null | undefined): v is Lang => v === "es" || v === "en" || v === "vi";
+const isLang = (v: string | null | undefined): v is Lang => v === "es" || v === "en";
 
 /** Elige el idioma (función pura, testeable): ?lang > guardado > español. */
 export function detectLang(input: DetectInput): Lang {

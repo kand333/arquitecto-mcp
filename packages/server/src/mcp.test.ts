@@ -74,13 +74,22 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
   });
 
   it("estimate_cost: tổng tiền + so ngân sách brief + override mức hoàn thiện", async () => {
-    const { client } = await connect();
+    const { client, store } = await connect();
     await client.callTool({ name: "project_new", arguments: { name: "Nhà anh Ba", template: "casa-prueba-2p" } });
+    // flujo real: el usuario llena precios (UF/m²) en <proyecto>/rules/don-gia.json
+    const { mkdirSync: md, writeFileSync: wf } = await import("node:fs");
+    md(path.join(store.baseDir, "rules"), { recursive: true });
+    wf(path.join(store.baseDir, "rules", "don-gia.json"), JSON.stringify({
+      don_gia_m2: {
+        xay_tho: { label: "Obra gruesa", monto: 10 },
+        hoan_thien: { "trung-binh-kha": { label: "Terminaciones medias", monto: 5 }, "cao-cap": { label: "Terminaciones de alto estándar", monto: 8 } },
+      },
+    }), "utf8");
     const r = await client.callTool({ name: "estimate_cost", arguments: {} });
     const msg = textOf(r);
     expect(msg).toContain("TOTAL EQUIVALENTE");
     expect(msg).toContain("➤ TOTAL:");
-    expect(msg).toContain("SOBRAN"); // brief fixture ~1.8 tỷ > dự toán TB khá
+    expect(msg).toContain("SOBRAN"); // brief de la fixture ~3.500 UF > ~1.900 UF estimadas
     expect(msg).toContain("don-gia.json");
 
     const sang = await client.callTool({ name: "estimate_cost", arguments: { muc: "cao-cap" } });
@@ -104,7 +113,7 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
     const dxf = await client.callTool({ name: "export", arguments: { format: "dxf" } });
     const msg = textOf(dxf);
     expect(msg).toContain("Láminas DXF (4;");
-    expect(msg).toContain("KT-01 MẶT BẰNG TẦNG 1");
+    expect(msg).toContain("KT-01 MẶT BẰNG PISO 1");
     expect(msg).toContain("KT-04 MẶT CẮT A-A");
     expect(msg).not.toContain("THỐNG KÊ →"); // tờ bảng không có DXF
     const { existsSync } = await import("node:fs");
@@ -223,7 +232,7 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
       name: "model_query",
       arguments: { select: { entity: "rooms", level: "L1" }, computed: true },
     });
-    expect(textOf(q)).toContain("Phòng khách");
+    expect(textOf(q)).toContain("Living");
     expect(textOf(q)).toContain("dien_tich_m2");
 
     // apply hợp lệ
@@ -249,7 +258,9 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
     expect(textOf(changes)).toContain("đổi tên phòng khách");
 
     const v = await client.callTool({ name: "validate", arguments: {} });
-    expect(textOf(v)).toContain("0 observaciones");
+    // región cl: solo pueden quedar CL-INDET/info (nunca se declara cumplimiento), sin errores ni avisos
+    expect(textOf(v)).not.toMatch(/\/(block|error|warn)\]/);
+    expect(textOf(v)).toContain("[CL-INDET/info]");
   });
 
   it("chưa mở dự án → lỗi tiếng Việt chỉ đường, isError", async () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { estimateCost, loadCasa2Pisos, loadCasaPrueba2p } from "@arquitecto/core";
+import { estimateCost, loadCasa2Pisos, loadCasaPrueba2p, setDonGia } from "@arquitecto/core";
 import { buildPlanScene } from "./plan-scene.js";
 import { buildElevationScene } from "./elevation-scene.js";
 import { buildSectionScene } from "./section-scene.js";
@@ -52,7 +52,14 @@ describe("P7 — biệt thự mái dốc trên lô góc đất dốc", () => {
   });
 
   it("estimate: mái dốc tính m² MẶT NGHIÊNG (chiếu / cos pitch), hệ số mái ngói; không còn dòng ước lệ", () => {
-    const est = estimateCost(villa);
+    // la tabla chilena no define coeficiente de techo: se declara uno de prueba para ejercitar el cálculo
+    setDonGia({ he_so_quy_doi: { san: { label: "Losas", he_so: 1 }, mai_ngoi: { label: "Techo de tejas", he_so: 0.7 } } });
+    let est;
+    try {
+      est = estimateCost(villa);
+    } finally {
+      setDonGia(null);
+    }
     const mai = est.quantities.dien_tich.find((l) => l.label.includes("RF1"));
     expect(mai).toBeDefined();
     // bbox mái 8.02×10.42m = 83.57m² chiếu → /cos(30°) ≈ 96.5m² mặt nghiêng

@@ -1,10 +1,9 @@
 import { getAsset } from "../catalog.js";
 import { convexOverlapDepth, furnitureObb, obbCorners, type Obb } from "../geometry/obb.js";
-import { area, areaM2, minPolygonWidth, pointInPolygon } from "../geometry/polygon.js";
-// (area vẫn dùng cho STD-12)
+import { areaM2, minPolygonWidth, pointInPolygon } from "../geometry/polygon.js";
 import { stairLayout } from "../geometry/stair.js";
 import { openingSidePoints, wallBand } from "../geometry/wall.js";
-import { clearHeight, floorSlabOf, getLevel, getWall, levelAbove, levelsSorted, roomsAdjacent, roomsAtPoint, roomsOfLevel } from "../model.js";
+import { clearHeight, floorSlabOf, getLevel, getWall, levelAbove, roomsAdjacent, roomsAtPoint, roomsOfLevel } from "../model.js";
 import type { Point, Polygon, Project, Room } from "../types.js";
 import { add, rotate } from "../geometry/vec.js";
 import type { Finding } from "./finding.js";
@@ -29,14 +28,14 @@ export function std01(p: Project, def: RuleDef): Finding[] {
     const min = doi ? prm.ngu_doi! : prm.ngu_don!;
     const a = areaM2(r.polygon);
     if (a < min) {
-      out.push({ entities: [r.id], values: { ten: r.name, room: r.id, area: a, min, loai: doi ? "ngủ giường đôi" : "ngủ giường đơn" } });
+      out.push({ entities: [r.id], values: { ten: r.name, room: r.id, area: a, min, loai: doi ? "dormitorio con cama doble" : "dormitorio con cama simple" } });
     }
   }
   const simple: Array<[Room["use"], number, string]> = [
-    ["bep-an", prm.bep_an!, "bếp + ăn"],
-    ["wc", prm.wc!, "vệ sinh"],
-    ["khach", prm.khach!, "tiếp khách"],
-    ["kho", prm.kho!, "chứa đồ"],
+    ["bep-an", prm.bep_an!, "cocina + comedor"],
+    ["wc", prm.wc!, "baño"],
+    ["khach", prm.khach!, "estar"],
+    ["kho", prm.kho!, "bodega"],
   ];
   for (const [use, min, loai] of simple) {
     for (const r of p.rooms.filter((x) => x.use === use)) {
@@ -119,17 +118,17 @@ export function std05(p: Project, def: RuleDef): Finding[] {
     const isWc = [...roomsA, ...roomsB].some((r) => r.use === "wc");
     const isExterior = isOutdoorPoint(p, w.level, pa) || isOutdoorPoint(p, w.level, pb);
     const [min, loai] = isWc
-      ? [prm.wc!, "cửa WC"]
+      ? [prm.wc!, "puerta de baño"]
       : isExterior
-        ? [prm.chinh!, "cửa chính"]
-        : [prm.phong!, "cửa phòng"];
+        ? [prm.chinh!, "puerta principal"]
+        : [prm.phong!, "puerta interior"];
     if (o.width < min) {
       out.push({ entities: [o.id, w.id], values: { opening: o.id, width: o.width, min, loai } });
     } else if (!isWc && isExterior && o.width < prm.chinh_khuyen!) {
       out.push({
         entities: [o.id, w.id],
         severity: "info",
-        values: { opening: o.id, width: o.width, min: prm.chinh_khuyen!, loai: "cửa chính — mức khuyến nghị" },
+        values: { opening: o.id, width: o.width, min: prm.chinh_khuyen!, loai: "puerta principal — nivel recomendado" },
       });
     }
   }
@@ -147,22 +146,22 @@ export function std06(p: Project, def: RuleDef): Finding[] {
       out.push({ entities: [st.id], values: { stair: st.id, detail }, ...(severity ? { severity } : {}) });
 
     if (riser < prm.riser_min! || riser > prm.riser_max!) {
-      push(`cao bậc ${round1(riser)}mm ngoài khoảng ${prm.riser_min}–${prm.riser_max}mm (height ${level.height} / ${st.steps} bậc)`);
+      push(`contrahuella ${round1(riser)}mm fuera del rango ${prm.riser_min}–${prm.riser_max}mm (altura ${level.height} / ${st.steps} peldaños)`);
     } else if (riser > prm.riser_khuyen!) {
-      push(`cao bậc ${round1(riser)}mm > ${prm.riser_khuyen}mm — 13967 khuyến khích ≤${prm.riser_khuyen}mm`, "warn");
+      push(`contrahuella ${round1(riser)}mm > ${prm.riser_khuyen}mm — se recomienda ≤${prm.riser_khuyen}mm`, "warn");
     }
-    if (st.tread < prm.tread_min!) push(`mặt bậc ${st.tread}mm < ${prm.tread_min}mm`);
+    if (st.tread < prm.tread_min!) push(`huella ${st.tread}mm < ${prm.tread_min}mm`);
     if (st.width < prm.ve_min!) {
-      push(`vế rộng ${st.width}mm < ${prm.ve_min}mm`);
+      push(`ancho del tramo ${st.width}mm < ${prm.ve_min}mm`);
     } else if (st.width < prm.ve_khuyen!) {
-      push(`vế rộng ${st.width}mm < ${prm.ve_khuyen}mm (mức thang thoát nạn nhà liên kế — TCVN 9411)`, "warn");
+      push(`ancho del tramo ${st.width}mm < ${prm.ve_khuyen}mm (nivel recomendado)`, "warn");
     }
     if (st.landing != null && st.landing < st.width) {
-      push(`chiếu nghỉ ${st.landing}mm < bề rộng vế ${st.width}mm`);
+      push(`descanso ${st.landing}mm < ancho del tramo ${st.width}mm`);
     }
     const buoc = 2 * riser + st.tread;
     if (buoc < prm.buoc_min! || buoc > prm.buoc_max!) {
-      push(`nhịp bước 2×riser+tread = ${round1(buoc)}mm ngoài ${prm.buoc_min}–${prm.buoc_max}mm`);
+      push(`paso 2×contrahuella+huella = ${round1(buoc)}mm fuera de ${prm.buoc_min}–${prm.buoc_max}mm`);
     }
   }
   return out;
@@ -284,7 +283,7 @@ export function std11(p: Project, def: RuleDef): Finding[] {
         rotation: f.rotation,
       });
       if (blocked(sideStrip(1), f.level, f.id) && blocked(sideStrip(-1), f.level, f.id)) {
-        out.push({ entities: [f.id], values: { item: `Giường ${f.id}`, detail: `cả hai bên hông đều không còn lối ≥ ${gap}mm` } });
+        out.push({ entities: [f.id], values: { item: `Cama ${f.id}`, detail: `ningún costado deja paso ≥ ${gap}mm` } });
       }
     }
     if (asset!.category === "tu-bep-duoi") {
@@ -296,7 +295,7 @@ export function std11(p: Project, def: RuleDef): Finding[] {
         rotation: f.rotation,
       };
       if (blocked(strip, f.level, f.id)) {
-        out.push({ entities: [f.id], severity: "warn", values: { item: `Tủ bếp ${f.id}`, detail: `khoảng trống trước mặt bếp < ${gap}mm` } });
+        out.push({ entities: [f.id], severity: "warn", values: { item: `Mueble de cocina ${f.id}`, detail: `espacio libre frente a la cocina < ${gap}mm` } });
       }
     }
     if (asset!.category === "bon-cau") {
@@ -308,30 +307,7 @@ export function std11(p: Project, def: RuleDef): Finding[] {
         rotation: f.rotation,
       };
       if (blocked(strip, f.level, f.id)) {
-        out.push({ entities: [f.id], values: { item: `Bồn cầu ${f.id}`, detail: `khoảng trống trước bồn cầu < ${gap}mm` } });
-      }
-    }
-  }
-  return out;
-}
-
-export function std12(p: Project): Finding[] {
-  const out: Finding[] = [];
-  const qh = p.brief.dat?.quy_hoach;
-  if (!qh) return out;
-  if (qh.tang_max != null && p.levels.length > qh.tang_max) {
-    out.push({
-      entities: p.levels.map((l) => l.id),
-      values: { detail: `số tầng ${p.levels.length} > tối đa ${qh.tang_max}` },
-    });
-  }
-  if (qh.mat_do_max != null) {
-    const lowest = levelsSorted(p)[0];
-    const slab = lowest && floorSlabOf(p, lowest.id);
-    if (slab) {
-      const pct = Math.round((area(slab.outline) / area(p.site.boundary)) * 100);
-      if (pct > qh.mat_do_max) {
-        out.push({ entities: [slab.id], values: { detail: `mật độ xây dựng ${pct}% > tối đa ${qh.mat_do_max}%` } });
+        out.push({ entities: [f.id], values: { item: `Inodoro ${f.id}`, detail: `espacio libre frente al inodoro < ${gap}mm` } });
       }
     }
   }

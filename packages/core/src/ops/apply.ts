@@ -6,7 +6,7 @@ import type { Op } from "./ops.js";
 import { summarizeOps } from "./summary.js";
 
 export type ApplyOptions = {
-  /** Validator đầy đủ (rules GEO/STD/LBB) — tiêm từ ngoài để core ops không phụ thuộc bộ rule. */
+  /** Validator đầy đủ (rules GEO/CL) — tiêm từ ngoài để core ops không phụ thuộc bộ rule. */
   validate?: (p: Project) => Issue[];
   note?: string;
 };

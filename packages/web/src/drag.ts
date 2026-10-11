@@ -53,7 +53,7 @@ export type DragSession = {
   typed(value: number, opts: SnapOpts): DragState | null;
 };
 
-const fmt = (v: number): string => Math.round(v).toLocaleString(LANG === "en" ? "en-US" : LANG === "vi" ? "vi-VN" : "es-CL");
+const fmt = (v: number): string => Math.round(v).toLocaleString(LANG === "en" ? "en-US" : "es-CL");
 const clamp = (v: number, lo: number, hi: number): number => Math.min(hi, Math.max(lo, v));
 const roundPt = ([x, y]: Point): Point => [Math.round(x), Math.round(y)];
 

@@ -1,7 +1,7 @@
 {
   "meta": {
     "id": "biet-thu-doc",
-    "name": "Biệt thự mái dốc — lô góc đất dốc, 2 tầng",
+    "name": "Casa de 2 pisos — techo inclinado, sitio en esquina con pendiente",
     "revision": 1,
     "unit": "mm",
     "app": "arquitecto/0.1"
@@ -11,7 +11,7 @@
     "dat": {
       "ranh_gioi": [[0, 0], [12000, 0], [12000, 15000], [0, 14000]],
       "huong_truoc": "Nam",
-      "tiep_giap": { "truoc": "đường 8m", "phai": "đường 6m", "sau": "nhà", "trai": "nhà" },
+      "tiep_giap": { "truoc": "calle 8 m", "phai": "calle 6 m", "sau": "vivienda vecina", "trai": "vivienda vecina" },
       "quy_hoach": {
         "tang_max": 3,
         "chieu_cao_max": 12000,
@@ -20,11 +20,10 @@
       },
       "vi_do": 11.9
     },
-    "gia_dinh": "vợ chồng + 2 con",
-    "nhu_cau": { "phong_ngu": 2, "wc": 2, "o_to": true, "bep": "liền phòng ăn" },
-    "ngan_sach": { "muc": "~2.5 tỷ", "hoan_thien": "trung bình khá" },
-    "gu": { "phong_cach": "mái dốc đồi", "mau": "trắng - ngói đỏ" },
-    "phong_thuy": { "lo_ban": false }
+    "gia_dinh": "pareja + 2 hijos",
+    "nhu_cau": { "phong_ngu": 2, "wc": 2, "o_to": true, "bep": "junto al comedor" },
+    "ngan_sach": { "muc": "~5.000 UF", "hoan_thien": "medio" },
+    "gu": { "phong_cach": "techo inclinado de cerro", "mau": "blanco - teja roja" }
   },
   "site": {
     "boundary": [[0, 0], [12000, 0], [12000, 15000], [0, 14000]],
@@ -49,8 +48,8 @@
     ]
   },
   "levels": [
-    { "id": "L1", "name": "Tầng 1", "elevation": 0, "height": 3600 },
-    { "id": "L2", "name": "Tầng 2", "elevation": 3600, "height": 3400 }
+    { "id": "L1", "name": "Piso 1", "elevation": 0, "height": 3600 },
+    { "id": "L2", "name": "Piso 2", "elevation": 3600, "height": 3400 }
   ],
   "walls": [
     { "id": "W1", "level": "L1", "from": [3200, 3200], "to": [9800, 3200], "thickness": 220, "kind": "gach" },
@@ -127,49 +126,49 @@
     {
       "id": "R1",
       "level": "L1",
-      "name": "Khách",
+      "name": "Living",
       "polygon": [[3310, 3310], [7875, 3310], [7875, 5455], [9690, 5455], [9690, 7925], [3310, 7925]],
       "use": "khach"
     },
     {
       "id": "R2",
       "level": "L1",
-      "name": "WC 1",
+      "name": "Baño 1",
       "polygon": [[7985, 3310], [9690, 3310], [9690, 5345], [7985, 5345]],
       "use": "wc"
     },
     {
       "id": "R3",
       "level": "L1",
-      "name": "Bếp + ăn",
+      "name": "Cocina + comedor",
       "polygon": [[3310, 8035], [7195, 8035], [7195, 12090], [3310, 12090]],
       "use": "bep-an"
     },
     {
       "id": "R4",
       "level": "L1",
-      "name": "Cầu thang",
+      "name": "Escalera",
       "polygon": [[7305, 8035], [9690, 8035], [9690, 12090], [7305, 12090]],
       "use": "cau-thang"
     },
     {
       "id": "R5",
       "level": "L2",
-      "name": "Ngủ 1",
+      "name": "Dormitorio 1",
       "polygon": [[3310, 3310], [9690, 3310], [9690, 7055], [3310, 7055]],
       "use": "ngu"
     },
     {
       "id": "R6",
       "level": "L2",
-      "name": "Ngủ 2",
+      "name": "Dormitorio 2",
       "polygon": [[3310, 7165], [7195, 7165], [7195, 12090], [3310, 12090]],
       "use": "ngu"
     },
     {
       "id": "R7",
       "level": "L2",
-      "name": "Cầu thang",
+      "name": "Escalera",
       "polygon": [[7305, 7165], [9690, 7165], [9690, 12090], [7305, 12090]],
       "use": "cau-thang"
     }
@@ -177,10 +176,10 @@
   "furniture": [],
   "styles": {
     "openings": {
-      "DC": { "label": "Cửa chính", "kind": "door", "leaf": "2-canh", "material": "nhôm kính" },
-      "DP": { "label": "Cửa phòng", "kind": "door", "leaf": "1-canh", "material": "gỗ công nghiệp" },
-      "DW": { "label": "Cửa WC", "kind": "door", "leaf": "1-canh", "material": "nhựa lõi thép" },
-      "SW": { "label": "Cửa sổ trượt", "kind": "window", "leaf": "truot", "material": "nhôm kính" }
+      "DC": { "label": "Puerta principal", "kind": "door", "leaf": "2-canh", "material": "aluminio y vidrio" },
+      "DP": { "label": "Puerta interior", "kind": "door", "leaf": "1-canh", "material": "madera aglomerada" },
+      "DW": { "label": "Puerta de baño", "kind": "door", "leaf": "1-canh", "material": "PVC con refuerzo de acero" },
+      "SW": { "label": "Ventana corredera", "kind": "window", "leaf": "truot", "material": "aluminio y vidrio" }
     }
   },
   "finishes": {}

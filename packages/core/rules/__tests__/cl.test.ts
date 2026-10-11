@@ -138,7 +138,7 @@ describe("E4 — CL-VEN-01 (OGUC 4.1.2, al menos una ventana al exterior en loca
   });
 
   it("negativo: la luz que llega solo por el vano de la escalera NO cuenta como ventana (a diferencia de STD-09)", () => {
-    // nha-ong-4x16: R2 es el único recinto adyacente a la escalera R6, que tiene vano en la losa superior.
+    // casa-prueba-2p: R2 es el único recinto adyacente a la escalera R6, que tiene vano en la losa superior.
     // Se usa como living (habitable) para tener el caso que STD-09 da por iluminado vía la escalera.
     const p = chile(loadCasaPrueba2p());
     const living = p.rooms.find((r) => r.id === "R2")!;

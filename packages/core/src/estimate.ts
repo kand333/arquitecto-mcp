@@ -1,4 +1,3 @@
-import donGiaVnJson from "../rules/don-gia.json" with { type: "json" };
 import donGiaClJson from "../rules/don-gia-cl.json" with { type: "json" };
 import { areaM2 } from "./geometry/polygon.js";
 import { roofGeometry } from "./geometry/roof.js";
@@ -27,9 +26,8 @@ export type DonGia = {
   he_so_quy_doi: Record<string, { label: string; he_so: number; nguong_m2?: number }>;
 };
 
-/** Tablas empaquetadas por región. "vn" es legado y se elimina en E4b-4. */
+/** Tablas empaquetadas por región. */
 const TABLAS: Record<string, DonGia> = {
-  vn: donGiaVnJson as DonGia,
   cl: donGiaClJson as DonGia,
 };
 
@@ -43,7 +41,7 @@ export function setDonGia(d: Partial<DonGia> | null): void {
 
 /** Tabla efectiva de una región (empaquetada + tabla local), o null si la región no tiene precios. */
 export function donGiaFor(region: string | undefined): DonGia | null {
-  const base = TABLAS[region ?? "vn"];
+  const base = TABLAS[region ?? "cl"];
   return base ? { ...structuredClone(base), ...(override ? structuredClone(override) : {}) } : null;
 }
 
@@ -96,7 +94,7 @@ export function computeQuantities(p: Project): QuantityReport {
       }
     }
     sanThuc += gross - holeAll;
-    // con coeficiente de vacíos (tabla VN): el exceso de los grandes se cobra según he_so; sin él, se descuentan los vacíos
+    // con coeficiente de vacíos: el exceso de los grandes se cobra según he_so; sin él, se descuentan los vacíos
     const tinhPhi = hs.o_trong_lon ? gross - holeLonVuot * (1 - hs.o_trong_lon.he_so) : gross - holeAll;
     const heSoSan = hs.san?.he_so ?? 1;
     lines.push({ label: `Losa ${lv.name}`, dien_tich_m2: r1(tinhPhi), he_so: heSoSan, quy_doi_m2: r1(tinhPhi * heSoSan) });
@@ -172,27 +170,9 @@ export function computeQuantities(p: Project): QuantityReport {
 /** Nivel de terminaciones a partir de brief.ngan_sach.hoan_thien (texto libre de la fase A). */
 export function suggestFinishLevel(p: Project): FinishLevel {
   const t = (p.brief.ngan_sach?.hoan_thien ?? "").toLowerCase();
-  if (/cao\s*cấp|cao\s*cap|sang|alto|premium|lujo/.test(t)) return "cao-cap";
-  if (/cơ\s*bản|co\s*ban|tiết\s*kiệm|tiet\s*kiem|rẻ|re\b|b[aá]sic|econ[oó]mic/.test(t)) return "co-ban";
+  if (/alto|premium|lujo/.test(t)) return "cao-cap";
+  if (/b[aá]sic|econ[oó]mic/.test(t)) return "co-ban";
   return "trung-binh-kha";
-}
-
-/** "~1.8 tỷ", "900 triệu" → dong (legado VN, se elimina en E4b-4). */
-export function parseBudgetVnd(text: string | undefined): number | null {
-  if (!text) return null;
-  const m = /(\d+(?:[.,]\d+)?)\s*(triệu|trieu|tr|tỷ|tỉ|ty|ti)(?!\p{L})/iu.exec(text.normalize("NFC"));
-  if (!m) return null;
-  const value = Number(m[1]!.replace(",", "."));
-  if (!Number.isFinite(value)) return null;
-  const unit = m[2]!.toLowerCase();
-  const laTrieu = unit === "tr" || unit.startsWith("tri");
-  return Math.round(value * (laTrieu ? 1e6 : 1e9));
-}
-
-/** Legado VN (se elimina en E4b-4). */
-export function formatVnd(vnd: number): string {
-  if (Math.abs(vnd) >= 1e9) return `${(vnd / 1e9).toFixed(2).replace(".", ",")} tỷ`;
-  return `${Math.round(vnd / 1e6).toLocaleString("vi-VN")} triệu`;
 }
 
 /** Número chileno: "3.500,5" → 3500.5. */
@@ -204,7 +184,6 @@ const numCl = (s: string): number => Number(s.replace(/\./g, "").replace(",", ".
  */
 export function parsePresupuesto(text: string | undefined, tabla: Pick<DonGia, "currency" | "valor_clp">): number | null {
   if (!text) return null;
-  if (tabla.currency.code === "VND") return parseBudgetVnd(text);
   const uf = /(\d[\d.]*(?:,\d+)?)\s*UF\b|\bUF\s*(\d[\d.]*(?:,\d+)?)/i.exec(text);
   if (uf) return numCl(uf[1] ?? uf[2]!);
   const valor = tabla.valor_clp;
@@ -217,7 +196,6 @@ export function parsePresupuesto(text: string | undefined, tabla: Pick<DonGia, "
 
 /** Monto legible en la moneda de la tabla; en UF agrega el equivalente en pesos si hay valor_clp. */
 export function formatMonto(n: number, tabla: Pick<DonGia, "currency" | "valor_clp">): string {
-  if (tabla.currency.code === "VND") return formatVnd(n);
   const { code, symbol, locale } = tabla.currency;
   if (code === "CLF") {
     const uf = `${n.toLocaleString(locale, { maximumFractionDigits: 1 })} UF`;
@@ -260,7 +238,7 @@ export function estimateCost(p: Project, muc?: FinishLevel): Estimate {
   }
 
   const hoanThien = tabla.don_gia_m2.hoan_thien[level] ?? tabla.don_gia_m2.hoan_thien["trung-binh-kha"]!;
-  const round = tabla.currency.code === "VND" ? Math.round : (v: number): number => Math.round(v * 100) / 100;
+  const round = (v: number): number => Math.round(v * 100) / 100;
   const item = (label: string, m2: number, precio: number | null): EstimateItem => ({
     label, khoi_luong_m2: m2, precio_m2: precio, monto: precio == null ? null : round(m2 * precio),
   });

@@ -1,7 +1,7 @@
 {
   "meta": {
-    "id": "nha-ong-4x16",
-    "name": "Nhà ống 4×16m — 2 tầng 3PN",
+    "id": "casa-prueba-2p",
+    "name": "Casa de prueba 4×16 m — 2 pisos, 3 dormitorios",
     "revision": 1,
     "unit": "mm",
     "app": "arquitecto/0.1"
@@ -26,12 +26,12 @@
           16000
         ]
       ],
-      "huong_truoc": "Đông Nam",
+      "huong_truoc": "Sureste",
       "tiep_giap": {
-        "truoc": "hẻm 5m",
-        "sau": "nhà",
-        "trai": "nhà",
-        "phai": "nhà"
+        "truoc": "pasaje 5 m",
+        "sau": "vivienda vecina",
+        "trai": "vivienda vecina",
+        "phai": "vivienda vecina"
       },
       "quy_hoach": {
         "khoang_lui_truoc": 0,
@@ -39,7 +39,7 @@
       },
       "vi_do": 10.8
     },
-    "gia_dinh": "vợ chồng + 2 con nhỏ + bà nội",
+    "gia_dinh": "pareja + 2 hijos pequeños + abuela",
     "nhu_cau": {
       "phong_ngu": 3,
       "wc": 2,
@@ -48,24 +48,21 @@
       "o_to": false,
       "gieng_troi": true,
       "san_phoi": true,
-      "bep": "liền phòng ăn"
+      "bep": "junto al comedor"
     },
     "ngan_sach": {
-      "muc": "~1.8 tỷ",
-      "hoan_thien": "trung bình khá"
+      "muc": "~3.500 UF",
+      "hoan_thien": "medio"
     },
     "gu": {
-      "phong_cach": "hiện đại tối giản",
-      "mau": "trắng - gỗ sáng"
+      "phong_cach": "moderno minimalista",
+      "mau": "blanco - madera clara"
     },
     "uu_tien": [
-      "thông thoáng",
-      "bà nội ngủ tầng trệt",
-      "dễ dọn"
-    ],
-    "phong_thuy": {
-      "lo_ban": true
-    }
+      "ventilado",
+      "la abuela duerme en el primer piso",
+      "fácil de limpiar"
+    ]
   },
   "site": {
     "boundary": [
@@ -137,13 +134,13 @@
   "levels": [
     {
       "id": "L1",
-      "name": "Tầng 1",
+      "name": "Piso 1",
       "elevation": 0,
       "height": 3600
     },
     {
       "id": "L2",
-      "name": "Tầng 2",
+      "name": "Piso 2",
       "elevation": 3600,
       "height": 3400
     }
@@ -612,7 +609,7 @@
     {
       "id": "R1",
       "level": "L1",
-      "name": "Phòng khách",
+      "name": "Living",
       "use": "khach",
       "polygon": [
         [
@@ -641,7 +638,7 @@
     {
       "id": "R2",
       "level": "L1",
-      "name": "Bếp + ăn",
+      "name": "Cocina + comedor",
       "use": "bep-an",
       "polygon": [
         [
@@ -670,7 +667,7 @@
     {
       "id": "R3",
       "level": "L1",
-      "name": "Hành lang",
+      "name": "Pasillo",
       "use": "hanh-lang",
       "polygon": [
         [
@@ -698,7 +695,7 @@
     {
       "id": "R4",
       "level": "L1",
-      "name": "WC 1",
+      "name": "Baño 1",
       "use": "wc",
       "polygon": [
         [
@@ -726,7 +723,7 @@
     {
       "id": "R5",
       "level": "L1",
-      "name": "Phòng bà",
+      "name": "Dormitorio abuela",
       "use": "ngu",
       "polygon": [
         [
@@ -754,7 +751,7 @@
     {
       "id": "R6",
       "level": "L1",
-      "name": "Cầu thang",
+      "name": "Escalera",
       "use": "cau-thang",
       "polygon": [
         [
@@ -781,7 +778,7 @@
     {
       "id": "R7",
       "level": "L1",
-      "name": "Giếng trời sau",
+      "name": "Patio de luz posterior",
       "use": "gieng-troi",
       "polygon": [
         [
@@ -805,7 +802,7 @@
     {
       "id": "R8",
       "level": "L2",
-      "name": "Ngủ chính",
+      "name": "Dormitorio principal",
       "use": "ngu",
       "polygon": [
         [
@@ -834,7 +831,7 @@
     {
       "id": "R9",
       "level": "L2",
-      "name": "Sảnh thờ + hành lang",
+      "name": "Vestíbulo + pasillo",
       "use": "hanh-lang",
       "polygon": [
         [
@@ -898,7 +895,7 @@
     {
       "id": "R11",
       "level": "L2",
-      "name": "Ngủ con",
+      "name": "Dormitorio hijos",
       "use": "ngu",
       "polygon": [
         [
@@ -926,7 +923,7 @@
     {
       "id": "R12",
       "level": "L2",
-      "name": "Giếng trời sau",
+      "name": "Patio de luz posterior",
       "use": "gieng-troi",
       "polygon": [
         [
@@ -1143,59 +1140,59 @@
   "styles": {
     "openings": {
       "DC": {
-        "label": "Cửa chính",
+        "label": "Puerta principal",
         "kind": "door",
         "leaf": "2-canh",
-        "material": "nhôm kính"
+        "material": "aluminio y vidrio"
       },
       "DP": {
-        "label": "Cửa phòng",
+        "label": "Puerta interior",
         "kind": "door",
         "leaf": "1-canh",
-        "material": "gỗ công nghiệp"
+        "material": "madera aglomerada"
       },
       "DW": {
-        "label": "Cửa WC",
+        "label": "Puerta de baño",
         "kind": "door",
         "leaf": "1-canh",
-        "material": "nhựa lõi thép"
+        "material": "PVC con refuerzo de acero"
       },
       "SW": {
-        "label": "Cửa sổ trượt",
+        "label": "Ventana corredera",
         "kind": "window",
         "leaf": "truot",
-        "material": "nhôm kính"
+        "material": "aluminio y vidrio"
       }
     }
   },
   "finishes": {
     "gach-600": {
-      "label": "Gạch granite 600×600",
+      "label": "Porcelanato 600×600",
       "scope": "floor",
       "color": "#cfc9ba"
     },
     "go-lam-te": {
-      "label": "Sàn gỗ công nghiệp",
+      "label": "Piso flotante",
       "scope": "floor",
       "color": "#b98d5f"
     },
     "gach-chong-tron": {
-      "label": "Gạch nhám chống trơn 300×300",
+      "label": "Cerámica antideslizante 300×300",
       "scope": "floor",
       "color": "#b3aea0"
     },
     "son-trang": {
-      "label": "Sơn nước trắng sữa",
+      "label": "Pintura látex blanco invierno",
       "scope": "wall",
       "color": "#f4f1e8"
     },
     "op-gach-wc": {
-      "label": "Gạch ốp 300×600",
+      "label": "Cerámica de muro 300×600",
       "scope": "wall",
       "color": "#dce4e6"
     },
     "tran-thach-cao": {
-      "label": "Trần thạch cao sơn trắng",
+      "label": "Cielo de yeso-cartón pintado blanco",
       "scope": "ceiling",
       "color": "#f7f5ef"
     }

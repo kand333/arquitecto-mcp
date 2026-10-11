@@ -3,7 +3,7 @@ import { getAsset } from "./catalog.js";
 import { loadCasaPrueba2p } from "./fixture.js";
 import { collectIds } from "./ids.js";
 
-describe("fixture nha-ong-4x16", () => {
+describe("fixture casa-prueba-2p", () => {
   const p = loadCasaPrueba2p();
 
   it("meta đúng quy ước", () => {
@@ -57,6 +57,6 @@ describe("fixture nha-ong-4x16", () => {
     expect(p.rooms.filter((r) => r.use === "ngu")).toHaveLength(3);
     expect(p.stairs).toHaveLength(1);
     expect(p.rooms.some((r) => r.use === "gieng-troi")).toBe(true);
-    expect(p.brief.phong_thuy?.lo_ban).toBe(true);
+    expect("phong_thuy" in p.brief).toBe(false); // el feng shui (Lỗ Ban) se eliminó en E4b
   });
 });

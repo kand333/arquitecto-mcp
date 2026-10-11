@@ -1,7 +1,7 @@
 {
   "meta": {
     "id": "can-ho",
-    "name": "Căn hộ 2PN — cải tạo trong khung có sẵn",
+    "name": "Departamento 2 dormitorios — remodelación dentro de una estructura existente",
     "revision": 1,
     "unit": "mm",
     "app": "arquitecto/0.1"
@@ -10,15 +10,14 @@
   "brief": {
     "dat": {
       "ranh_gioi": [[0, 0], [10500, 0], [10500, 8200], [0, 8200]],
-      "huong_truoc": "hành lang chung cư",
-      "tiep_giap": { "truoc": "hành lang chung", "sau": "thoáng", "trai": "căn hộ", "phai": "thoáng" }
+      "huong_truoc": "pasillo común del edificio",
+      "tiep_giap": { "truoc": "pasillo común", "sau": "thoáng", "trai": "departamento vecino", "phai": "thoáng" }
     },
-    "gia_dinh": "vợ chồng + 1 con",
-    "nhu_cau": { "phong_ngu": 2, "wc": 1, "bep": "mở liền khách" },
-    "ngan_sach": { "muc": "~350 triệu", "hoan_thien": "trung bình khá" },
-    "gu": { "phong_cach": "hiện đại ấm", "mau": "kem - gỗ" },
-    "uu_tien": ["bếp mở", "tối đa ánh sáng"],
-    "phong_thuy": { "lo_ban": false }
+    "gia_dinh": "pareja + 1 hijo",
+    "nhu_cau": { "phong_ngu": 2, "wc": 1, "bep": "abierta al living" },
+    "ngan_sach": { "muc": "~800 UF", "hoan_thien": "medio" },
+    "gu": { "phong_cach": "moderno cálido", "mau": "crema - madera" },
+    "uu_tien": ["cocina abierta", "máxima luz natural"]
   },
   "site": {
     "boundary": [[0, 0], [10500, 0], [10500, 8200], [0, 8200]],
@@ -35,7 +34,7 @@
       { "id": "2", "offset": 8090 }
     ]
   },
-  "levels": [{ "id": "L1", "name": "Căn hộ", "elevation": 0, "height": 3000 }],
+  "levels": [{ "id": "L1", "name": "Departamento", "elevation": 0, "height": 3000 }],
   "walls": [
     { "id": "W1", "level": "L1", "from": [110, 110], "to": [10390, 110], "thickness": 220, "kind": "btct" },
     { "id": "W2", "level": "L1", "from": [10390, 110], "to": [10390, 8090], "thickness": 220, "kind": "btct" },
@@ -70,28 +69,28 @@
     {
       "id": "R1",
       "level": "L1",
-      "name": "Khách + bếp",
+      "name": "Living + cocina",
       "polygon": [[220, 220], [5945, 220], [5945, 7980], [220, 7980]],
       "use": "khach"
     },
     {
       "id": "R2",
       "level": "L1",
-      "name": "Ngủ 1",
+      "name": "Dormitorio 1",
       "polygon": [[6055, 220], [10280, 220], [10280, 3445], [6055, 3445]],
       "use": "ngu"
     },
     {
       "id": "R3",
       "level": "L1",
-      "name": "Ngủ 2",
+      "name": "Dormitorio 2",
       "polygon": [[6055, 3555], [10280, 3555], [10280, 6300], [6055, 6300]],
       "use": "ngu"
     },
     {
       "id": "R4",
       "level": "L1",
-      "name": "WC",
+      "name": "Baño",
       "polygon": [[6055, 6410], [10280, 6410], [10280, 7980], [6055, 7980]],
       "use": "wc"
     }
@@ -99,10 +98,10 @@
   "furniture": [],
   "styles": {
     "openings": {
-      "DC": { "label": "Cửa vào căn hộ", "kind": "door", "leaf": "1-canh", "material": "thép chống cháy" },
-      "DP": { "label": "Cửa phòng", "kind": "door", "leaf": "1-canh", "material": "gỗ công nghiệp" },
-      "DW": { "label": "Cửa WC", "kind": "door", "leaf": "1-canh", "material": "nhựa lõi thép" },
-      "SW": { "label": "Cửa sổ trượt", "kind": "window", "leaf": "truot", "material": "nhôm kính" }
+      "DC": { "label": "Puerta de acceso", "kind": "door", "leaf": "1-canh", "material": "acero cortafuego" },
+      "DP": { "label": "Puerta interior", "kind": "door", "leaf": "1-canh", "material": "madera aglomerada" },
+      "DW": { "label": "Puerta de baño", "kind": "door", "leaf": "1-canh", "material": "PVC con refuerzo de acero" },
+      "SW": { "label": "Ventana corredera", "kind": "window", "leaf": "truot", "material": "aluminio y vidrio" }
     }
   },
   "finishes": {}

@@ -6,7 +6,6 @@ import { activeRules, getRule, type RuleDef } from "./rules.js";
 import { geo01, geo02, geo03, geo04, geo05, geo06, geo07, geo08 } from "./evaluators-geo.js";
 import { std01, std02, std03, std04, std05, std06, std08, std09, std10, std11 } from "./evaluators-std.js";
 import { pln01, pln02, pln03, pln04, pln05, pln06, pln07 } from "./evaluators-pln.js";
-import { lbb01, lbb02, lbb04 } from "./evaluators-lbb.js";
 import { clAlt01, clCipAlt, clCipAnt, clCipCos, clCipDis, clCipFon, clCipPis, clVen01 } from "./evaluators-cl.js";
 
 type Evaluator = (p: Project, def: RuleDef) => Finding[];
@@ -37,9 +36,6 @@ const EVALUATORS: Record<string, Evaluator> = {
   "PLN-05": pln05,
   "PLN-06": pln06,
   "PLN-07": pln07,
-  "LBB-01": lbb01,
-  "LBB-02": lbb02,
-  "LBB-04": lbb04,
   "CL-ALT-01": clAlt01,
   "CL-VEN-01": clVen01,
   "CL-CIP-ANT": clCipAnt,
@@ -48,7 +44,7 @@ const EVALUATORS: Record<string, Evaluator> = {
   "CL-CIP-PIS": clCipPis,
   "CL-CIP-ALT": clCipAlt,
   "CL-CIP-DIS": clCipDis,
-  // LBB-03 được phát từ bên trong LBB-01/02/04 (gợi ý số đẹp đi kèm phát hiện xấu)
+  // CL-INDET lo emiten los evaluadores CL-* (regla de estado sin evaluador propio)
 };
 
 export function formatMessage(tpl: string, values: Record<string, string | number>): string {

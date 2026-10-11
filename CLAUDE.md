@@ -6,12 +6,12 @@
 - Sin remotos ni push salvo pedido explícito.
 
 ## Convenciones
-- UI, descripciones de herramientas MCP, mensajes y docs: español. Código, identificadores y commits: inglés. Legado VN oculto hasta E4: plantillas `hidden` en `TEMPLATES`, packs `std-vn`/`loban`/`pln`, diccionario web `vi` (solo `?lang=vi`). No lo expongas al usuario; las superficies nuevas van en español.
+- UI, descripciones de herramientas MCP, mensajes y docs: español. Código, identificadores y commits: inglés. El legado VN se borró en E4b (packs `std-vn`/`loban`/`pln`, región `vn`, VND, diccionario `vi`); la región por defecto es `cl`. Quedan claves de esquema (`quy_hoach`, `dien_tich`…), rótulos de planos exportados y comentarios en vietnamita: no los expongas en superficies nuevas.
 - Nombres: `@arquitecto/{core,server,web}`, bin `arquitecto-mcp`, servidor MCP `arquitecto`, env `ARQUITECTO_*`, archivos `arquitecto.project.json` y `.arquitecto/`.
 - No renombres «Atelier» en: `LICENSE`, URLs `github.com/lebac-svg/Atelier`, `docs/reference-en/`, `packages/core/assets/license-manifest.json`. Es atribución o referencia upstream.
 - `@arquitecto/core` es puro: sin imports `node:` ni DOM en `src/` (salvo tests). Disco, red y render van en `server`.
 - Reglas normativas = datos en `packages/core/rules/*.json`, cada regla con `source`. Las de Chile llevan `verified: false` hasta que el usuario las valide; nunca inventes un artículo o un valor.
-- Pack Chile (`rules/cl.json`, región `cl`): toda regla `CL-*` debe tener su fila en `docs/oguc-sources.md` con cita literal cotejada contra la fuente oficial (`cl.test.ts` exige la correspondencia). Si falta un dato, el evaluador emite `CL-INDET` (`info`); nunca pases en silencio. No reutilices `STD-*` para Chile si su semántica difiere de la OGUC: escribe el evaluador en `evaluators-cl.ts`.
+- Packs Chile (`rules/cl.json` OGUC + `rules/cl-cip.json` CIP declarado por el usuario, región `cl`): toda regla `CL-*` debe tener su fila en `docs/oguc-sources.md` con cita literal cotejada contra la fuente oficial (`cl.test.ts` exige la correspondencia). Si falta un dato, el evaluador emite `CL-INDET` (`info`); nunca pases en silencio. No reutilices `STD-*` para Chile si su semántica difiere de la OGUC: escribe el evaluador en `evaluators-cl.ts`. Presupuesto: `rules/don-gia-cl.json` en UF/m² con precios `null` («por completar»); nunca inventes precios ni totales. Los tests de evaluadores `STD-*` usan un pack de test (región `lib`) dentro de `rules.test.ts`; la fixture de tests es `casa-prueba-2p` (plantilla oculta).
 
 ## Dependencias y build
 - Instalar siempre con `pnpm install --frozen-lockfile --ignore-scripts`.

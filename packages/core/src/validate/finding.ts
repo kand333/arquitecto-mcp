@@ -2,7 +2,7 @@ import type { Severity } from "../issues.js";
 
 /** Kết quả thô từ evaluator — engine ghép với RuleDef thành Issue. */
 export type Finding = {
-  /** Mặc định = rule đang chạy; evaluator được phép phát rule khác (vd LBB-03). */
+  /** Mặc định = rule đang chạy; evaluator được phép phát rule khác (vd CL-INDET). */
   rule?: string;
   entities: string[];
   values?: Record<string, string | number>;

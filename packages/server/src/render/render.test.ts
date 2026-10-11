@@ -31,26 +31,26 @@ describe("renderer 2D — mặt bằng", () => {
     // ký hiệu cửa đi = cung mở (path A) trong layer CUA
     expect(svg).toMatch(/data-id="D1"[^>]*d="M[^"]+A/);
     // nhãn phòng HOA có dấu + diện tích dẫn xuất
-    expect(svg).toContain("PHÒNG KHÁCH");
+    expect(svg).toContain("LIVING");
     expect(svg).toContain("13.3m²");
     // dim: chuỗi trục 3780 và tổng 4000/16000
     expect(svg).toContain(">3780<");
     expect(svg).toContain(">16000<");
     // thang: mũi tên LÊN + số bậc
     expect(svg).toContain("LÊN 21 BẬC");
-    // khung tên + tỷ lệ; mọi rule đã verified nên KHÔNG còn dòng ⚠ tham khảo
+    // cajetín + escala; las reglas OGUC aún no están validadas → el plano DEBE llevar la nota ⚠
     expect(svg).toContain("TỶ LỆ 1:50");
-    expect(svg).toContain("MẶT BẰNG TẦNG 1");
-    expect(svg).not.toContain("⚠");
+    expect(svg).toContain("MẶT BẰNG PISO 1");
+    expect(svg).toContain("⚠");
     expect(svg).toContain("Bản vẽ concept");
   });
 
   it("tầng 2 vẽ thang từ dưới lên (không zigzag) + giếng trời là lỗ sàn", () => {
     const svg = render("L2");
-    expect(svg).toContain("MẶT BẰNG TẦNG 2");
+    expect(svg).toContain("MẶT BẰNG PISO 2");
     expect(svg).toContain(`data-id="ST1"`); // thang hiện ở mặt bằng tầng trên
     expect(svg).toContain(`data-id="SL2"`); // nét đứt lỗ sàn
-    expect(svg).toContain("NGỦ CHÍNH");
+    expect(svg).toContain("DORMITORIO PRINCIPAL");
     expect(svg).toContain("+3.600");
   });
 
