@@ -4,14 +4,14 @@
 
 ## Estado actual
 
-- **Etapa:** E2 en curso (auto mode con reglas del usuario: diff --stat antes de cada commit; pausa si un fix toca >3 archivos o `core/ops/apply.ts`, rompe un test o hay dudas de diseño).
+- **Etapa:** E2 completada (2026-10-11). Siguiente: E3, a la espera de la confirmación del usuario. Volver a modo de permisos manual antes de E3 (parte de E2 corrió en bypass/auto por decisión del usuario).
 - Al terminar cada etapa, actualiza esta sección. Registra la etapa completada, los commits y lo que quedó pendiente o falló.
 
 | Etapa | Estado | Commits / notas |
 |---|---|---|
 | E0 Línea base | completada | `6ec6023` import (tag `upstream-import`), `8a6e7a0` audit baseline; luego commit de `CONTEXTO.md` + `PROMPT-INICIAL.md` |
 | E1 Limpieza e identidad | completada | `2af29c8` limpieza, `3b41efb` renombre, `e41e7c1` docs, `836cdb3` identidad |
-| E2 Seguridad | en curso | A1 `7297c1a` + `79336ae` (scripts demo); A2 `fca078e`; M2+M3 `3de5489`; M1 `8e27aa0`; LOW (commit `fix(security): LOW …`); DEPS pendiente |
+| E2 Seguridad | completada | A1 `7297c1a` + `79336ae` (scripts demo); A2 `fca078e`; M2+M3 `3de5489`; M1 `8e27aa0`; LOW `6be626c`; DEPS (commit `fix(security): DEPS …`) |
 | E3 Español y región Chile | pendiente | — |
 | E4 Rule pack OGUC | pendiente | — |
 | E5 App completa | pendiente | — |
@@ -51,6 +51,7 @@
 - **M2 + M3** (2026-10-11, auto mode «GO» del usuario): ver `docs/security-tests/M2.md` y `M3.md`. M2: `readVariant` exige `^[a-z0-9-]+$` (cubre los 4 llamadores). M3: `openProject` confina con `safeJoin` y no reenvía el mensaje de `JSON.parse`. Un commit conjunto porque comparten archivos. Tests: 242 passed, 1 failed (Chromium), 17 skipped.
 - **M1** (2026-10-11): ver `docs/security-tests/M1.md`. Tres capas: `applyUnderlay` (add y update) solo acepta un nombre de archivo; `underlaySourcePath` con `realpath` confinado a `.arquitecto/underlay`; `underlay_import` solo dentro del proyecto y ≤20 MB. Se ajustó el test existente de `underlay_import` (importaba desde fuera del proyecto). Tests: 245 passed, 1 failed (Chromium), 17 skipped.
 - **LOW** (2026-10-11): ver `docs/security-tests/LOW.md`. Estáticos con `safeJoin` y `decodeURIComponent` protegido (400/403); WS `maxPayload` 2 MB; `renderTempPng` borra el `mkdtemp` en `finally`. Tests: 248 passed, 1 failed (Chromium), 17 skipped.
+- **DEPS** (2026-10-11): ver `docs/security-tests/DEPS.md`. SDK MCP 1.29.0→1.32.1, vitest 3.2.7→4.1.11 (mayor mínima que elimina `tinypool`), hono 4.12.29→4.13.13 y @hono/node-server 2.0.8→2.1.4 (parches dentro de rango, fuera del texto original del ítem). `pnpm audit`: 37 → 0. Sin cambios en config ni tests; 248 passed, 1 failed (Chromium), 17 skipped.- **Pendiente para E5:** ejecutar `live-e2e.test.ts`, `cli/smoke.mts` y los scripts demo (actualizados en A1, no ejecutados por falta de Chromium y del editor compilado).
 
 ## Origen y objetivo
 

@@ -15,7 +15,7 @@
 ## Dependencias y build
 - Instalar siempre con `pnpm install --frozen-lockfile --ignore-scripts`.
 - `packages/cli/web/` es un bundle compilado versionado: no se edita a mano; lo regenera `pnpm build:cli`.
-- `SECURITY-AUDIT-BASE.md` es la línea base de `pnpm audit` del upstream; no lo sobrescribas.
+- `SECURITY-AUDIT-BASE.md` es la línea base de `pnpm audit` del upstream; no lo sobrescribas. Desde E2 (DEPS) `pnpm audit` está limpio: una dependencia nueva o actualizada debe mantenerlo.
 
 ## Tests
 - `pnpm typecheck` y `pnpm test`.

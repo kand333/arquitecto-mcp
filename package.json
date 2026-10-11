@@ -20,9 +20,9 @@
     "build:cli": "pnpm build:web && pnpm --filter arquitecto-mcp build"
   },
   "devDependencies": {
+    "tsx": "^4.19.0",
     "typescript": "^5.9.0",
-    "vitest": "^3.2.0",
-    "tsx": "^4.19.0"
+    "vitest": "^4.1.11"
   },
   "description": "Arquitecto IA local vía MCP: levantamiento de propiedades y diseño de casas, editor web 2D/3D, normas de Chile (OGUC), exportes PDF/DXF/IFC/glTF. Derivado de Atelier (MIT).",
   "license": "MIT"
