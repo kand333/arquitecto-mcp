@@ -283,3 +283,18 @@ describe("M1 — underlay_import confinado", () => {
     expect(textOf(r2)).toMatch(/20 MB/);
   });
 });
+
+// ── LOW: los temporales de PNG se borran (docs/security-tests/LOW.md) ──
+
+describe("LOW — assets_search no deja carpetas temporales", () => {
+  it("con o sin Chromium, el mkdtemp de la lámina PNG se borra", async () => {
+    const { readdirSync } = await import("node:fs");
+    const { tmpdir: td } = await import("node:os");
+    const count = (): number => readdirSync(td()).filter((f) => f.startsWith("arquitecto-assets-")).length;
+    const { client } = await connect();
+    await client.callTool({ name: "project_new", arguments: { name: "Nhà anh Ba", template: "nha-ong-4x16-2t" } });
+    const before = count();
+    await client.callTool({ name: "assets_search", arguments: {} });
+    expect(count()).toBe(before);
+  });
+});

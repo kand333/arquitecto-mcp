@@ -11,7 +11,7 @@
 |---|---|---|
 | E0 Línea base | completada | `6ec6023` import (tag `upstream-import`), `8a6e7a0` audit baseline; luego commit de `CONTEXTO.md` + `PROMPT-INICIAL.md` |
 | E1 Limpieza e identidad | completada | `2af29c8` limpieza, `3b41efb` renombre, `e41e7c1` docs, `836cdb3` identidad |
-| E2 Seguridad | en curso | A1 `7297c1a` + `79336ae` (scripts demo); A2 `fca078e`; M2+M3 `3de5489`; M1 (commit `fix(security): M1 …`); LOW, DEPS pendientes |
+| E2 Seguridad | en curso | A1 `7297c1a` + `79336ae` (scripts demo); A2 `fca078e`; M2+M3 `3de5489`; M1 `8e27aa0`; LOW (commit `fix(security): LOW …`); DEPS pendiente |
 | E3 Español y región Chile | pendiente | — |
 | E4 Rule pack OGUC | pendiente | — |
 | E5 App completa | pendiente | — |
@@ -50,6 +50,7 @@
 - **A2** (2026-10-11): ver `docs/security-tests/A2.md`. Decisiones del usuario: regex `^[A-Za-z0-9_-]{1,32}$` + lista negra `__proto__`/`constructor`/`prototype`; al cargar de disco (`openProject`, `openVariant`) se validan todos los IDs; `safeJoin` en todos los sinks de exporte; un commit. Desviación documentada: se recorta `meta.id` en `newProject` y no `slugify` (que también nombra variantes; recortarlo podía pisar variantes). Tests: 239 passed, 1 failed (Chromium), 17 skipped. La sesión de A2 corrió en bypass permissions por decisión del usuario («continúa, termina»).
 - **M2 + M3** (2026-10-11, auto mode «GO» del usuario): ver `docs/security-tests/M2.md` y `M3.md`. M2: `readVariant` exige `^[a-z0-9-]+$` (cubre los 4 llamadores). M3: `openProject` confina con `safeJoin` y no reenvía el mensaje de `JSON.parse`. Un commit conjunto porque comparten archivos. Tests: 242 passed, 1 failed (Chromium), 17 skipped.
 - **M1** (2026-10-11): ver `docs/security-tests/M1.md`. Tres capas: `applyUnderlay` (add y update) solo acepta un nombre de archivo; `underlaySourcePath` con `realpath` confinado a `.arquitecto/underlay`; `underlay_import` solo dentro del proyecto y ≤20 MB. Se ajustó el test existente de `underlay_import` (importaba desde fuera del proyecto). Tests: 245 passed, 1 failed (Chromium), 17 skipped.
+- **LOW** (2026-10-11): ver `docs/security-tests/LOW.md`. Estáticos con `safeJoin` y `decodeURIComponent` protegido (400/403); WS `maxPayload` 2 MB; `renderTempPng` borra el `mkdtemp` en `finally`. Tests: 248 passed, 1 failed (Chromium), 17 skipped.
 
 ## Origen y objetivo
 

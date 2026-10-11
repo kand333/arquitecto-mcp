@@ -1,4 +1,4 @@
-import { mkdtempSync } from "node:fs";
+import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { get as httpGet } from "node:http";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -411,5 +411,35 @@ describe("A1 — editor exige token, Origin y Host locales", () => {
       if (prev == null) delete process.env.ARQUITECTO_HOST;
       else process.env.ARQUITECTO_HOST = prev;
     }
+  });
+});
+
+// ── LOW: estáticos y tamaño de mensaje WS (docs/security-tests/LOW.md) ──
+
+describe("LOW — estáticos confinados a dist y maxPayload del WS", () => {
+  it("una carpeta hermana con el mismo prefijo que dist → 403; URL mal codificada → 400", async () => {
+    const root = mkdtempSync(path.join(tmpdir(), "arquitecto-low-"));
+    const dist = path.join(root, "dist");
+    mkdirSync(dist);
+    writeFileSync(path.join(dist, "index.html"), "<!doctype html><script></script>", "utf8");
+    mkdirSync(path.join(root, "dist-secreto"));
+    writeFileSync(path.join(root, "dist-secreto", "x.txt"), "SECRETO", "utf8");
+    const { url } = await boot({ webDist: dist });
+    expect((await fetch(`${url}/index.html`)).status).toBe(200);
+    const leak = await fetch(`${url}/..%2Fdist-secreto%2Fx.txt`);
+    expect(leak.status).toBe(403);
+    expect((await fetch(`${url}/%E0%A4%A`)).status).toBe(400);
+  });
+
+  it("WS: un mensaje de más de 2 MB cierra la conexión", async () => {
+    const { url, t } = await boot();
+    const c = await TestClient.connect(url, t);
+    const code = await new Promise<number>((res) => {
+      c.sock.on("close", (k) => res(k));
+      setTimeout(() => res(-1), 2000);
+      c.sock.send("x".repeat(2 * 1024 * 1024 + 1));
+    });
+    // ws cierra con 1009; si el cliente aún está enviando, solo ve el corte (1006). -1 = siguió abierta.
+    expect([1009, 1006]).toContain(code);
   });
 });

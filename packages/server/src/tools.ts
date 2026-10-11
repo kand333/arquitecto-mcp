@@ -1,4 +1,5 @@
-import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
@@ -41,6 +42,18 @@ type ToolResult = {
 
 /** M1: tope de tamaño para underlay_import (se copia a .arquitecto/underlay y se incrusta como data URI). */
 const UNDERLAY_MAX_BYTES = 20 * 1024 * 1024;
+
+/** LOW: PNG vía Chromium en una carpeta temporal que se borra siempre (también si el render falla). */
+async function renderTempPng(prefix: string, render: (fp: string) => Promise<void>): Promise<string> {
+  const dir = mkdtempSync(path.join(tmpdir(), prefix));
+  try {
+    const fp = path.join(dir, "out.png");
+    await render(fp);
+    return readFileSync(fp).toString("base64");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
 
 const text = (t: string): ToolResult => ({ content: [{ type: "text", text: t }] });
 const fail = (e: unknown): ToolResult => ({
@@ -370,11 +383,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
             args.query || args.category ? `KẾT QUẢ: ${args.query ?? args.category}` : "CATALOG NỘI THẤT — ARQUITECTO",
           );
           const { svgToPng } = await import("./render/png.js");
-          const { mkdtempSync } = await import("node:fs");
-          const os = await import("node:os");
-          const fp = path.join(mkdtempSync(path.join(os.tmpdir(), "arquitecto-assets-")), "sheet.png");
-          await svgToPng(svg, fp);
-          const png = readFileSync(fp).toString("base64");
+          const png = await renderTempPng("arquitecto-assets-", (fp) => svgToPng(svg, fp));
           return {
             content: [
               { type: "image" as const, data: png, mimeType: "image/png" },
@@ -515,11 +524,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
         try {
           const html = compareHtml(a, b, level, store.current.meta.name);
           const { htmlToPng } = await import("./render/png.js");
-          const { mkdtempSync } = await import("node:fs");
-          const os = await import("node:os");
-          const fp = path.join(mkdtempSync(path.join(os.tmpdir(), "arquitecto-sosanh-")), "so-sanh.png");
-          await htmlToPng(html, fp);
-          const png = readFileSync(fp).toString("base64");
+          const png = await renderTempPng("arquitecto-sosanh-", (fp) => htmlToPng(html, fp));
           return {
             content: [
               { type: "image" as const, data: png, mimeType: "image/png" },

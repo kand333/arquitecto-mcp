@@ -15,6 +15,7 @@ import {
 import { compareHtml, type VariantSide } from "./compare.js";
 import { loadUnderlay } from "./import/underlay.js";
 import { renderPlanSvg } from "./render/render.js";
+import { safeJoin } from "./safe-path.js";
 import type { ProjectStore, StoreEvent } from "./store.js";
 
 /** dist của web editor — build bằng `pnpm --filter @arquitecto/web build`. */
@@ -144,6 +145,7 @@ export class LiveServer {
     this.wss = new WebSocketServer({
       server: this.http,
       path: "/ws",
+      maxPayload: 2 * 1024 * 1024, // LOW: un mensaje mayor cierra con 1009 (default de ws: 100 MB)
       // A1: Host local (anti DNS-rebinding) y Origin del propio editor (anti CSWSH); sin Origin = cliente no-browser
       verifyClient: (info: { origin?: string; req: IncomingMessage }, cb: (ok: boolean, code?: number) => void) =>
         cb(this.isLocalHost(info.req.headers.host) && (info.origin == null || this.isLocalOrigin(info.origin)), 403),
@@ -368,10 +370,19 @@ export class LiveServer {
     app.get("/*", (c) => {
       const dist = this.opts.webDist ?? DEFAULT_WEB_DIST;
       if (!existsSync(path.join(dist, "index.html"))) return c.html(NO_DIST_PAGE);
-      let rel = decodeURIComponent(new URL(c.req.url).pathname);
+      let rel: string;
+      try {
+        rel = decodeURIComponent(new URL(c.req.url).pathname);
+      } catch {
+        return c.text("URL inválida.", 400); // LOW: %-encoding mal formado
+      }
       if (rel === "/") rel = "/index.html";
-      let file = path.normalize(path.join(dist, rel));
-      if (!file.startsWith(path.normalize(dist))) return c.text("Ngoài phạm vi.", 403);
+      let file: string;
+      try {
+        file = safeJoin(dist, rel.replace(/^\/+/, "")); // LOW: dentro de dist con separador (no «dist-otro/»)
+      } catch {
+        return c.text("Ngoài phạm vi.", 403);
+      }
       if (!existsSync(file) || !statSync(file).isFile()) {
         if (path.extname(rel) !== "") return c.text("Không có file này.", 404);
         file = path.join(dist, "index.html"); // đường dẫn không đuôi → SPA
