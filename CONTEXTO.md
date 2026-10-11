@@ -4,7 +4,7 @@
 
 ## Estado actual
 
-- **Etapa:** E3 completada (2026-10-11). Siguiente: E4, a la espera de la confirmación del usuario. E2 y E3 corrieron en auto mode por decisión del usuario; volver a modo manual antes de E4.
+- **Etapa:** E4 (rediseñada, MVP OGUC) completada (2026-10-11). Siguiente: validación de reglas por el usuario (`docs/oguc-sources.md`) y E4b, a la espera de confirmación. Volver a modo de permisos manual.
 - Al terminar cada etapa, actualiza esta sección. Registra la etapa completada, los commits y lo que quedó pendiente o falló.
 
 | Etapa | Estado | Commits / notas |
@@ -13,7 +13,8 @@
 | E1 Limpieza e identidad | completada | `2af29c8` limpieza, `3b41efb` renombre, `e41e7c1` docs, `836cdb3` identidad |
 | E2 Seguridad | completada | A1 `7297c1a` + `79336ae` (scripts demo); A2 `fca078e`; M2+M3 `3de5489`; M1 `8e27aa0`; LOW `6be626c`; DEPS `fc4c906`; test flaky `84b7afa` |
 | E3 Español y región Chile | completada | `d2993eb` plantillas/región, `b058ec3` tools/store/live/compare, `eac5d2b` core + plantillas traducidas, `935a7c4` web; cierre en commit `docs: record E3…` |
-| E4 Rule pack OGUC | pendiente | — |
+| E4 Rule pack OGUC | completada (MVP) | `ac5ebba` pack + evaluadores + docs + tests, `ca1246d` región cl por defecto + aviso en validate; cierre en commit `docs: record E4…` |
+| E4b Limpieza VN + presupuesto | pendiente | nueva, sale de E4 |
 | E5 App completa | pendiente | — |
 | E6 Registro y prueba final | pendiente | — |
 
@@ -76,6 +77,31 @@
   - Un detector de vietnamita incompleto (sin `à è ì ò ù ã õ â ê ô`), ampliado después; encontró 2 mensajes que se habían escapado.
   - Un `sed` que rompió una línea de test.
   - Un regex que escribió en `data-i18n-title` en vez de en `title`: `index.html` se restauró y se regeneró.
+
+### Resultado E4
+
+- **Decisiones del usuario:** E4 = pack OGUC MVP + región `cl`; lo VN y el presupuesto pasan a E4b; indeterminado = regla `info` `CL-INDET` (sin tocar el motor); MVP = 2 reglas activas + 1 planned.
+- **Fuente oficial:** MINVU, D.S. N°47/1992 OGUC, texto actualizado por D.S. N°5 (D.O. 22-05-2026). Las citas se cotejaron literalmente contra el PDF oficial (extracción con `zlib`, sin dependencias nuevas). LeyChile no cargó sin JavaScript. Detalle en `docs/oguc-sources.md`.
+- **Corrección importante:** la altura mínima del 4.1.1 es **2,30 m**; el valor que el asistente recordaba (2,35 m) era erróneo.
+- **Pack `cl-oguc`:**
+  - `CL-ALT-01`: 4.1.1, altura ≥ 2300 mm en habitables.
+  - `CL-VEN-01`: 4.1.2, ventana al exterior en habitables.
+  - `CL-VEN-02`: 4.1.2, 1,5 m frente a la ventana de dormitorios; `planned`, no corre por falta de datos de vecinos.
+  - `CL-INDET` (`info`).
+  - Todas `verified:false` hasta que el usuario las valide.
+- **Clasificación OGUC 4.1.1:** habitables `ngu`, `khach`, `lam-viec`; ambiguos `bep-an`, `tho` → indeterminado.
+- **Pendientes sin fuente verificada (no codificados):** escaleras, puertas/accesibilidad, distanciamientos/rasantes/coeficientes (además dependen del plan regulador comunal) y ductos (4.1.3, no modelados).
+- **Integración:** las plantillas visibles y los proyectos en blanco usan la región `cl`. `validate` agrega «⚠ Reglas sin validación documental…». Sin `currency` en `cl`: el presupuesto da solo cantidades hasta E4b.
+- **Código compartido tocado:** solo `export` de `isOutdoorPoint` y el registro en `rules.ts`/`engine.ts`. Los packs VN, UK y genérico quedan sin cambios.
+- **Commits:** `ac5ebba` (pack, evaluadores, docs, tests) y `ca1246d` (región por defecto + aviso en validate).
+- **Tests:** `cl.test.ts` con 13 casos (correspondencia reglas↔docs, DoD de región, positivo/negativo/indeterminado) + 1 test MCP. Suite completa **281/281** (con Chromium y web compilado), typecheck en verde.
+- **Limitaciones:**
+  - La altura sale de piso − losa superior: no modela «obra terminada» ni las excepciones (vigas, techumbre inclinada); en el último piso usa la altura del piso.
+  - No se distinguen ventanas fijas selladas.
+  - El resultado no certifica cumplimiento legal.
+- **Incidencias propias:**
+  - Un archivo `NUL` vacío creado por error en la raíz del repo por un script de extracción; detectado en `git status` y borrado antes del commit.
+  - Se usó una sonda temporal `_probe.test.ts`, borrada antes del commit.
 
 ## Origen y objetivo
 
@@ -232,13 +258,18 @@ Una etapa por sesión. Se para al final de cada etapa, se actualiza este archivo
 - **Presupuesto:** el motor se conserva. `rules/don-gia.json` pasa a una tabla CLP/UF con valores marcados «por completar»; los precios los da el usuario y no se inventan.
 - **Feynman:** «reglas como datos». El motor es una balanza y el rule pack son las pesas: se cambian las pesas sin tocar la balanza.
 
-### E4 · Rule pack Chile (OGUC)
+### E4 · Rule pack Chile (OGUC) — rediseñado por el usuario el 2026-10-11
 
-- **Heredado de E3 (decisión «ocultar en E3, borrar en E4»):**
-  - Crear la región `cl` (`registerRegion`) y hacerla la región de las plantillas visibles y de los proyectos nuevos (hoy usan `generic`).
-  - Migrar los tests que usan las fixtures VN (`nha-ong-4x16` y otras: ~78 usos en 17 archivos) a fixtures chilenas, y luego borrar `std-vn.json`, `loban.json`, `evaluators-lbb.ts`, `phong_thuy`, las plantillas ocultas y el diccionario `vi` del web.
-  - Decidir si `pln.json` (distanciamientos/densidad desde el brief) se reutiliza para Chile o se reemplaza por reglas OGUC.
-  - Presupuesto: tabla CLP/UF con valores «por completar» (los da el usuario) ligada a la región `cl`, reemplazando `formatVnd`.
+Brief del usuario: MVP reutilizando la arquitectura existente, 3–5 candidatas pero solo las respaldables documentalmente y evaluables con los datos del modelo, estado indeterminado cuando falten datos, sin tocar otros packs. Plan aprobado: `C:\Users\cavbs\.claude\plans\foamy-wishing-peach.md`. Resultado en «Resultado E4».
+
+### E4b · Limpieza del legado VN + presupuesto (nueva; sale de E4 por decisión del usuario)
+
+- Migrar los tests que usan las fixtures VN (`nha-ong-4x16` y otras: ~78 usos en 17 archivos) a fixtures chilenas, y luego borrar `std-vn.json`, `loban.json`, `evaluators-lbb.ts`, `phong_thuy`, las plantillas ocultas y el diccionario `vi` del web.
+- Decidir si `pln.json` (distanciamientos/densidad desde el brief) se reutiliza para Chile o se reemplaza por reglas OGUC.
+- Presupuesto: tabla CLP/UF con valores «por completar» (los da el usuario), con `currency` en la región `cl`, reemplazando `formatVnd`.
+
+### Plan original de E4 (referencia)
+
 - **Investigar el texto oficial** (bcn.cl / minvu.gob.cl):
   - Habitabilidad: alturas mínimas, iluminación y ventilación.
   - Escaleras: huella, contrahuella y ancho.

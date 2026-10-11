@@ -11,6 +11,7 @@
 - No renombres «Atelier» en: `LICENSE`, URLs `github.com/lebac-svg/Atelier`, `docs/reference-en/`, `packages/core/assets/license-manifest.json`. Es atribución o referencia upstream.
 - `@arquitecto/core` es puro: sin imports `node:` ni DOM en `src/` (salvo tests). Disco, red y render van en `server`.
 - Reglas normativas = datos en `packages/core/rules/*.json`, cada regla con `source`. Las de Chile llevan `verified: false` hasta que el usuario las valide; nunca inventes un artículo o un valor.
+- Pack Chile (`rules/cl.json`, región `cl`): toda regla `CL-*` debe tener su fila en `docs/oguc-sources.md` con cita literal cotejada contra la fuente oficial (`cl.test.ts` exige la correspondencia). Si falta un dato, el evaluador emite `CL-INDET` (`info`); nunca pases en silencio. No reutilices `STD-*` para Chile si su semántica difiere de la OGUC: escribe el evaluador en `evaluators-cl.ts`.
 
 ## Dependencias y build
 - Instalar siempre con `pnpm install --frozen-lockfile --ignore-scripts`.
