@@ -75,7 +75,8 @@ mkdirSync(DIR, { recursive: true });
 
 const store = new ProjectStore(DIR);
 const live = new LiveServer(store, { lockReleaseMs: HEADLESS ? 400 : 5000 });
-const url = await live.start();
+await live.start();
+const url = live.editorUrl()!; // A1: URL con token del propietario
 
 const browser = await chromium.launch({ headless: HEADLESS, args: HEADLESS ? [] : ["--window-size=1500,960"] });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });

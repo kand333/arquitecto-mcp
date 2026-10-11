@@ -52,7 +52,8 @@ writeFileSync(path.join(DIR, "arquitecto.project.json"), JSON.stringify(đấtTr
 const store = new ProjectStore(DIR);
 store.openProject();
 const live = new LiveServer(store, { lockReleaseMs: 5000 });
-const url = await live.start();
+await live.start();
+const url = live.editorUrl()!; // A1: URL con token del propietario
 
 const browser = await chromium.launch({ headless: true });
 const context = await browser.newContext({

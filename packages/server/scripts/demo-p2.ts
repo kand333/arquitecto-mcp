@@ -91,7 +91,8 @@ mkdirSync(DIR, { recursive: true });
 
 const store = new ProjectStore(DIR);
 const live = new LiveServer(store);
-const url = await live.start();
+await live.start();
+const url = live.editorUrl()!; // A1: URL con token del propietario
 console.log(`Editor: ${url}${HEADLESS ? "" : " — đang mở trình duyệt…"}\n`);
 if (!HEADLESS) openInBrowser(url);
 

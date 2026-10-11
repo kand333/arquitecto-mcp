@@ -11,7 +11,7 @@
 |---|---|---|
 | E0 Línea base | completada | `6ec6023` import (tag `upstream-import`), `8a6e7a0` audit baseline; luego commit de `CONTEXTO.md` + `PROMPT-INICIAL.md` |
 | E1 Limpieza e identidad | completada | `2af29c8` limpieza, `3b41efb` renombre, `e41e7c1` docs, `836cdb3` identidad |
-| E2 Seguridad | en curso | A1 hecho (commit `fix(security): A1 …`); A2, M1, M2, M3, LOW, DEPS pendientes |
+| E2 Seguridad | en curso | A1 `7297c1a` (+ scripts demo con token); A2, M1, M2, M3, LOW, DEPS pendientes |
 | E3 Español y región Chile | pendiente | — |
 | E4 Rule pack OGUC | pendiente | — |
 | E5 App completa | pendiente | — |
@@ -46,7 +46,7 @@
 
 ### Resultado E2
 
-- **A1** (2026-10-11): ver `docs/security-tests/A1.md`. Decisiones del usuario: token del propietario en la query `?token=`, verificación de Host en todo HTTP y en el WS, un solo commit. Escucha fija en `127.0.0.1`; se eliminó `ARQUITECTO_HOST`, así que el link compartido solo funciona en el mismo equipo. Tests: 231 passed, 1 failed (Chromium), 17 skipped. `live-e2e` y `smoke.mts` se actualizaron sin poder ejecutarlos (E5).
+- **A1** (2026-10-11): ver `docs/security-tests/A1.md`. Decisiones del usuario: token del propietario en la query `?token=`, verificación de Host en todo HTTP y en el WS, un solo commit. Escucha fija en `127.0.0.1`; se eliminó `ARQUITECTO_HOST`, así que el link compartido solo funciona en el mismo equipo. Tests: 231 passed, 1 failed (Chromium), 17 skipped. `live-e2e` y `smoke.mts` se actualizaron sin poder ejecutarlos (E5). Seguimiento: los 5 scripts de `packages/server/scripts/` abren `live.editorUrl()`; verificados con `tsc --strict` desde `packages/server` (no están en el `tsconfig`), sin ejecutar (requieren Chromium).
 
 ## Origen y objetivo
 
