@@ -23,15 +23,21 @@ export type StoreEvent =
   | { kind: "applied"; revision: number; ops: Op[]; origin: OpOrigin; note?: string; summary: string; issues: Issue[] }
   | { kind: "project"; reason: "created" | "opened" }; // model thay mới toàn bộ → client cần snapshot
 
-/** Thư viện template (P8 — doc 12): mỗi typology một mẫu có fixture + golden test. */
-export const TEMPLATES: Record<string, { label: string; load: () => Project }> = {
-  "nha-ong-4x16-2t": { label: "Nhà ống 4×16m, 2 tầng, 3PN", load: loadNhaOng4x16 },
-  "biet-thu-doc-2t": { label: "Biệt thự mái dốc — lô góc đất dốc, 2 tầng", load: loadBietThuDoc },
-  "nha-cap-4": { label: "Nhà cấp 4 — 2 phòng ngủ, mái tôn, một tầng", load: loadNhaCap4 },
-  "nha-vuon": { label: "Nhà vườn — 1 tầng mái ngói, lô lớn mật độ thấp", load: loadNhaVuon },
-  "can-ho": { label: "Căn hộ 2PN — cải tạo trong khung có sẵn (không lô đất)", load: loadCanHo },
-  "detached-uk": { label: "UK detached — 3 bed gable roof (region uk, Approved Documents)", load: loadDetachedUk },
+/**
+ * Plantillas (P8). `hidden`: legado vietnamita/UK que solo usan los tests — no se
+ * ofrece al usuario y se elimina en E4, cuando exista la región "cl".
+ */
+export const TEMPLATES: Record<string, { label: string; load: () => Project; hidden?: true }> = {
+  "casa-1-piso": { label: "Casa de 1 piso — 2 dormitorios, techo de planchas", load: loadNhaCap4 },
+  "casa-2-pisos": { label: "Casa de 2 pisos — techo inclinado, sitio en esquina con pendiente", load: loadBietThuDoc },
+  "depto-2d": { label: "Departamento 2 dormitorios — remodelación dentro de una estructura existente", load: loadCanHo },
+  "nha-ong-4x16-2t": { label: "Nhà ống 4×16m, 2 tầng, 3PN", load: loadNhaOng4x16, hidden: true },
+  "nha-vuon": { label: "Nhà vườn — 1 tầng mái ngói", load: loadNhaVuon, hidden: true },
+  "detached-uk": { label: "UK detached — 3 bed gable roof", load: loadDetachedUk, hidden: true },
 };
+
+/** Plantillas que se ofrecen al usuario (sin el legado oculto). */
+export const VISIBLE_TEMPLATES = Object.keys(TEMPLATES).filter((k) => !TEMPLATES[k]!.hidden);
 
 /**
  * Model store: một dự án tại một thư mục (doc 03).
@@ -103,12 +109,14 @@ export class ProjectStore {
     if (template) {
       const t = TEMPLATES[template];
       if (!t) {
-        throw new Error(`Không có template "${template}" — hiện có: ${Object.keys(TEMPLATES).join(", ")}.`);
+        throw new Error(`No existe la plantilla "${template}". Disponibles: ${VISIBLE_TEMPLATES.join(", ")}.`);
       }
       p = t.load();
     } else {
       p = blankProject(brief);
     }
+    // E3: fuera del legado oculto no se valida con normas vietnamitas — pack de muestra "generic" hasta la región "cl" (E4)
+    if (!template || !TEMPLATES[template]!.hidden) p.config = { ...p.config, region: p.config?.region ?? "generic" };
     // A2: meta.id es un ID (≤32); se recorta aquí y no en slugify, que también nombra variantes
     p.meta = { ...p.meta, id: slugify(name).slice(0, 32).replace(/-+$/, "") || "du-an", name, revision: 0 };
     if (brief) p.brief = structuredClone(brief); // brief từ pha A phỏng vấn — nguồn đối chiếu mọi pha sau

@@ -20,7 +20,7 @@ import { parseDxf } from "./import/dxf.js";
 import { imageSize } from "./import/image-size.js";
 import { loadUnderlay, placedPolylines, underlayDir } from "./import/underlay.js";
 import { safeJoin } from "./safe-path.js";
-import { ProjectStore, TEMPLATES } from "./store.js";
+import { ProjectStore, VISIBLE_TEMPLATES } from "./store.js";
 
 const ENTITY = z.enum([
   "level", "wall", "opening", "slab", "roof", "stair", "room", "furniture", "axis", "style", "finish", "underlay",
@@ -85,14 +85,14 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
   server.registerTool(
     "project_new",
     {
-      title: "Tạo dự án nhà mới",
+      title: "Crear un proyecto nuevo",
       description:
-        `Tạo model mới tại ${store.filePath}. Nếu có template thì khởi đầu từ nhà mẫu (nhanh và chất hơn vẽ từ giấy trắng) rồi biến đổi dần bằng apply_ops. Template hiện có: ${Object.keys(TEMPLATES).join(", ")}. siteBoundary = polygon ranh đất mm [[x,y],...] nếu biết ngay từ đầu.`,
+        `Crea el modelo en ${store.filePath}. Con plantilla, parte de una casa tipo (más rápido y mejor que desde cero) y luego se ajusta con apply_ops. Plantillas disponibles: ${VISIBLE_TEMPLATES.join(", ")}. siteBoundary = polígono del deslinde del terreno en mm [[x,y],...] si ya se conoce.`,
       inputSchema: {
-        name: z.string().min(1).describe("Tên dự án, vd 'Nhà anh Ba'"),
-        template: z.string().optional().describe("ID template khởi đầu (bỏ trống = dự án trống)"),
+        name: z.string().min(1).describe("Nombre del proyecto, p. ej. 'Casa Pérez'"),
+        template: z.string().optional().describe("ID de la plantilla inicial (vacío = proyecto en blanco)"),
         siteBoundary: z.array(z.tuple([z.number().int(), z.number().int()])).min(3).optional(),
-        brief: z.record(z.unknown()).optional().describe("Brief pha A (schema xem docs/02): dat, gia_dinh, nhu_cau, ngan_sach, gu, uu_tien, phong_thuy.lo_ban"),
+        brief: z.record(z.unknown()).optional().describe("Brief de la fase A: dat (terreno), gia_dinh (familia), nhu_cau (necesidades), ngan_sach (presupuesto), gu (estilo), uu_tien (prioridades)"),
       },
     },
     (args) => {
