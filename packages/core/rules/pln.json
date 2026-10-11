@@ -1,0 +1,57 @@
+{
+  "pack": { "id": "pln", "title": "Quy hoạch địa phương (VN)", "kind": "planning", "region": "vn" },
+  "ghi_chu": "PLN — quy hoạch địa phương (doc 07, backlog doc 10 → 13/07/2026). Params KHÔNG hardcode: lấy từ brief.dat.quy_hoach do người dùng khai ở pha A (Atelier không tự tra quy hoạch — ngoài phạm vi). Không khai mục nào thì rule đó không chạy. Thay thế STD-12 cũ và phần khoảng lùi từng ghép tạm trong GEO-08.",
+  "rules": [
+    {
+      "id": "PLN-01",
+      "title": "Khoảng lùi ranh TRƯỚC",
+      "severity": "error",
+      "source": { "vanBan": "Quy hoạch địa phương — người dùng khai trong brief (pha A)", "verified": true },
+      "message": "Tường {wall} cách ranh trước {dist}mm — phạm khoảng lùi trước {lui}mm khai trong brief."
+    },
+    {
+      "id": "PLN-02",
+      "title": "Khoảng lùi ranh SAU",
+      "severity": "error",
+      "source": { "vanBan": "Quy hoạch địa phương — người dùng khai trong brief (pha A)", "verified": true },
+      "message": "Tường {wall} cách ranh sau {dist}mm — phạm khoảng lùi sau {lui}mm khai trong brief."
+    },
+    {
+      "id": "PLN-03",
+      "title": "Mật độ xây dựng tối đa",
+      "severity": "error",
+      "source": { "vanBan": "Quy hoạch địa phương — người dùng khai trong brief (pha A)", "verified": true },
+      "message": "Mật độ xây dựng {pct}% vượt tối đa {max}% khai trong brief."
+    },
+    {
+      "id": "PLN-04",
+      "title": "Số tầng tối đa",
+      "severity": "error",
+      "source": { "vanBan": "Quy hoạch địa phương — người dùng khai trong brief (pha A)", "verified": true },
+      "message": "Số tầng {n} vượt tối đa {max} khai trong brief."
+    },
+    {
+      "id": "PLN-05",
+      "title": "Chiều cao công trình tối đa",
+      "severity": "error",
+      "source": { "vanBan": "Quy hoạch địa phương — người dùng khai trong brief (pha A)", "verified": true },
+      "message": "Đỉnh công trình +{top}mm vượt chiều cao tối đa {max}mm khai trong brief."
+    },
+    {
+      "id": "PLN-06",
+      "title": "Ô văng/mái vươn ra ngoài ranh mặt thoáng tối đa",
+      "severity": "error",
+      "source": { "vanBan": "Quy hoạch địa phương — người dùng khai trong brief (pha A)", "verified": true },
+      "message": "{slab} vươn ra ngoài ranh {vuon}mm — quá mức ô văng tối đa {max}mm khai trong brief.",
+      "note": "Cạnh mặt thoáng = site.front, hoặc mọi cạnh street/alley khi khai site.edges (P7). Ô văng slab lẫn đuôi mái dốc đều tính."
+    },
+    {
+      "id": "PLN-07",
+      "title": "Khoảng lùi theo TỪNG CẠNH ranh (đa mặt tiền)",
+      "severity": "error",
+      "source": { "vanBan": "Quy hoạch địa phương — người dùng khai setback từng cạnh trong site.edges (P7)", "verified": true },
+      "message": "Tường {wall} cách cạnh ranh #{edge} {dist}mm — phạm khoảng lùi {lui}mm khai cho cạnh này.",
+      "note": "Chỉ chạy khi site.edges[i].setback được khai — lô góc/biệt thự lùi nhiều phía. PLN-01/02 (trước/sau) vẫn hoạt động độc lập cho dự án chưa khai edges."
+    }
+  ]
+}

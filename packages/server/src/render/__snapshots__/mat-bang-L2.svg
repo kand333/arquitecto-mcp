@@ -1,0 +1,364 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 297" width="420mm" height="297mm" data-tf-scale="50" data-tf-rotated="1" data-tf-ox="50" data-tf-oy="108.5" data-tf-min-x="0" data-tf-min-y="0" data-tf-max-x="4000" data-tf-max-y="16000">
+<style>
+text{font-family:'Be Vietnam Pro','Segoe UI',Arial,sans-serif;fill:#000;stroke:none}
+.b{font-weight:700}
+</style>
+<rect width="420" height="297" fill="#ffffff"/>
+<g id="layer-TRUC" data-layer="TRUC">
+<line data-id="1" x1="28" y1="110.7" x2="392" y2="110.7" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 1.5 1 1.5"/>
+<circle data-id="1" cx="24" cy="110.7" r="4" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="1" x="24" y="110.7" font-size="3.2" text-anchor="middle" dominant-baseline="middle">1</text>
+<circle data-id="1" cx="396" cy="110.7" r="4" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="1" x="396" y="110.7" font-size="3.2" text-anchor="middle" dominant-baseline="middle">1</text>
+<line data-id="2" x1="28" y1="186.3" x2="392" y2="186.3" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 1.5 1 1.5"/>
+<circle data-id="2" cx="24" cy="186.3" r="4" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="2" x="24" y="186.3" font-size="3.2" text-anchor="middle" dominant-baseline="middle">2</text>
+<circle data-id="2" cx="396" cy="186.3" r="4" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="2" x="396" y="186.3" font-size="3.2" text-anchor="middle" dominant-baseline="middle">2</text>
+<line data-id="A" x1="52.2" y1="86.5" x2="52.2" y2="210.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 1.5 1 1.5"/>
+<circle data-id="A" cx="52.2" cy="82.5" r="4" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="A" x="52.2" y="82.5" font-size="3.2" text-anchor="middle" dominant-baseline="middle">A</text>
+<circle data-id="A" cx="52.2" cy="214.5" r="4" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="A" x="52.2" y="214.5" font-size="3.2" text-anchor="middle" dominant-baseline="middle">A</text>
+<line data-id="B" x1="150" y1="86.5" x2="150" y2="210.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 1.5 1 1.5"/>
+<circle data-id="B" cx="150" cy="82.5" r="4" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="B" x="150" y="82.5" font-size="3.2" text-anchor="middle" dominant-baseline="middle">B</text>
+<circle data-id="B" cx="150" cy="214.5" r="4" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="B" x="150" y="214.5" font-size="3.2" text-anchor="middle" dominant-baseline="middle">B</text>
+<line data-id="C" x1="200.4" y1="86.5" x2="200.4" y2="210.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 1.5 1 1.5"/>
+<circle data-id="C" cx="200.4" cy="82.5" r="4" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="C" x="200.4" y="82.5" font-size="3.2" text-anchor="middle" dominant-baseline="middle">C</text>
+<circle data-id="C" cx="200.4" cy="214.5" r="4" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="C" x="200.4" y="214.5" font-size="3.2" text-anchor="middle" dominant-baseline="middle">C</text>
+<line data-id="D" x1="269.4" y1="86.5" x2="269.4" y2="210.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 1.5 1 1.5"/>
+<circle data-id="D" cx="269.4" cy="82.5" r="4" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="D" x="269.4" y="82.5" font-size="3.2" text-anchor="middle" dominant-baseline="middle">D</text>
+<circle data-id="D" cx="269.4" cy="214.5" r="4" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="D" x="269.4" y="214.5" font-size="3.2" text-anchor="middle" dominant-baseline="middle">D</text>
+<line data-id="E" x1="298.4" y1="86.5" x2="298.4" y2="210.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 1.5 1 1.5"/>
+<circle data-id="E" cx="298.4" cy="82.5" r="4" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="E" x="298.4" y="82.5" font-size="3.2" text-anchor="middle" dominant-baseline="middle">E</text>
+<circle data-id="E" cx="298.4" cy="214.5" r="4" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="E" x="298.4" y="214.5" font-size="3.2" text-anchor="middle" dominant-baseline="middle">E</text>
+<line data-id="F" x1="351.2" y1="86.5" x2="351.2" y2="210.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 1.5 1 1.5"/>
+<circle data-id="F" cx="351.2" cy="82.5" r="4" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="F" x="351.2" y="82.5" font-size="3.2" text-anchor="middle" dominant-baseline="middle">F</text>
+<circle data-id="F" cx="351.2" cy="214.5" r="4" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="F" x="351.2" y="214.5" font-size="3.2" text-anchor="middle" dominant-baseline="middle">F</text>
+<line data-id="G" x1="367.8" y1="86.5" x2="367.8" y2="210.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 1.5 1 1.5"/>
+<circle data-id="G" cx="367.8" cy="82.5" r="4" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="G" x="367.8" y="82.5" font-size="3.2" text-anchor="middle" dominant-baseline="middle">G</text>
+<circle data-id="G" cx="367.8" cy="214.5" r="4" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="G" x="367.8" y="214.5" font-size="3.2" text-anchor="middle" dominant-baseline="middle">G</text>
+</g>
+<g id="layer-TUONG-CAT" data-layer="TUONG-CAT">
+<polygon data-id="W9" points="54.4,108.5 54.4,132.5 50,132.5 50,108.5" fill="#1f1f1f" stroke="#000" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="W9" points="54.4,164.5 54.4,188.5 50,188.5 50,164.5" fill="#1f1f1f" stroke="#000" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="W10" points="50,108.5 370,108.5 370,112.9 50,112.9" fill="#1f1f1f" stroke="#000" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="W11" points="50,184.1 370,184.1 370,188.5 50,188.5" fill="#1f1f1f" stroke="#000" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="W12" points="370,108.5 370,188.5 365.6,188.5 365.6,108.5" fill="#1f1f1f" stroke="#000" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="W13" points="148.9,186.3 148.9,130.7 151.1,130.7 151.1,186.3" fill="#1f1f1f" stroke="#000" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="W13" points="148.9,114.7 148.9,110.7 151.1,110.7 151.1,114.7" fill="#1f1f1f" stroke="#000" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="W14" points="298.4,135.1 294.4,135.1 294.4,132.9 298.4,132.9" fill="#1f1f1f" stroke="#000" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="W14" points="280,135.1 200.4,135.1 200.4,132.9 280,132.9" fill="#1f1f1f" stroke="#000" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="W15" points="270.5,134 270.5,186.3 268.3,186.3 268.3,134" fill="#1f1f1f" stroke="#000" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="W16" points="299.5,110.7 299.5,114.7 297.3,114.7 297.3,110.7" fill="#1f1f1f" stroke="#000" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="W16" points="299.5,130.7 299.5,186.3 297.3,186.3 297.3,130.7" fill="#1f1f1f" stroke="#000" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="W17" points="352.3,110.7 352.3,136.1 350.1,136.1 350.1,110.7" fill="#1f1f1f" stroke="#000" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="W17" points="352.3,160.9 352.3,186.3 350.1,186.3 350.1,160.9" fill="#1f1f1f" stroke="#000" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<g id="layer-TUONG-THAY" data-layer="TUONG-THAY">
+<polygon data-id="site" points="50,108.5 50,188.5 370,188.5 370,108.5" fill="none" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3 1.2 0.6 1.2"/>
+<line data-id="S3" x1="54.4" y1="132.5" x2="50" y2="132.5" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="54.4" y1="164.5" x2="50" y2="164.5" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="D4" x1="148.9" y1="130.7" x2="151.1" y2="130.7" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="D4" x1="148.9" y1="114.7" x2="151.1" y2="114.7" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="D5" x1="294.4" y1="135.1" x2="294.4" y2="132.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="D5" x1="280" y1="135.1" x2="280" y2="132.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="D6" x1="299.5" y1="114.7" x2="297.3" y2="114.7" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="D6" x1="299.5" y1="130.7" x2="297.3" y2="130.7" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S4" x1="352.3" y1="136.1" x2="350.1" y2="136.1" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S4" x1="352.3" y1="160.9" x2="350.1" y2="160.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="SL2" points="200.4,135.1 200.4,165.1 245.4,165.1 245.4,184.1 269.4,184.1 269.4,135.1" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2.5 1.2"/>
+<polygon data-id="SL2" points="352.3,112.9 352.3,184.1 365.6,184.1 365.6,112.9" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2.5 1.2"/>
+</g>
+<g id="layer-CUA" data-layer="CUA">
+<line data-id="S3" x1="50" y1="132.5" x2="50" y2="164.5" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="52.2" y1="132.5" x2="52.2" y2="164.5" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="54.4" y1="132.5" x2="54.4" y2="164.5" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="S3" x="56.6" y="148.5" font-size="2.2" text-anchor="middle" dominant-baseline="middle">S3</text>
+<line data-id="D4" x1="150" y1="130.7" x2="134" y2="130.7" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
+<path data-id="D4" d="M 150 114.7 A 16 16 0 0 0 134 130.7" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="D4" x="146.7" y="122.7" font-size="2.2" text-anchor="middle" dominant-baseline="middle">D4</text>
+<line data-id="D5" x1="280" y1="134" x2="280" y2="148.4" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
+<path data-id="D5" d="M 294.4 134 A 14.4 14.4 0 0 1 280 148.4" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="D5" x="287.2" y="137.3" font-size="2.2" text-anchor="middle" dominant-baseline="middle">D5</text>
+<line data-id="D6" x1="298.4" y1="130.7" x2="314.4" y2="130.7" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
+<path data-id="D6" d="M 298.4 114.7 A 16 16 0 0 1 314.4 130.7" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="D6" x="301.7" y="122.7" font-size="2.2" text-anchor="middle" dominant-baseline="middle">D6</text>
+<line data-id="S4" x1="350.1" y1="136.1" x2="350.1" y2="160.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S4" x1="351.2" y1="136.1" x2="351.2" y2="160.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S4" x1="352.3" y1="136.1" x2="352.3" y2="160.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-id="S4" x="354.5" y="148.5" font-size="2.2" text-anchor="middle" dominant-baseline="middle">S4</text>
+</g>
+<g id="layer-THANG" data-layer="THANG">
+<polygon data-id="ST1" points="200.4,165.1 200.4,184.1 250.4,184.1 250.4,165.1" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="ST1" x1="205.4" y1="165.1" x2="205.4" y2="184.1" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="ST1" x1="210.4" y1="165.1" x2="210.4" y2="184.1" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="ST1" x1="215.4" y1="165.1" x2="215.4" y2="184.1" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="ST1" x1="220.4" y1="165.1" x2="220.4" y2="184.1" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="ST1" x1="225.4" y1="165.1" x2="225.4" y2="184.1" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="ST1" x1="230.4" y1="165.1" x2="230.4" y2="184.1" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="ST1" x1="235.4" y1="165.1" x2="235.4" y2="184.1" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="ST1" x1="240.4" y1="165.1" x2="240.4" y2="184.1" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="ST1" x1="245.4" y1="165.1" x2="245.4" y2="184.1" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="ST1" x1="250.4" y1="165.1" x2="250.4" y2="184.1" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="ST1" points="200.4,146.1 200.4,165.1 250.4,165.1 250.4,146.1" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="ST1" x1="245.4" y1="165.1" x2="245.4" y2="146.1" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="ST1" x1="240.4" y1="165.1" x2="240.4" y2="146.1" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="ST1" x1="235.4" y1="165.1" x2="235.4" y2="146.1" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="ST1" x1="230.4" y1="165.1" x2="230.4" y2="146.1" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="ST1" x1="225.4" y1="165.1" x2="225.4" y2="146.1" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="ST1" x1="220.4" y1="165.1" x2="220.4" y2="146.1" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="ST1" x1="215.4" y1="165.1" x2="215.4" y2="146.1" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="ST1" x1="210.4" y1="165.1" x2="210.4" y2="146.1" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="ST1" x1="205.4" y1="165.1" x2="205.4" y2="146.1" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="ST1" x1="200.4" y1="165.1" x2="200.4" y2="146.1" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="ST1" points="250.4,146.1 250.4,184.1 269.4,184.1 269.4,146.1" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline data-id="ST1" points="200.4,174.6 259.9,174.6 259.9,165.1 200.4,155.6" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="ST1" points="200.4,155.6 202.6,156.4 202.6,154.8" fill="#000"/>
+<text data-id="ST1" x="222.9" y="170.04" font-size="2.2" text-anchor="middle" dominant-baseline="middle">LÊN 21 BẬC</text>
+</g>
+<g id="layer-NOI-THAT" data-layer="NOI-THAT">
+<polygon data-id="F13" points="54.4,130.5 54.4,166.5 94.4,166.5 94.4,130.5" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="F13" points="55.8,131.9 55.8,165.1 62.4,165.1 62.4,131.9" fill="none" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="F13" x1="67.2" y1="130.5" x2="67.2" y2="166.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="F14" points="148.9,178.5 148.9,138.5 136.9,138.5 136.9,178.5" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="F14" x1="148.9" y1="158.5" x2="136.9" y2="158.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="F14" x1="148.9" y1="178.5" x2="136.9" y2="158.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="F15" points="167.3,184.1 188.7,184.1 188.7,171.9 167.3,171.9" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="F15" x1="167.3" y1="178" x2="188.7" y2="178" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<circle data-id="F15" cx="172.65" cy="181.05" r="1.1" fill="none" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<circle data-id="F15" cx="178" cy="181.05" r="1.1" fill="none" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<circle data-id="F15" cx="183.35" cy="181.05" r="1.1" fill="none" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="F16" points="326.1,184.1 350.1,184.1 350.1,144.1 326.1,144.1" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="F16" points="327.5,182.7 348.7,182.7 348.7,176.1 327.5,176.1" fill="none" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="F16" x1="326.1" y1="171.3" x2="350.1" y2="171.3" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="F17" points="348,112.9 328,112.9 328,122.9 348,122.9" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="F17" points="346.8,114.1 329.2,114.1 329.2,121.7 346.8,121.7" fill="none" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="F18" points="279.9,184.1 287.9,184.1 287.9,170.1 279.9,170.1" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="F18" points="279.9,184.1 287.9,184.1 287.9,180.7 279.9,180.7" fill="none" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<ellipse data-id="F18" cx="283.9" cy="175.42" rx="3.36" ry="4.2" fill="none" transform="rotate(0 283.9 175.42)" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon data-id="F19" points="270.5,152 270.5,163 278.9,163 278.9,152" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<ellipse data-id="F19" cx="275.1" cy="157.5" rx="4.3" ry="2.8" fill="none" transform="rotate(90 275.1 157.5)" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<circle data-id="F19" cx="271.7" cy="157.5" r="0.52" fill="none" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<g id="layer-DIM" data-layer="DIM">
+<line x1="48.5" y1="108.5" x2="28.8" y2="108.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="48.5" y1="112.9" x2="40.8" y2="112.9" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="48.5" y1="132.5" x2="40.8" y2="132.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="48.5" y1="164.5" x2="40.8" y2="164.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="48.5" y1="184.1" x2="40.8" y2="184.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="48.5" y1="188.5" x2="28.8" y2="188.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="48.5" y1="110.7" x2="34.8" y2="110.7" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="48.5" y1="186.3" x2="34.8" y2="186.3" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="42" y1="108.5" x2="42" y2="188.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="40.9" y1="107.4" x2="43.1" y2="109.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="40.9" y1="111.8" x2="43.1" y2="114" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="40.9" y1="131.4" x2="43.1" y2="133.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="40.9" y1="163.4" x2="43.1" y2="165.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="40.9" y1="183" x2="43.1" y2="185.2" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="40.9" y1="187.4" x2="43.1" y2="189.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="39.9" y="110.7" font-size="2.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 39.9 110.7)">220</text>
+<text x="43" y="122.7" font-size="2.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 43 122.7)">980</text>
+<text x="43" y="148.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 43 148.5)">1600</text>
+<text x="43" y="174.3" font-size="2.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 43 174.3)">980</text>
+<text x="37.7" y="186.3" font-size="2.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 37.7 186.3)">220</text>
+<line x1="36" y1="110.7" x2="36" y2="186.3" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="34.9" y1="109.6" x2="37.1" y2="111.8" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="34.9" y1="185.2" x2="37.1" y2="187.4" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="37" y="148.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 37 148.5)">3780</text>
+<line x1="30" y1="108.5" x2="30" y2="188.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="28.9" y1="107.4" x2="31.1" y2="109.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="28.9" y1="187.4" x2="31.1" y2="189.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="31" y="148.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 31 148.5)">4000</text>
+<line x1="371.5" y1="108.5" x2="391.2" y2="108.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="371.5" y1="112.9" x2="379.2" y2="112.9" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="371.5" y1="184.1" x2="379.2" y2="184.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="371.5" y1="188.5" x2="391.2" y2="188.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="371.5" y1="110.7" x2="385.2" y2="110.7" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="371.5" y1="186.3" x2="385.2" y2="186.3" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="378" y1="108.5" x2="378" y2="188.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="376.9" y1="107.4" x2="379.1" y2="109.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="376.9" y1="111.8" x2="379.1" y2="114" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="376.9" y1="183" x2="379.1" y2="185.2" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="376.9" y1="187.4" x2="379.1" y2="189.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="380.1" y="110.7" font-size="2.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 380.1 110.7)">220</text>
+<text x="377" y="148.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 377 148.5)">3560</text>
+<text x="382.3" y="186.3" font-size="2.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 382.3 186.3)">220</text>
+<line x1="384" y1="110.7" x2="384" y2="186.3" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="382.9" y1="109.6" x2="385.1" y2="111.8" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="382.9" y1="185.2" x2="385.1" y2="187.4" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="383" y="148.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 383 148.5)">3780</text>
+<line x1="390" y1="108.5" x2="390" y2="188.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="388.9" y1="107.4" x2="391.1" y2="109.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="388.9" y1="187.4" x2="391.1" y2="189.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="389" y="148.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 389 148.5)">4000</text>
+<line x1="50" y1="107" x2="50" y2="87.3" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="54.4" y1="107" x2="54.4" y2="99.3" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="365.6" y1="107" x2="365.6" y2="99.3" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="370" y1="107" x2="370" y2="87.3" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="52.2" y1="107" x2="52.2" y2="93.3" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="150" y1="107" x2="150" y2="93.3" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="200.4" y1="107" x2="200.4" y2="93.3" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="269.4" y1="107" x2="269.4" y2="93.3" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="298.4" y1="107" x2="298.4" y2="93.3" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="351.2" y1="107" x2="351.2" y2="93.3" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="367.8" y1="107" x2="367.8" y2="93.3" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="50" y1="100.5" x2="370" y2="100.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="48.9" y1="99.4" x2="51.1" y2="101.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="53.3" y1="99.4" x2="55.5" y2="101.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="364.5" y1="99.4" x2="366.7" y2="101.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="368.9" y1="99.4" x2="371.1" y2="101.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="52.2" y="98.4" font-size="2.5" text-anchor="middle" dominant-baseline="middle">220</text>
+<text x="210" y="101.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle">15560</text>
+<text x="367.8" y="96.2" font-size="2.5" text-anchor="middle" dominant-baseline="middle">220</text>
+<line x1="52.2" y1="94.5" x2="367.8" y2="94.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="51.1" y1="93.4" x2="53.3" y2="95.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="148.9" y1="93.4" x2="151.1" y2="95.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="199.3" y1="93.4" x2="201.5" y2="95.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="268.3" y1="93.4" x2="270.5" y2="95.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="297.3" y1="93.4" x2="299.5" y2="95.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="350.1" y1="93.4" x2="352.3" y2="95.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="366.7" y1="93.4" x2="368.9" y2="95.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="101.1" y="95.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle">4890</text>
+<text x="175.2" y="95.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle">2520</text>
+<text x="234.9" y="95.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle">3450</text>
+<text x="283.9" y="95.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle">1450</text>
+<text x="324.8" y="95.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle">2640</text>
+<text x="359.5" y="95.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle">830</text>
+<line x1="50" y1="88.5" x2="370" y2="88.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="48.9" y1="87.4" x2="51.1" y2="89.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="368.9" y1="87.4" x2="371.1" y2="89.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="210" y="89.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle">16000</text>
+<line x1="50" y1="190" x2="50" y2="209.7" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="54.4" y1="190" x2="54.4" y2="197.7" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="365.6" y1="190" x2="365.6" y2="197.7" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="370" y1="190" x2="370" y2="209.7" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="52.2" y1="190" x2="52.2" y2="203.7" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="150" y1="190" x2="150" y2="203.7" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="200.4" y1="190" x2="200.4" y2="203.7" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="269.4" y1="190" x2="269.4" y2="203.7" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="298.4" y1="190" x2="298.4" y2="203.7" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="351.2" y1="190" x2="351.2" y2="203.7" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="367.8" y1="190" x2="367.8" y2="203.7" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="50" y1="196.5" x2="370" y2="196.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="48.9" y1="195.4" x2="51.1" y2="197.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="53.3" y1="195.4" x2="55.5" y2="197.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="364.5" y1="195.4" x2="366.7" y2="197.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="368.9" y1="195.4" x2="371.1" y2="197.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="52.2" y="198.6" font-size="2.5" text-anchor="middle" dominant-baseline="middle">220</text>
+<text x="210" y="195.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle">15560</text>
+<text x="367.8" y="200.8" font-size="2.5" text-anchor="middle" dominant-baseline="middle">220</text>
+<line x1="52.2" y1="202.5" x2="367.8" y2="202.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="51.1" y1="201.4" x2="53.3" y2="203.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="148.9" y1="201.4" x2="151.1" y2="203.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="199.3" y1="201.4" x2="201.5" y2="203.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="268.3" y1="201.4" x2="270.5" y2="203.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="297.3" y1="201.4" x2="299.5" y2="203.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="350.1" y1="201.4" x2="352.3" y2="203.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="366.7" y1="201.4" x2="368.9" y2="203.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="101.1" y="201.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle">4890</text>
+<text x="175.2" y="201.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle">2520</text>
+<text x="234.9" y="201.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle">3450</text>
+<text x="283.9" y="201.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle">1450</text>
+<text x="324.8" y="201.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle">2640</text>
+<text x="359.5" y="201.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle">830</text>
+<line x1="50" y1="208.5" x2="370" y2="208.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="48.9" y1="207.4" x2="51.1" y2="209.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="368.9" y1="207.4" x2="371.1" y2="209.6" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="210" y="207.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle">16000</text>
+<line x1="82.75" y1="112.9" x2="82.75" y2="184.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="81.65" y1="111.8" x2="83.85" y2="114" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="81.65" y1="183" x2="83.85" y2="185.2" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="83.75" y="148.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 83.75 148.5)">3560</text>
+<line x1="54.4" y1="134.26" x2="148.9" y2="134.26" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="53.3" y1="133.16" x2="55.5" y2="135.36" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="147.8" y1="133.16" x2="150" y2="135.36" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="82.75" y="133.26" font-size="2.5" text-anchor="middle" dominant-baseline="middle">4725</text>
+<line x1="194.96" y1="112.9" x2="194.96" y2="184.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="193.86" y1="111.8" x2="196.06" y2="114" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="193.86" y1="183" x2="196.06" y2="185.2" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="195.96" y="148.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 195.96 148.5)">3560</text>
+<line x1="151.1" y1="134.26" x2="297.3" y2="134.26" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="150" y1="133.16" x2="152.2" y2="135.36" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="296.2" y1="133.16" x2="298.4" y2="135.36" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="194.96" y="133.26" font-size="2.5" text-anchor="middle" dominant-baseline="middle">7310</text>
+<line x1="278.54" y1="135.1" x2="278.54" y2="184.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="277.44" y1="134" x2="279.64" y2="136.2" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="277.44" y1="183" x2="279.64" y2="185.2" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="279.54" y="159.6" font-size="2.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 279.54 159.6)">2450</text>
+<line x1="270.5" y1="149.8" x2="297.3" y2="149.8" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="269.4" y1="148.7" x2="271.6" y2="150.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="296.2" y1="148.7" x2="298.4" y2="150.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="278.54" y="148.8" font-size="2.5" text-anchor="middle" dominant-baseline="middle">1340</text>
+<line x1="314.68" y1="112.9" x2="314.68" y2="184.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="313.58" y1="111.8" x2="315.78" y2="114" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="313.58" y1="183" x2="315.78" y2="185.2" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="315.68" y="148.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 315.68 148.5)">3560</text>
+<line x1="299.5" y1="134.26" x2="350.1" y2="134.26" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="298.4" y1="133.16" x2="300.6" y2="135.36" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="349" y1="133.16" x2="351.2" y2="135.36" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="314.68" y="133.26" font-size="2.5" text-anchor="middle" dominant-baseline="middle">2530</text>
+<line x1="356.29" y1="112.9" x2="356.29" y2="184.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="355.19" y1="111.8" x2="357.39" y2="114" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="355.19" y1="183" x2="357.39" y2="185.2" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="357.29" y="148.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 357.29 148.5)">3560</text>
+<line x1="352.3" y1="134.26" x2="365.6" y2="134.26" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="351.2" y1="133.16" x2="353.4" y2="135.36" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="364.5" y1="133.16" x2="366.7" y2="135.36" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="356.29" y="133.26" font-size="2.5" text-anchor="middle" dominant-baseline="middle">665</text>
+</g>
+<g id="layer-TEXT" data-layer="TEXT">
+<line x1="42" y1="174.6" x2="378" y2="174.6" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="10 3 2 3"/>
+<line x1="42" y1="174.6" x2="46" y2="174.6" stroke="#000" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="42,171 43.1,174 40.9,174" fill="#000"/>
+<text x="42" y="177.2" font-size="3.5" text-anchor="middle" dominant-baseline="middle" class="b">A</text>
+<line x1="378" y1="174.6" x2="374" y2="174.6" stroke="#000" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="378,171 379.1,174 376.9,174" fill="#000"/>
+<text x="378" y="177.2" font-size="3.5" text-anchor="middle" dominant-baseline="middle" class="b">A</text>
+<text data-id="R8" x="101.65" y="148.5" font-size="3.5" text-anchor="middle" dominant-baseline="middle">NGỦ CHÍNH</text>
+<text data-id="R8" x="101.65" y="153.1" font-size="2.5" text-anchor="middle" dominant-baseline="middle">16.8m²</text>
+<text data-id="R9" x="216.267" y="143.3" font-size="3.5" text-anchor="middle" dominant-baseline="middle">SẢNH THỜ + HÀNH LANG</text>
+<text data-id="R9" x="216.267" y="147.9" font-size="2.5" text-anchor="middle" dominant-baseline="middle">13.6m²</text>
+<text data-id="R10" x="283.9" y="159.6" font-size="2.4" text-anchor="middle" dominant-baseline="middle">WC 2</text>
+<text data-id="R10" x="283.9" y="163" font-size="2" text-anchor="middle" dominant-baseline="middle">3.3m²</text>
+<text data-id="R11" x="324.8" y="148.5" font-size="3.5" text-anchor="middle" dominant-baseline="middle">NGỦ CON</text>
+<text data-id="R11" x="324.8" y="153.1" font-size="2.5" text-anchor="middle" dominant-baseline="middle">9.0m²</text>
+<text data-id="R12" x="358.95" y="148.5" font-size="2.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 358.95 148.5)">GIẾNG TRỜI SAU</text>
+<text data-id="R12" x="362.35" y="148.5" font-size="2" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 362.35 148.5)">2.4m²</text>
+<polygon points="100.25,158 103.05,158 101.65,159.6" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="101.65" y="156.8" font-size="2.5" text-anchor="middle" dominant-baseline="middle">+3.600</text>
+</g>
+<g id="layer-KHUNG" data-layer="KHUNG">
+<polygon points="7,7 413,7 413,290 7,290" fill="none" stroke="#000" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="263,248 413,248 413,290 263,290" fill="none" stroke="#000" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="263" y1="260" x2="413" y2="260" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="263" y1="270" x2="413" y2="270" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="263" y1="280" x2="413" y2="280" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="367" y1="248" x2="367" y2="290" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="266" y="255.6" font-size="3.4" text-anchor="start" dominant-baseline="middle" class="b">NHÀ ỐNG 4×16M — 2 TẦNG 3PN</text>
+<text x="370" y="255.6" font-size="3.4" text-anchor="start" dominant-baseline="middle" class="b">KT-01</text>
+<text x="266" y="266.6" font-size="3" text-anchor="start" dominant-baseline="middle" class="b">MẶT BẰNG TẦNG 2</text>
+<text x="370" y="266.6" font-size="2.8" text-anchor="start" dominant-baseline="middle">TỶ LỆ 1:50</text>
+<text x="266" y="276.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">Thiết kế: Atelier AI + anh Ba</text>
+<text x="370" y="276.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">Ngày: 13/07/2026</text>
+<text x="266" y="286.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">Kiểm: ................</text>
+<text x="370" y="286.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">atelier/0.1</text>
+<text x="10" y="284.6" font-size="2" text-anchor="start" dominant-baseline="middle">Bản vẽ concept — không thay thế hồ sơ thiết kế có chữ ký KTS hành nghề.</text>
+<circle cx="401" cy="19" r="6.5" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="404.677" y1="22.677" x2="397.323" y2="15.323" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="397.323,15.323 400.859,16.596 398.596,18.859" fill="#000"/>
+<text x="394.919" y="12.919" font-size="3" text-anchor="middle" dominant-baseline="middle" class="b">B</text>
+</g>
+</svg>
