@@ -321,6 +321,7 @@ describe("E4 — validate en un proyecto chileno", () => {
     expect(msg).toContain("CL-INDET"); // cocina + comedor: no clasificable → indeterminado, no "limpio"
     expect(msg).toContain("No se declara cumplimiento");
     expect(msg).not.toContain("Reglas sin validación documental");
+    expect(msg).toContain("no certifica cumplimiento legal"); // descargo fijo en región cl
     expect(msg).not.toMatch(/STD-|LBB-|PLN-|UK-|GEN-/);
   });
 });

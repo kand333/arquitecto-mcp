@@ -226,7 +226,12 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
         const nota = sinValidar.length
           ? `\n⚠ Reglas sin validación documental (resultado orientativo, no certifica cumplimiento): ${sinValidar.join(", ")}.`
           : "";
-        return text(`Validador (revisión ${p.meta.revision}): ${issueLines(issues)}${nota}`);
+        // Chile: descargo fijo, independiente de verified (los evaluadores simplifican el texto legal)
+        const descargo =
+          (p.config?.region ?? "cl") === "cl"
+            ? "\nResultado orientativo sobre un anteproyecto: no certifica cumplimiento legal de la OGUC ni reemplaza la revisión de un arquitecto o de la DOM."
+            : "";
+        return text(`Validador (revisión ${p.meta.revision}): ${issueLines(issues)}${nota}${descargo}`);
       } catch (e) {
         return fail(e);
       }

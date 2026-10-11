@@ -138,6 +138,13 @@
   - **CAD** (LibreCAD o QCAD, gratuitos): para abrir y editar los `.dxf`. Instalar cuando se entregue un plano a un dibujante o arquitecto.
   - **BIM** (FreeCAD o Bonsai): para abrir los `.ifc`. Solo si un tercero pide el modelo BIM.
 - **Electron:** no hace falta. El servidor local + el navegador ya funcionan como app, y Claude Code arranca el servidor por stdio.
+- **Validación de reglas (post-E5, 2026-10-11):** el usuario verificó `CL-ALT-01`, `CL-VEN-01` y `CL-CIP-*` contra el PDF oficial (`b47c372`). Como el aviso de reglas sin validar desaparece, `validate` agrega en la región `cl` un descargo fijo: resultado orientativo, no certifica cumplimiento legal.
+
+### Pendientes para después de E6 (decisión del usuario: no ejecutar todavía)
+
+- **Deuda técnica:** `smoke.mts` crea `%TEMP%\arquitecto-smoke-*` y no las borra. TODO: borrar las carpetas con más de 12 h al arrancar el smoke.
+- **Limpieza manual fuera del proyecto:** borrar las carpetas `%TEMP%\arquitecto-smoke-*` existentes con más de 12 h. La hace el usuario: queda fuera de `D:\0Claude\arquitecto-mcp`.
+- **Mensajes de consola del servidor en vietnamita** (stderr, p. ej. «MCP server sẵn sàng»): no se ven en el navegador ni en las respuestas MCP; traducir.
 
 ## Origen y objetivo
 
