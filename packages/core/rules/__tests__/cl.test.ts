@@ -2,7 +2,11 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { loadBietThuDoc, loadNhaCap4 } from "../../src/fixture.js";
+import { loadBietThuDoc, loadNhaCap4, loadNhaOng4x16 } from "../../src/fixture.js";
+import { pointInPolygon } from "../../src/geometry/polygon.js";
+import { openingSidePoints } from "../../src/geometry/wall.js";
+import { getWall } from "../../src/model.js";
+import { std09 } from "../../src/validate/evaluators-std.js";
 import type { Issue } from "../../src/issues.js";
 import type { Project } from "../../src/types.js";
 import { validateProject } from "../../src/validate/engine.js";
@@ -128,5 +132,27 @@ describe("E4 — CL-VEN-01 (OGUC 4.1.2, al menos una ventana al exterior en loca
     const i = indet(validateProject(chile()), "CL-VEN-01", "R4");
     expect(i).toHaveLength(1);
     expect(i[0]!.severity).toBe("info");
+  });
+
+  it("negativo: la luz que llega solo por el vano de la escalera NO cuenta como ventana (a diferencia de STD-09)", () => {
+    // nha-ong-4x16: R2 es el único recinto adyacente a la escalera R6, que tiene vano en la losa superior.
+    // Se usa como living (habitable) para tener el caso que STD-09 da por iluminado vía la escalera.
+    const p = chile(loadNhaOng4x16());
+    const living = p.rooms.find((r) => r.id === "R2")!;
+    living.use = "khach";
+    // quitar toda ventana que dé a R1
+    p.openings = p.openings.filter((o) => {
+      if (o.kind !== "window") return true;
+      const w = getWall(p, o.wall);
+      if (!w || w.level !== living.level) return true;
+      const [pa, pb] = openingSidePoints(w, o);
+      return !pointInPolygon(pa, living.polygon) && !pointInPolygon(pb, living.polygon);
+    });
+    // precondición: STD-09 sigue dando a R1 por iluminado vía el vano de la escalera
+    expect(std09(p).some((f) => f.entities.includes("R2"))).toBe(false);
+    // CL-VEN-01 (OGUC 4.1.2 exige una ventana al exterior) sí lo marca
+    const h = hits(validateProject(p), "CL-VEN-01", "R2");
+    expect(h).toHaveLength(1);
+    expect(h[0]!.severity).toBe("error");
   });
 });
