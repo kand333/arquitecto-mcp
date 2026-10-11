@@ -11,7 +11,7 @@
 |---|---|---|
 | E0 Línea base | completada | `6ec6023` import (tag `upstream-import`), `8a6e7a0` audit baseline; luego commit de `CONTEXTO.md` + `PROMPT-INICIAL.md` |
 | E1 Limpieza e identidad | completada | `2af29c8` limpieza, `3b41efb` renombre, `e41e7c1` docs, `836cdb3` identidad |
-| E2 Seguridad | en curso | A1 `7297c1a` + `79336ae` (scripts demo); A2 (commit `fix(security): A2 …`); M1, M2, M3, LOW, DEPS pendientes |
+| E2 Seguridad | en curso | A1 `7297c1a` + `79336ae` (scripts demo); A2 `fca078e`; M2+M3 (commit `fix(security): M2 M3 …`); M1, LOW, DEPS pendientes |
 | E3 Español y región Chile | pendiente | — |
 | E4 Rule pack OGUC | pendiente | — |
 | E5 App completa | pendiente | — |
@@ -48,6 +48,7 @@
 
 - **A1** (2026-10-11): ver `docs/security-tests/A1.md`. Decisiones del usuario: token del propietario en la query `?token=`, verificación de Host en todo HTTP y en el WS, un solo commit. Escucha fija en `127.0.0.1`; se eliminó `ARQUITECTO_HOST`, así que el link compartido solo funciona en el mismo equipo. Tests: 231 passed, 1 failed (Chromium), 17 skipped. `live-e2e` y `smoke.mts` se actualizaron sin poder ejecutarlos (E5). Seguimiento: los 5 scripts de `packages/server/scripts/` abren `live.editorUrl()`; verificados con `tsc --strict` desde `packages/server` (no están en el `tsconfig`), sin ejecutar (requieren Chromium).
 - **A2** (2026-10-11): ver `docs/security-tests/A2.md`. Decisiones del usuario: regex `^[A-Za-z0-9_-]{1,32}$` + lista negra `__proto__`/`constructor`/`prototype`; al cargar de disco (`openProject`, `openVariant`) se validan todos los IDs; `safeJoin` en todos los sinks de exporte; un commit. Desviación documentada: se recorta `meta.id` en `newProject` y no `slugify` (que también nombra variantes; recortarlo podía pisar variantes). Tests: 239 passed, 1 failed (Chromium), 17 skipped. La sesión de A2 corrió en bypass permissions por decisión del usuario («continúa, termina»).
+- **M2 + M3** (2026-10-11, auto mode «GO» del usuario): ver `docs/security-tests/M2.md` y `M3.md`. M2: `readVariant` exige `^[a-z0-9-]+$` (cubre los 4 llamadores). M3: `openProject` confina con `safeJoin` y no reenvía el mensaje de `JSON.parse`. Un commit conjunto porque comparten archivos. Tests: 242 passed, 1 failed (Chromium), 17 skipped.
 
 ## Origen y objetivo
 

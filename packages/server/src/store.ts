@@ -5,6 +5,7 @@ import {
   type ApplyResult, type Issue, type Op, type OpOrigin, type Point, type Project,
 } from "@arquitecto/core";
 import { SoftLocks } from "./locks.js";
+import { safeJoin } from "./safe-path.js";
 
 export const PROJECT_FILE = "arquitecto.project.json";
 
@@ -129,11 +130,17 @@ export class ProjectStore {
   }
 
   openProject(file?: string): Project {
-    const fp = file ? path.resolve(this.baseDir, file) : this.filePath;
+    const fp = file ? safeJoin(this.baseDir, file) : this.filePath; // M3: solo dentro de la carpeta del proyecto
     if (!existsSync(fp)) {
       throw new Error(`Không thấy ${fp} — kiểm tra đường dẫn hoặc tạo mới bằng project_new.`);
     }
-    const raw = JSON.parse(readFileSync(fp, "utf8")) as Project;
+    let raw: Project;
+    try {
+      raw = JSON.parse(readFileSync(fp, "utf8")) as Project;
+    } catch {
+      // M3: el mensaje de JSON.parse incluye un fragmento del archivo — no se reenvía al agente
+      throw new Error(`${fp} no es JSON válido.`);
+    }
     if (typeof raw?.meta?.revision !== "number" || raw.meta.unit !== "mm") {
       throw new Error(`${fp} không phải file dự án Arquitecto hợp lệ (thiếu meta.revision / unit mm).`);
     }
@@ -233,6 +240,8 @@ export class ProjectStore {
 
   /** Đọc model của một phương án (không đổi model đang làm). */
   readVariant(slug: string): { name: string; savedAt: string; model: Project } {
+    // M2: el slug llega de MCP y de HTTP (/plan?variant, /so-sanh) — nunca una ruta
+    if (!/^[a-z0-9-]+$/.test(slug)) throw new Error(`Slug inválido ${JSON.stringify(slug)}: solo a-z, 0-9 y "-".`);
     const fp = path.join(this.variantsDir, `${slug}.json`);
     if (!existsSync(fp)) {
       const known = this.listVariants().map((v) => v.slug).join(", ") || "(chưa có phương án nào)";

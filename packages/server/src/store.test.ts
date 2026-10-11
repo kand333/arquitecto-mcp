@@ -105,3 +105,46 @@ describe("A2 — openProject/openVariant rechazan IDs inválidos", () => {
     expect(slugify("Casa Pérez Cañete 3 dormitorios 2 pisos").length).toBe(39);
   });
 });
+
+// ── M2: slug de variante (docs/security-tests/M2.md) ────────────────
+
+describe("M2 — readVariant solo acepta slugs ^[a-z0-9-]+$", () => {
+  it("rechaza traversal y slugs mal formados; no lee .json fuera de phuong-an/", () => {
+    const store = freshStore();
+    store.newProject("Nhà anh Ba", "nha-ong-4x16-2t");
+    writeFileSync(path.join(store.baseDir, "secreto.json"), JSON.stringify({ name: "SECRETO", model: store.current }), "utf8");
+    for (const slug of ["../../secreto", "..\..\secreto", "A", "a b", ""]) {
+      expect(() => store.readVariant(slug), JSON.stringify(slug)).toThrowError(/Slug inválido/);
+    }
+    store.saveVariant("Phương án A");
+    expect(store.readVariant("phuong-an-a").name).toBe("Phương án A");
+  });
+});
+
+// ── M3: project_open confinado (docs/security-tests/M3.md) ──────────
+
+describe("M3 — openProject solo dentro de la carpeta del proyecto y sin filtrar contenido", () => {
+  it("ruta fuera de la carpeta (absoluta o relativa) → error; el proyecto actual no cambia", () => {
+    const outside = freshStore();
+    outside.newProject("Otra casa", "nha-ong-4x16-2t");
+    const store = freshStore();
+    store.newProject("Nhà anh Ba", "nha-ong-4x16-2t");
+    expect(() => store.openProject(outside.filePath)).toThrowError(/fuera del directorio/);
+    expect(() => store.openProject(path.relative(store.baseDir, outside.filePath))).toThrowError(/fuera del directorio/);
+    expect(store.current.meta.name).toBe("Nhà anh Ba");
+  });
+
+  it("JSON inválido: el error no reenvía el contenido del archivo", () => {
+    const store = freshStore();
+    store.newProject("Nhà anh Ba", "nha-ong-4x16-2t");
+    writeFileSync(path.join(store.baseDir, "roto.json"), "SECRETO-123 esto no es json", "utf8");
+    let msg = "";
+    try {
+      store.openProject("roto.json");
+    } catch (e) {
+      msg = (e as Error).message;
+    }
+    expect(msg).toMatch(/JSON válido/);
+    expect(msg).not.toContain("SECRETO");
+  });
+});

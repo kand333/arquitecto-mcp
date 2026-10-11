@@ -8,7 +8,7 @@ export function safeJoin(dir: string, name: string): string {
   const base = path.resolve(dir);
   const full = path.resolve(base, name);
   if (!full.startsWith(base + path.sep)) {
-    throw new Error(`Ruta fuera del directorio de exportes: ${JSON.stringify(name)}.`);
+    throw new Error(`Ruta fuera del directorio permitido: ${JSON.stringify(name)}.`);
   }
   return full;
 }
