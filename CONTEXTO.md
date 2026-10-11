@@ -4,7 +4,7 @@
 
 ## Estado actual
 
-- **Etapa:** E0 completada (2026-10-11). Siguiente: E1, a la espera de la confirmación del usuario.
+- **Etapa:** E0 completada (2026-10-11). E1 en curso.
 - Al terminar cada etapa, actualiza esta sección. Registra la etapa completada, los commits y lo que quedó pendiente o falló.
 
 | Etapa | Estado | Commits / notas |
@@ -29,7 +29,7 @@
   - El fallo es `render-p4.test.ts › PDF`: falta Chromium de Playwright (E5).
   - Los saltados son `live-e2e.test.ts`: falta el dist del editor (`pnpm build:web`, E5).
 
-**Pendiente de decisión del usuario:** añadir a E2 un ítem `DEPS` (actualizar `@modelcontextprotocol/sdk` y `vitest`, re-auditar). El plan actual no cubre las vulnerabilidades de dependencias.
+- El usuario verificó E0. Se borró el tag `backup/pre-amend`. Se aprobó el ítem `DEPS` en E2.
 
 ## Origen y objetivo
 
@@ -136,7 +136,7 @@ Una etapa por sesión. Se para al final de cada etapa, se actualiza este archivo
 
 **Protocolo por fix:**
 1. Escribir el test.
-2. Ejecutarlo **sin el fix** y guardar el output real del fallo en `docs/security-tests/<id>.md` (ids: `A1`, `A2`, `M1`, `M2`, `M3`, `LOW`), con comando, fecha y hallazgo de la auditoría.
+2. Ejecutarlo **sin el fix** y guardar el output real del fallo en `docs/security-tests/<id>.md` (ids: `A1`, `A2`, `M1`, `M2`, `M3`, `LOW`, `DEPS`), con comando, fecha y hallazgo de la auditoría.
 3. Aplicar el fix.
 4. Añadir al mismo archivo el output en verde.
 5. Un commit por fix.
@@ -163,6 +163,10 @@ Una etapa por sesión. Se para al final de cada etapa, se actualiza este archivo
   - Comprobación de prefijo de estáticos con `sep` y try/catch en `decodeURIComponent` (`live.ts:324-327`).
   - `maxPayload` de 2 MB.
   - Borrar los temporales de `mkdtemp` en un `finally`.
+- **DEPS** (aprobado tras E0):
+  - Actualizar `@modelcontextprotocol/sdk` y `vitest` a versiones parcheadas.
+  - Volver a correr `pnpm audit --audit-level=high`.
+  - En `docs/security-tests/DEPS.md`: el «rojo» es `SECURITY-AUDIT-BASE.md` y el «verde» es el audit nuevo, con `pnpm typecheck` y `pnpm test` en verde. Lo que no tenga parche se documenta con su justificación.
 
 **Feynman:** «la puerta sin llave» (A1) y «el cartero que acepta cualquier dirección» (A2/M1).
 
