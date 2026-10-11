@@ -37,8 +37,8 @@ const MIME: Record<string, string> = {
 
 const NO_DIST_PAGE = `<!doctype html><meta charset="utf-8"><title>Arquitecto</title>
 <body style="font-family:system-ui;display:grid;place-items:center;min-height:100vh;margin:0;background:#111;color:#eee">
-<div style="max-width:34rem;line-height:1.6"><h1 style="font-weight:600">📐 Arquitecto — editor chưa được build</h1>
-<p>Chạy lệnh sau rồi tải lại trang:</p>
+<div style="max-width:34rem;line-height:1.6"><h1 style="font-weight:600">📐 Arquitecto — el editor no está compilado</h1>
+<p>Ejecuta este comando y recarga la página:</p>
 <pre style="background:#000;padding:.8rem 1rem;border-radius:8px">pnpm --filter @arquitecto/web build</pre></div>`;
 
 export type LiveOptions = {
@@ -138,7 +138,7 @@ export class LiveServer {
       }
     }
     if (!this.http) {
-      throw new Error(`Không mở được cổng ${prefer}…${prefer + 9}: ${lastErr instanceof Error ? lastErr.message : String(lastErr)}`);
+      throw new Error(`No se pudo abrir ningún puerto ${prefer}…${prefer + 9}: ${lastErr instanceof Error ? lastErr.message : String(lastErr)}`);
     }
     this.url = `http://localhost:${this.port}`;
 
@@ -166,7 +166,7 @@ export class LiveServer {
     this.heartbeat = null;
     for (const [, p] of this.pending) {
       clearTimeout(p.timer);
-      p.reject(new Error("Live server đang tắt."));
+      p.reject(new Error("El servidor del editor se está deteniendo."));
     }
     this.pending.clear();
     for (const peer of this.peers) peer.sock.terminate();
@@ -201,7 +201,7 @@ export class LiveServer {
     mkdirSync(dir, { recursive: true });
     writeFileSync(path.join(dir, "share.json"), JSON.stringify({ token: this.share }) + "\n", "utf8");
     for (const peer of this.peers) {
-      if (peer.readonly) peer.sock.close(4001, "link chia sẻ đã được thu hồi");
+      if (peer.readonly) peer.sock.close(4001, "link compartido revocado");
     }
     return this.share;
   }
@@ -222,14 +222,14 @@ export class LiveServer {
       .sort((a, b) => a.lastActive - b.lastActive)
       .at(-1);
     if (!peer) {
-      return Promise.reject(new Error("Chưa có browser nào đang mở editor — gọi editor_open trước."));
+      return Promise.reject(new Error("No hay ningún navegador con el editor abierto: llama antes a editor_open."));
     }
     const requestId = randomUUID();
     const timeoutMs = this.opts.captureTimeoutMs ?? 10_000;
     return new Promise<string>((resolve, reject) => {
       const timer = setTimeout(() => {
         this.pending.delete(requestId);
-        reject(new Error(`Browser không trả ảnh trong ${Math.round(timeoutMs / 1000)}s — thử tải lại trang editor.`));
+        reject(new Error(`El navegador no devolvió la imagen en ${Math.round(timeoutMs / 1000)} s: prueba recargar el editor.`));
       }, timeoutMs);
       this.pending.set(requestId, { resolve, reject, timer });
       this.send(peer, { type: "capture_request", requestId, target, ...(camera ? { camera } : {}) });
@@ -292,21 +292,21 @@ export class LiveServer {
     app.get("/share", (c) => {
       if (this.tokenRole(c.req.query("token")) !== "owner") return c.text("Token requerido.", 401);
       const url = this.shareUrl();
-      return url ? c.json({ url, token: this.shareToken() }) : c.text("Server chưa sẵn sàng.", 503);
+      return url ? c.json({ url, token: this.shareToken() }) : c.text("El servidor aún no está listo.", 503);
     });
     app.post("/share/rotate", (c) => {
       if (this.tokenRole(c.req.query("token")) !== "owner") return c.text("Token requerido.", 401);
       this.rotateShareToken();
       const url = this.shareUrl();
-      return url ? c.json({ url, token: this.shareToken() }) : c.text("Server chưa sẵn sàng.", 503);
+      return url ? c.json({ url, token: this.shareToken() }) : c.text("El servidor aún no está listo.", 503);
     });
     app.get("/xem/:token", (c) => {
       if (c.req.param("token") !== this.shareToken()) {
         return c.html(
           `<!doctype html><meta charset="utf-8"><title>Arquitecto</title>
 <body style="font-family:system-ui;display:grid;place-items:center;min-height:100vh;margin:0;background:#111;color:#eee">
-<div style="max-width:30rem;line-height:1.6"><h1 style="font-weight:600">🔒 Link không còn hiệu lực</h1>
-<p>Link chia sẻ này đã được thu hồi hoặc gõ sai — xin chủ nhà gửi lại link mới.</p></div>`,
+<div style="max-width:30rem;line-height:1.6"><h1 style="font-weight:600">🔒 Este link ya no es válido</h1>
+<p>El link compartido fue revocado o está mal escrito: pide uno nuevo al dueño del proyecto.</p></div>`,
           404,
         );
       }
@@ -319,7 +319,7 @@ export class LiveServer {
 
     app.get("/plan/:file", (c) => {
       if (!this.tokenRole(c.req.query("token"))) return c.text("Token requerido.", 401);
-      if (!this.store.isOpen) return c.text("Chưa mở dự án — project_open trước.", 409);
+      if (!this.store.isOpen) return c.text("No hay un proyecto abierto: usa project_open antes.", 409);
       const level = c.req.param("file").replace(/\.svg$/i, "");
       // ?variant=<slug> → vẽ từ phương án đã lưu thay vì model đang làm
       const slug = c.req.query("variant");
@@ -331,7 +331,7 @@ export class LiveServer {
           return c.text(e instanceof Error ? e.message : String(e), 404);
         }
       }
-      if (!p.levels.some((l) => l.id === level)) return c.text(`Không có tầng "${level}".`, 404);
+      if (!p.levels.some((l) => l.id === level)) return c.text(`No existe el piso "${level}".`, 404);
       const underlay = loadUnderlay(p, this.store.baseDir);
       const { svg } = renderPlanSvg(p, level, underlay ? { underlay } : {});
       return c.body(svg, 200, { "content-type": "image/svg+xml", "cache-control": "no-store" });
@@ -340,7 +340,7 @@ export class LiveServer {
     // ── so sánh phương án A/B cạnh nhau (backlog v2 → 13/07/2026) ──
     app.get("/so-sanh", (c) => {
       if (!this.tokenRole(c.req.query("token"))) return c.text("Token requerido.", 401);
-      if (!this.store.isOpen) return c.text("Chưa mở dự án — project_open trước.", 409);
+      if (!this.store.isOpen) return c.text("No hay un proyecto abierto: usa project_open antes.", 409);
       this.store.refreshDonGia(); // dự toán trong trang so sánh ăn bảng đơn giá địa phương
       try {
         const side = (key: string | undefined, fallbackLatest: boolean): VariantSide => {
@@ -355,12 +355,12 @@ export class LiveServer {
               return { label: v.name, model: v.model };
             }
           }
-          return { label: `HIỆN TẠI (r${this.store.current.meta.revision})`, model: this.store.current };
+          return { label: `ACTUAL (r${this.store.current.meta.revision})`, model: this.store.current };
         };
         const a = side(c.req.query("a"), true);
         const b = side(c.req.query("b"), false);
         const level = c.req.query("level") ?? [...a.model.levels].sort((x, y) => x.elevation - y.elevation)[0]?.id;
-        if (!level) return c.text("Model chưa có tầng nào.", 409);
+        if (!level) return c.text("El modelo aún no tiene pisos.", 409);
         return c.html(compareHtml(a, b, level, this.store.current.meta.name));
       } catch (e) {
         return c.text(e instanceof Error ? e.message : String(e), 404);
@@ -381,7 +381,7 @@ export class LiveServer {
       try {
         file = safeJoin(dist, rel.replace(/^\/+/, "")); // LOW: dentro de dist con separador (no «dist-otro/»)
       } catch {
-        return c.text("Ngoài phạm vi.", 403);
+        return c.text("Fuera del ámbito permitido.", 403);
       }
       if (!existsSync(file) || !statSync(file).isFile()) {
         if (path.extname(rel) !== "") return c.text("Không có file này.", 404);
@@ -438,14 +438,14 @@ export class LiveServer {
           this.send(peer, {
             type: "reject", yourBase: msg.baseRevision,
             currentRevision: this.store.isOpen ? this.store.current.meta.revision : -1,
-            errors: [{ rule: "VIEW-01", severity: "block", entities: [], message: "Bạn đang xem qua link chia sẻ chỉ-xem — không sửa được model." }],
+            errors: [{ rule: "VIEW-01", severity: "block", entities: [], message: "Estás viendo un link de solo lectura: no puedes modificar el modelo." }],
           });
           return;
         }
         if (!this.store.isOpen) {
           this.send(peer, {
             type: "reject", yourBase: msg.baseRevision, currentRevision: -1,
-            errors: [{ rule: "REV-00", severity: "block", entities: [], message: "Chưa mở dự án nào." }],
+            errors: [{ rule: "REV-00", severity: "block", entities: [], message: "No hay ningún proyecto abierto." }],
           });
           return;
         }
@@ -460,7 +460,7 @@ export class LiveServer {
           // lỗi I/O (persist EPERM sau retry…) — từ chối op này, KHÔNG giết server
           this.send(peer, {
             type: "reject", yourBase: msg.baseRevision, currentRevision: this.store.current.meta.revision,
-            errors: [{ rule: "IO-01", severity: "block", entities: [], message: `Không ghi được file dự án: ${e instanceof Error ? e.message : String(e)}. Thử lại sau giây lát.` }],
+            errors: [{ rule: "IO-01", severity: "block", entities: [], message: `No se pudo guardar el archivo del proyecto: ${e instanceof Error ? e.message : String(e)}. Reintenta en unos segundos.` }],
           });
         }
         return;
@@ -481,7 +481,7 @@ export class LiveServer {
         this.pending.delete(msg.requestId);
         clearTimeout(pend.timer);
         if (msg.png) pend.resolve(msg.png);
-        else pend.reject(new Error(msg.error ?? "Browser trả lỗi capture không rõ."));
+        else pend.reject(new Error(msg.error ?? "El navegador devolvió un error de captura desconocido."));
         return;
       }
     }

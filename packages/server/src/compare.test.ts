@@ -26,7 +26,7 @@ describe("phương án A/B — store", () => {
     expect(store.listVariants()).toHaveLength(2);
     expect(store.readVariant(slug).model.levels.find((l) => l.id === "L2")!.height).toBe(3500);
 
-    expect(() => store.readVariant("khong-co")).toThrow(/hiện có/);
+    expect(() => store.readVariant("khong-co")).toThrow(/Guardadas/);
   });
 
   it("openVariant = checkout: revision tiếp tục tăng, journal ghi system, model đổi", () => {
@@ -38,7 +38,7 @@ describe("phương án A/B — store", () => {
     expect(p.levels.find((l) => l.id === "L2")!.height).toBe(3400); // state của phương án gốc
     const last = store.changesSince(1).entries.at(-1)!;
     expect(last.origin).toBe("system");
-    expect(last.summary).toContain("chuyển sang phương án");
+    expect(last.summary).toContain("paso a la alternativa");
   });
 });
 
@@ -53,7 +53,7 @@ describe("phương án A/B — compare engine", () => {
 
     const report = compareProjects({ label: "Gốc", model: a }, { label: "Thu ngủ chính", model: b });
     expect(report.highlights.some((h) => h.includes("Ngủ chính") && h.includes("−") === false)).toBe(true);
-    expect(report.highlights.some((h) => h.includes("chỉ có ở Gốc"))).toBe(true);
+    expect(report.highlights.some((h) => h.includes("solo existe en Gốc"))).toBe(true);
     const r8diff = report.rooms.find((r) => r.id === "R8")!;
     expect(r8diff.a_m2).toBeGreaterThan(r8diff.b_m2!);
     expect(report.a.duToan_vnd).toBeGreaterThan(0);
@@ -70,9 +70,9 @@ describe("phương án A/B — compare engine", () => {
       "Nhà anh Ba",
     );
     expect(html.split("<svg").length - 1).toBe(2);
-    expect(html).toContain("SO SÁNH PHƯƠNG ÁN");
-    expect(html).toContain("TỔNG DIỆN TÍCH PHÒNG");
-    expect(html).toContain("DỰ TOÁN SƠ BỘ");
-    expect(html).toContain("Nội thất: 19 → 18 món");
+    expect(html).toContain("COMPARACIÓN DE ALTERNATIVAS");
+    expect(html).toContain("SUPERFICIE TOTAL DE RECINTOS");
+    expect(html).toContain("PRESUPUESTO PRELIMINAR");
+    expect(html).toContain("Mobiliario: 19 → 18 piezas");
   });
 });

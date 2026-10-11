@@ -269,7 +269,7 @@ describe("LiveServer", () => {
     expect(rClaude.ok).toBe(true); // viewer không tạo được soft-lock
 
     // capture không bao giờ chọn tab viewer
-    await expect(live.capture("3d")).rejects.toThrow(/Chưa có browser/);
+    await expect(live.capture("3d")).rejects.toThrow(/No hay ningún navegador/);
 
     // thu hồi: token mới, viewer cũ bị ngắt, link cũ thành 404
     const viewerClosed = new Promise<number>((res) => viewer.sock.on("close", (code) => res(code)));
@@ -292,15 +292,15 @@ describe("LiveServer", () => {
     const page = await fetch(`${url}/so-sanh${t}`);
     expect(page.status).toBe(200);
     const html = await page.text();
-    expect(html).toContain("SO SÁNH PHƯƠNG ÁN");
+    expect(html).toContain("COMPARACIÓN DE ALTERNATIVAS");
     expect(html).toContain("Phương án A");
-    expect(html).toContain("HIỆN TẠI (r1)");
+    expect(html).toContain("ACTUAL (r1)");
     expect((await fetch(`${url}/so-sanh${t}&a=khong-co`)).status).toBe(404);
   });
 
   it("capture: browser trả PNG; timeout khi browser im; lỗi khi không có browser", async () => {
     const { live, url, t } = await boot({ captureTimeoutMs: 300 });
-    await expect(live.capture("3d")).rejects.toThrow(/Chưa có browser/);
+    await expect(live.capture("3d")).rejects.toThrow(/No hay ningún navegador/);
 
     const c = await TestClient.connect(url, t);
     c.hello();
@@ -315,7 +315,7 @@ describe("LiveServer", () => {
     await expect(live.capture("3d")).resolves.toBe("iVBORfake==");
 
     // target "plan" không được client này trả → timeout
-    await expect(live.capture("plan")).rejects.toThrow(/không trả ảnh/);
+    await expect(live.capture("plan")).rejects.toThrow(/no devolvió la imagen/);
   });
 });
 

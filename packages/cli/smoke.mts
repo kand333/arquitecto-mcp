@@ -47,7 +47,7 @@ const hasImage = ((plan.content ?? []) as Array<{ type: string }>).some((c) => c
 ok(hasImage, `render_plan trả PNG${hasImage ? "" : ` — ${textOf(plan).slice(0, 120)}`}`);
 
 const est1 = await client.callTool({ name: "estimate_cost", arguments: {} });
-ok(textOf(est1).includes("➤ TỔNG:"), "estimate_cost bảng đóng gói");
+ok(textOf(est1).includes("➤ TOTAL:"), "estimate_cost bảng đóng gói");
 
 // bảng đơn giá địa phương trong THƯ MỤC DỰ ÁN đè bảng gói
 mkdirSync(path.join(HOUSE, "rules"), { recursive: true });

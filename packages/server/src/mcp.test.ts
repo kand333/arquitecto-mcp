@@ -61,8 +61,8 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
     expect(cmp.isError).not.toBe(true);
     const msg = textOf(cmp);
     expect(msg).toContain("A = Phương án A — gốc");
-    expect(msg).toContain("Nội thất: 19 → 17 món");
-    expect(msg).toContain("dự toán");
+    expect(msg).toContain("Mobiliario: 19 → 17 piezas");
+    expect(msg).toContain("presupuesto");
 
     const opened = await client.callTool({ name: "variant_open", arguments: { slug: "phuong-an-a-goc" } });
     expect(textOf(opened)).toContain("✅");
@@ -78,9 +78,9 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
     await client.callTool({ name: "project_new", arguments: { name: "Nhà anh Ba", template: "nha-ong-4x16-2t" } });
     const r = await client.callTool({ name: "estimate_cost", arguments: {} });
     const msg = textOf(r);
-    expect(msg).toContain("TỔNG QUY ĐỔI");
-    expect(msg).toContain("➤ TỔNG:");
-    expect(msg).toContain("CÒN DƯ"); // brief fixture ~1.8 tỷ > dự toán TB khá
+    expect(msg).toContain("TOTAL EQUIVALENTE");
+    expect(msg).toContain("➤ TOTAL:");
+    expect(msg).toContain("SOBRAN"); // brief fixture ~1.8 tỷ > dự toán TB khá
     expect(msg).toContain("don-gia.json");
 
     const sang = await client.callTool({ name: "estimate_cost", arguments: { muc: "cao-cap" } });
@@ -103,7 +103,7 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
 
     const dxf = await client.callTool({ name: "export", arguments: { format: "dxf" } });
     const msg = textOf(dxf);
-    expect(msg).toContain("4 tờ DXF");
+    expect(msg).toContain("Láminas DXF (4;");
     expect(msg).toContain("KT-01 MẶT BẰNG TẦNG 1");
     expect(msg).toContain("KT-04 MẶT CẮT A-A");
     expect(msg).not.toContain("THỐNG KÊ →"); // tờ bảng không có DXF
@@ -184,7 +184,7 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
     await client.callTool({ name: "project_new", arguments: { name: "Nhà anh Ba", template: "nha-ong-4x16-2t" } });
     const r = await client.callTool({ name: "export", arguments: { format: "svg", sheets: ["elevation"] } });
     const msg = textOf(r);
-    expect(msg).toContain("1 tờ SVG");
+    expect(msg).toContain("Láminas SVG (1)");
     expect(msg).toContain("KT-03 MẶT ĐỨNG CHÍNH");
   });
 
@@ -235,7 +235,7 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
         note: "đổi tên phòng khách",
       },
     });
-    expect(textOf(okApply)).toContain("revision 1");
+    expect(textOf(okApply)).toContain("revisión 1");
 
     // stale baseRevision → từ chối, chỉ đường get_changes_since
     const stale = await client.callTool({
@@ -249,7 +249,7 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
     expect(textOf(changes)).toContain("đổi tên phòng khách");
 
     const v = await client.callTool({ name: "validate", arguments: {} });
-    expect(textOf(v)).toContain("0 vấn đề");
+    expect(textOf(v)).toContain("0 observaciones");
   });
 
   it("chưa mở dự án → lỗi tiếng Việt chỉ đường, isError", async () => {

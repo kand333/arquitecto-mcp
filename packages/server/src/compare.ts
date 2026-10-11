@@ -62,8 +62,8 @@ export function compareProjects(a: VariantSide, b: VariantSide): CompareReport {
 
   const highlights: string[] = [];
   for (const r of roomList) {
-    if (r.a_m2 == null) highlights.push(`${r.name} (${r.id}, ${r.level}): chỉ có ở ${sb.label} — ${r.b_m2}m²`);
-    else if (r.b_m2 == null) highlights.push(`${r.name} (${r.id}, ${r.level}): chỉ có ở ${sa.label} — ${r.a_m2}m²`);
+    if (r.a_m2 == null) highlights.push(`${r.name} (${r.id}, ${r.level}): solo existe en ${sb.label} — ${r.b_m2}m²`);
+    else if (r.b_m2 == null) highlights.push(`${r.name} (${r.id}, ${r.level}): solo existe en ${sa.label} — ${r.a_m2}m²`);
     else if (Math.abs(r.a_m2 - r.b_m2) >= 0.3) {
       const d = r1(r.b_m2 - r.a_m2);
       highlights.push(`${r.name} (${r.id}): ${r.a_m2}m² → ${r.b_m2}m² (${d > 0 ? "+" : ""}${d}m²)`);
@@ -71,10 +71,10 @@ export function compareProjects(a: VariantSide, b: VariantSide): CompareReport {
   }
   const dTien = sb.duToan_vnd - sa.duToan_vnd;
   if (Math.abs(dTien) >= 5_000_000) {
-    highlights.push(`Dự toán: ${formatVnd(sa.duToan_vnd)} → ${formatVnd(sb.duToan_vnd)} (${dTien > 0 ? "đắt hơn" : "rẻ hơn"} ~${formatVnd(Math.abs(dTien))})`);
+    highlights.push(`Presupuesto: ${formatVnd(sa.duToan_vnd)} → ${formatVnd(sb.duToan_vnd)} (${dTien > 0 ? "más caro" : "más barato"} ~${formatVnd(Math.abs(dTien))})`);
   }
-  if (sa.furniture !== sb.furniture) highlights.push(`Nội thất: ${sa.furniture} → ${sb.furniture} món`);
-  if (highlights.length === 0) highlights.push("Hai phương án gần như trùng nhau về phòng ốc và chi phí.");
+  if (sa.furniture !== sb.furniture) highlights.push(`Mobiliario: ${sa.furniture} → ${sb.furniture} piezas`);
+  if (highlights.length === 0) highlights.push("Las dos alternativas son prácticamente iguales en recintos y costo.");
 
   return { a: sa, b: sb, rooms: roomList, highlights };
 }
@@ -102,15 +102,15 @@ export function compareHtml(a: VariantSide, b: VariantSide, levelId: string, pro
     .join("");
 
   const tongRow =
-    `<tr class="tong"><td></td><td>TỔNG DIỆN TÍCH PHÒNG</td><td></td>` +
+    `<tr class="tong"><td></td><td>SUPERFICIE TOTAL DE RECINTOS</td><td></td>` +
     `<td class="so">${report.a.tongPhong_m2}</td><td class="so">${report.b.tongPhong_m2}</td>` +
     `<td class="so">${r1(report.b.tongPhong_m2 - report.a.tongPhong_m2)}</td></tr>` +
-    `<tr class="tong"><td></td><td>DỰ TOÁN SƠ BỘ</td><td></td>` +
+    `<tr class="tong"><td></td><td>PRESUPUESTO PRELIMINAR</td><td></td>` +
     `<td class="so">${formatVnd(report.a.duToan_vnd)}</td><td class="so">${formatVnd(report.b.duToan_vnd)}</td>` +
     `<td class="so">${formatVnd(report.b.duToan_vnd - report.a.duToan_vnd)}</td></tr>`;
 
-  return `<!doctype html><html lang="vi"><head><meta charset="utf-8">
-<title>So sánh phương án — ${esc(projectName)}</title>
+  return `<!doctype html><html lang="es"><head><meta charset="utf-8">
+<title>Comparación de alternativas — ${esc(projectName)}</title>
 <style>
   body{margin:0;padding:16px 20px;background:#14171b;color:#e9e6df;font:13px "Be Vietnam Pro","Segoe UI",system-ui,sans-serif}
   h1{font-size:15px;font-weight:700;margin:0 0 2px}
@@ -131,15 +131,15 @@ export function compareHtml(a: VariantSide, b: VariantSide, levelId: string, pro
   .hl b{color:#6ea0d8;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
   .hl ul{margin:6px 0 0;padding-left:18px;line-height:1.55}
 </style></head><body>
-<h1>SO SÁNH PHƯƠNG ÁN — ${esc(projectName)}</h1>
-<div class="sub">Mặt bằng ${esc(levelId)} · A = ${esc(report.a.label)} · B = ${esc(report.b.label)}</div>
+<h1>COMPARACIÓN DE ALTERNATIVAS — ${esc(projectName)}</h1>
+<div class="sub">Planta ${esc(levelId)} · A = ${esc(report.a.label)} · B = ${esc(report.b.label)}</div>
 <div class="cols">
-  <div class="pane"><h2>A · ${esc(report.a.label)} <span class="khi">${report.a.walls} tường · ${report.a.openings} cửa · ${report.a.furniture} nội thất</span></h2><div class="paper">${svgA}</div></div>
-  <div class="pane"><h2>B · ${esc(report.b.label)} <span class="khi">${report.b.walls} tường · ${report.b.openings} cửa · ${report.b.furniture} nội thất</span></h2><div class="paper">${svgB}</div></div>
+  <div class="pane"><h2>A · ${esc(report.a.label)} <span class="khi">${report.a.walls} muros · ${report.a.openings} vanos · ${report.a.furniture} muebles</span></h2><div class="paper">${svgA}</div></div>
+  <div class="pane"><h2>B · ${esc(report.b.label)} <span class="khi">${report.b.walls} muros · ${report.b.openings} vanos · ${report.b.furniture} muebles</span></h2><div class="paper">${svgB}</div></div>
 </div>
-<div class="hl"><b>Khác biệt chính</b><ul>${report.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul></div>
+<div class="hl"><b>Diferencias principales</b><ul>${report.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul></div>
 <table>
-  <tr><th>ID</th><th>Phòng</th><th>Tầng</th><th class="so">A (m²)</th><th class="so">B (m²)</th><th class="so">Δ</th></tr>
+  <tr><th>ID</th><th>Recinto</th><th>Piso</th><th class="so">A (m²)</th><th class="so">B (m²)</th><th class="so">Δ</th></tr>
   ${roomRows}
   ${tongRow}
 </table>

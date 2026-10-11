@@ -21,7 +21,7 @@ describe("ProjectStore", () => {
   it("không nghiền dự án đang có (project_new lần 2 bị chặn)", () => {
     const store = freshStore();
     store.newProject("Nhà 1");
-    expect(() => store.newProject("Nhà 2")).toThrowError(/Đã có dự án/);
+    expect(() => store.newProject("Nhà 2")).toThrowError(/Ya existe un proyecto/);
   });
 
   it("apply thành công → persist + journal; apply phạm block → file không đổi", () => {

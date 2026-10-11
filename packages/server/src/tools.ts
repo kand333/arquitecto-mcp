@@ -62,7 +62,7 @@ const fail = (e: unknown): ToolResult => ({
 });
 
 function issueLines(issues: Issue[]): string {
-  if (issues.length === 0) return "0 vấn đề — sạch.";
+  if (issues.length === 0) return "0 observaciones — limpio.";
   return issues
     .map((i) => `[${i.rule}/${i.severity}] ${i.message}${i.entities.length ? ` (${i.entities.join(", ")})` : ""}`)
     .join("\n");
@@ -73,10 +73,10 @@ function projectBrief(p: Project): string {
     .map((l) => {
       const rooms = p.rooms.filter((r) => r.level === l.id).length;
       const walls = p.walls.filter((w) => w.level === l.id).length;
-      return `${l.id} "${l.name}": ${walls} tường, ${rooms} phòng`;
+      return `${l.id} "${l.name}": ${walls} muros, ${rooms} recintos`;
     })
     .join("; ");
-  return `"${p.meta.name}" (revision ${p.meta.revision}) — ${p.levels.length} tầng: ${perLevel}. Openings: ${p.openings.length}, nội thất: ${p.furniture.length}.`;
+  return `"${p.meta.name}" (revisión ${p.meta.revision}) — ${p.levels.length} pisos: ${perLevel}. Vanos: ${p.openings.length}, mobiliario: ${p.furniture.length}.`;
 }
 
 export function createArquitectoServer(store: ProjectStore, live: LiveServer = new LiveServer(store)): McpServer {
@@ -98,7 +98,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
     (args) => {
       try {
         const p = store.newProject(args.name, args.template, args.siteBoundary as never, args.brief as never);
-        return text(`✅ Đã tạo ${store.filePath}\n${projectBrief(p)}\nBước tiếp: brief (pha A) → apply_ops dựng/chỉnh model → validate → render_plan.`);
+        return text(`✅ Creado ${store.filePath}\n${projectBrief(p)}\nSiguiente: brief (fase A) → apply_ops para construir/ajustar el modelo → validate → render_plan.`);
       } catch (e) {
         return fail(e);
       }
@@ -108,14 +108,14 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
   server.registerTool(
     "project_open",
     {
-      title: "Mở dự án có sẵn",
-      description: `Mở file model. Bỏ trống path để mở ${store.filePath}.`,
+      title: "Abrir un proyecto existente",
+      description: `Abre un archivo de modelo dentro de la carpeta del proyecto. Sin path abre ${store.filePath}.`,
       inputSchema: { path: z.string().optional() },
     },
     (args) => {
       try {
         const p = store.openProject(args.path);
-        return text(`✅ Đã mở.\n${projectBrief(p)}`);
+        return text(`✅ Abierto.\n${projectBrief(p)}`);
       } catch (e) {
         return fail(e);
       }
@@ -125,9 +125,9 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
   server.registerTool(
     "model_query",
     {
-      title: "Đọc model",
+      title: "Leer el modelo",
       description:
-        "Đọc phần model theo bộ lọc. select.entity (walls|openings|slabs|stairs|rooms|furniture|levels|axes|styles|finishes|meta|brief|site), select.ids, select.level. computed=true trả kèm giá trị dẫn xuất (diện tích phòng, riser thang) — các giá trị này KHÔNG lưu trong model, đừng cố ghi chúng.",
+        "Lee parte del modelo según un filtro. select.entity (walls|openings|slabs|stairs|rooms|furniture|levels|axes|styles|finishes|meta|brief|site), select.ids, select.level. computed=true agrega valores derivados (superficie de recintos, contrahuella de escaleras): NO se guardan en el modelo, no intentes escribirlos.",
       inputSchema: {
         select: z
           .object({
@@ -153,23 +153,23 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
   server.registerTool(
     "apply_ops",
     {
-      title: "Sửa model (cổng mutation duy nhất)",
+      title: "Modificar el modelo (única vía de cambios)",
       description:
-        "Áp một batch ops như MỘT transaction: tất cả cùng áp hoặc cùng hủy. baseRevision phải bằng revision hiện tại — nếu đã lâu không đọc model (hoặc người dùng có thể vừa sửa tay), LUÔN gọi get_changes_since trước; không bao giờ ghi đè thay đổi của người dùng. Entity người dùng đang kéo trên editor bị khóa mềm (LOCK-01) — chờ vài giây rồi get_changes_since xem họ đổi gì, thích nghi theo thay vì 'sửa lại cho đúng ý mình'. Không có op thay cả model. Lỗi mức block → transaction bị hủy, đọc message rồi tự sửa và gửi lại. warnings (error/warn/info) không chặn ghi nhưng phải xử lý trước checkpoint. ID do client tự đặt theo tiền tố: W tường, D cửa đi, S cửa sổ, R phòng, F nội thất, ST thang, SL sàn, L tầng.",
+        "Aplica un lote de ops como UNA transacción: se aplican todas o ninguna. baseRevision debe ser la revisión actual; si hace rato que no lees el modelo (o el usuario pudo editar a mano), llama SIEMPRE antes a get_changes_since y nunca sobrescribas cambios del usuario. Lo que el usuario está arrastrando en el editor tiene bloqueo suave (LOCK-01): espera unos segundos, mira con get_changes_since qué cambió y adáptate en vez de «corregirlo a tu gusto». No existe una op que reemplace todo el modelo. Un error de nivel block anula la transacción: lee el mensaje, corrige y reenvía. Las advertencias (error/warn/info) no bloquean la escritura pero hay que resolverlas antes de cada checkpoint. El cliente asigna los ID con prefijo: W muro, D puerta, S ventana, R recinto, F mueble, ST escalera, SL losa, L piso; solo letras, números, «_» o «-» (1–32).",
       inputSchema: {
         baseRevision: z.number().int().nonnegative(),
         ops: z.array(OP).min(1),
-        note: z.string().optional().describe("Ghi chú ngắn cho journal, vd 'Ngăn phòng ngủ 2'"),
+        note: z.string().optional().describe("Nota breve para el historial, p. ej. 'Dividir dormitorio 2'"),
       },
     },
     (args) => {
       try {
         const r = store.apply(args.baseRevision, args.ops as Op[], args.note);
         if (!r.ok) {
-          return text(`⛔ Transaction bị hủy (revision hiện tại: ${r.currentRevision}).\n${issueLines(r.errors)}`);
+          return text(`⛔ Transacción anulada (revisión actual: ${r.currentRevision}).\n${issueLines(r.errors)}`);
         }
-        const warn = r.warnings.length ? `\nCảnh báo:\n${issueLines(r.warnings)}` : "\nValidator: sạch.";
-        return text(`✅ revision ${r.revision} — ${r.summary}${warn}`);
+        const warn = r.warnings.length ? `\nAdvertencias:\n${issueLines(r.warnings)}` : "\nValidador: limpio.";
+        return text(`✅ revisión ${r.revision} — ${r.summary}${warn}`);
       } catch (e) {
         return fail(e);
       }
@@ -179,17 +179,17 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
   server.registerTool(
     "get_changes_since",
     {
-      title: "Xem thay đổi từ một revision",
+      title: "Ver cambios desde una revisión",
       description:
-        "Trả các ops từ revision đó tới nay kèm tóm tắt chữ + origin (claude/user/system) — dùng để bắt kịp thay đổi tay của người dùng trước khi apply_ops.",
+        "Devuelve las ops desde esa revisión hasta ahora, con resumen en texto y origen (claude/user/system). Úsala para ponerte al día con los cambios manuales del usuario antes de apply_ops.",
       inputSchema: { revision: z.number().int().nonnegative() },
     },
     (args) => {
       try {
         const { entries, currentRevision } = store.changesSince(args.revision);
-        if (entries.length === 0) return text(`Không có thay đổi nào sau revision ${args.revision}. Revision hiện tại: ${currentRevision}.`);
+        if (entries.length === 0) return text(`No hay cambios después de la revisión ${args.revision}. Revisión actual: ${currentRevision}.`);
         const lines = entries.map((e) => `r${e.revision} [${e.origin}] ${e.summary}${e.note ? ` — "${e.note}"` : ""}`);
-        return text(`Revision hiện tại: ${currentRevision}\n${lines.join("\n")}\n\nChi tiết ops:\n${JSON.stringify(entries.map((e) => ({ revision: e.revision, ops: e.ops })), null, 2)}`);
+        return text(`Revisión actual: ${currentRevision}\n${lines.join("\n")}\n\nDetalle de ops:\n${JSON.stringify(entries.map((e) => ({ revision: e.revision, ops: e.ops })), null, 2)}`);
       } catch (e) {
         return fail(e);
       }
@@ -199,9 +199,9 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
   server.registerTool(
     "validate",
     {
-      title: "Chạy validator",
+      title: "Ejecutar el validador",
       description:
-        "Chạy toàn bộ rule (GEO topology, STD chuẩn VN, LBB Lỗ Ban nếu brief bật) trên model. scope.level hoặc scope.entityIds để lọc kết quả. Chạy validate + render_plan tự soi TRƯỚC khi mời người dùng xem (nguyên tắc 5).",
+        "Ejecuta todas las reglas que aplican al proyecto (topología GEO + el pack normativo de su región) sobre el modelo. scope.level o scope.entityIds filtran el resultado. Corre validate + render_plan y revisa tú mismo ANTES de mostrarle algo al usuario (principio 5).",
       inputSchema: {
         scope: z
           .object({ level: z.string().optional(), entityIds: z.array(z.string()).optional() })
@@ -221,7 +221,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
           const onLevel = entityIdsOfLevel(p, scope.level);
           issues = issues.filter((i) => i.entities.some((e) => onLevel.has(e)));
         }
-        return text(`Validator (revision ${p.meta.revision}): ${issueLines(issues)}`);
+        return text(`Validador (revisión ${p.meta.revision}): ${issueLines(issues)}`);
       } catch (e) {
         return fail(e);
       }
@@ -231,11 +231,11 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
   server.registerTool(
     "render_plan",
     {
-      title: "Render mặt bằng (PNG + SVG)",
+      title: "Dibujar la planta (PNG + SVG)",
       description:
-        "Sinh bản vẽ mặt bằng một tầng đúng ký hiệu + dim từ model, trả ảnh PNG để nhìn ngay trong chat (SVG lưu ở .arquitecto/exports). layers để lọc (vd chỉ TUONG-CAT,DIM khi cần soi kích thước). scale 50/100 (mặc định tự chọn).",
+        "Genera la planta de un piso con su simbología y cotas a partir del modelo y devuelve un PNG para verlo en el chat (el SVG queda en .arquitecto/exports). layers filtra capas (p. ej. solo TUONG-CAT,DIM para revisar medidas). scale 50/100 (por defecto se elige solo).",
       inputSchema: {
-        level: z.string().describe("ID level, vd L1"),
+        level: z.string().describe("ID del piso, p. ej. L1"),
         scale: z.number().int().optional(),
         layers: z.array(z.string()).optional(),
       },
@@ -251,9 +251,9 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
           ...(underlay ? { underlay } : {}),
         });
         const issues = validateProject(p);
-        const note = `Đã render ${r.levelName} (${r.scaleLabel}) → ${r.svgPath}\nValidator: ${issues.length === 0 ? "sạch" : `${issues.length} vấn đề — chạy validate để xem`}.`;
+        const note = `Dibujado ${r.levelName} (${r.scaleLabel}) → ${r.svgPath}\nValidador: ${issues.length === 0 ? "limpio" : `${issues.length} observaciones — ejecuta validate para verlas`}.`;
         if (!r.pngPath) {
-          return text(`${note}\n(PNG lỗi: ${r.pngError ?? "không rõ"} — xem SVG.)`);
+          return text(`${note}\n(Error en el PNG: ${r.pngError ?? "desconocido"} — revisa el SVG.)`);
         }
         const png = readFileSync(r.pngPath).toString("base64");
         return {
@@ -271,27 +271,27 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
   server.registerTool(
     "editor_open",
     {
-      title: "Mở live editor trên trình duyệt",
+      title: "Abrir el editor en el navegador",
       description:
-        "Khởi động web editor (một process với server) và mở bằng trình duyệt mặc định — từ đây MỌI apply_ops hiện ngay trên màn hình người dùng (2D + 3D), làm đến đâu dựng đến đó. Gọi sau khi đã project_new/project_open. openBrowser=false nếu chỉ cần URL. Sau khi mở, dùng capture_view để tự nhìn đúng cái người dùng đang thấy (nguyên tắc 5).",
+        "Inicia el editor web (en el mismo proceso del servidor, solo en 127.0.0.1 y con token) y lo abre en el navegador predeterminado: desde ahí CADA apply_ops aparece al instante en pantalla (2D + 3D). Llámala después de project_new/project_open. openBrowser=false si solo necesitas la URL. Luego usa capture_view para ver exactamente lo que ve el usuario (principio 5).",
       inputSchema: {
-        openBrowser: z.boolean().optional().describe("Mặc định true — tự mở trình duyệt"),
+        openBrowser: z.boolean().optional().describe("Por defecto true: abre el navegador"),
       },
     },
     async (args) => {
       try {
-        void store.current; // bắt lỗi "chưa mở dự án" sớm, thông điệp chỉ đường sẵn có
+        void store.current; // falla temprano si no hay proyecto abierto, con su mensaje guía
         await live.start();
         const url = live.editorUrl()!; // A1: lleva el token del propietario
         if (args.openBrowser !== false) openInBrowser(url);
         const distNote = existsSync(DEFAULT_WEB_DIST)
           ? ""
-          : "\n⚠ Web editor chưa build — trang sẽ hướng dẫn chạy: pnpm --filter @arquitecto/web build";
+          : "\n⚠ El editor web no está compilado: la página indicará ejecutar pnpm --filter @arquitecto/web build";
         const share = live.shareUrl();
         return text(
-          `✅ Editor: ${url}${args.openBrowser !== false ? " (đã mở trình duyệt)" : ""} — browser đang nối: ${live.browserCount}.${distNote}` +
+          `✅ Editor: ${url}${args.openBrowser !== false ? " (navegador abierto)" : ""} — navegadores conectados: ${live.browserCount}.${distNote}` +
             (share
-              ? `\n👁 Link chia sẻ CHỈ-XEM (gửi cho người thân cùng ngắm, không sửa được): ${share}\n   (el servidor solo escucha en 127.0.0.1: el link funciona únicamente en este equipo)`
+              ? `\n👁 Link de SOLO LECTURA (ve todo en vivo, no puede editar): ${share}\n   (el servidor solo escucha en 127.0.0.1: el link funciona únicamente en este equipo)`
               : ""),
         );
       } catch (e) {
@@ -303,9 +303,9 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
   server.registerTool(
     "capture_view",
     {
-      title: "Chụp khung nhìn editor",
+      title: "Capturar la vista del editor",
       description:
-        "Nhờ browser đang mở chụp ĐÚNG cái người dùng đang thấy: target '3d' (canvas Three.js) hoặc 'plan' (mặt bằng 2D). camera {position, lookAt} mm để đặt góc 3D trước khi chụp — bỏ trống là giữ góc người dùng đang xem. Chưa có browser: 'plan' fallback render server (tầng thấp nhất), '3d' cần editor_open trước. Dùng để TỰ NHÌN sau mỗi thay đổi lớn (nguyên tắc 5).",
+        "Pide al navegador abierto una captura de EXACTAMENTE lo que ve el usuario: target '3d' (canvas Three.js) o 'plan' (planta 2D). camera {position, lookAt} en mm fija el ángulo 3D antes de capturar; vacío = el ángulo actual del usuario. Sin navegador: 'plan' usa el render del servidor (piso más bajo) y '3d' exige editor_open antes. Úsala para revisar tú mismo tras cada cambio grande (principio 5).",
       inputSchema: {
         target: z.enum(["3d", "plan"]),
         camera: z
@@ -324,7 +324,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
           return {
             content: [
               { type: "image" as const, data: png, mimeType: "image/png" },
-              { type: "text" as const, text: `Ảnh ${args.target} từ browser (revision ${p.meta.revision}).` },
+              { type: "text" as const, text: `Imagen ${args.target} del navegador (revisión ${p.meta.revision}).` },
             ],
           };
         }
@@ -333,16 +333,16 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
           const r = await renderPlanFiles(p, ground.id, store.exportDir, {
             date: new Date().toLocaleDateString("vi-VN"),
           });
-          if (!r.pngPath) return fail(new Error(`Fallback render lỗi: ${r.pngError ?? "không rõ"}`));
+          if (!r.pngPath) return fail(new Error(`Falló el render de respaldo: ${r.pngError ?? "desconocido"}`));
           const png = readFileSync(r.pngPath).toString("base64");
           return {
             content: [
               { type: "image" as const, data: png, mimeType: "image/png" },
-              { type: "text" as const, text: `Chưa có browser mở — đây là bản render server ${r.levelName} (revision ${p.meta.revision}). Muốn nhìn đúng khung người dùng: editor_open trước.` },
+              { type: "text" as const, text: `No hay navegador abierto: este es el render del servidor de ${r.levelName} (revisión ${p.meta.revision}). Para ver exactamente la vista del usuario, primero editor_open.` },
             ],
           };
         }
-        return fail(new Error("Chưa có browser nào mở editor — gọi editor_open trước (3d chỉ chụp được từ browser)."));
+        return fail(new Error("No hay ningún navegador con el editor abierto: llama antes a editor_open (el 3d solo se captura desde el navegador)."));
       } catch (e) {
         return fail(e);
       }
@@ -352,11 +352,11 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
   server.registerTool(
     "assets_search",
     {
-      title: "Tìm asset nội thất trong catalog",
+      title: "Buscar mobiliario en el catálogo",
       description:
-        `Tìm trong catalog ${"≥100"} asset chuẩn hóa (kích thước mm THẬT, tên VN, khe hở khuyến nghị) — dùng id trả về cho apply_ops add furniture. Trả kèm MỘT ảnh contact sheet để nhìn hình dáng + cỡ. maxFootprint {w,d} lọc đồ vừa chỗ trống (vd hốc 900mm). Category: ${ASSET_CATEGORIES.join(", ")}. Đồ treo tường có "treo <mm>" — đặt bằng field elevation của furniture.`,
+        `Busca en el catálogo de ${"≥100"} piezas normalizadas (medidas REALES en mm y holguras recomendadas; los nombres aún están en vietnamita, traducción pendiente). Usa el id devuelto en apply_ops add furniture. Devuelve además UNA lámina de contacto para ver forma y tamaño. maxFootprint {w,d} filtra lo que cabe en un hueco (p. ej. 900 mm). Categorías: ${ASSET_CATEGORIES.join(", ")}. Lo que va colgado indica "treo <mm>" (altura): se fija con el campo elevation del mueble.`,
       inputSchema: {
-        query: z.string().optional().describe("Từ khóa, vd 'giường', 'sofa góc'"),
+        query: z.string().optional().describe("Palabra clave (por ahora en vietnamita o por id/categoría), p. ej. 'sofa'"),
         category: z.string().optional(),
         maxFootprint: z.object({ w: z.number().optional(), d: z.number().optional() }).optional(),
       },
@@ -364,23 +364,23 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
     async (args) => {
       try {
         if (args.category && !ASSET_CATEGORIES.includes(args.category as AssetCategory)) {
-          return fail(new Error(`Category "${args.category}" không tồn tại — hợp lệ: ${ASSET_CATEGORIES.join(", ")}.`));
+          return fail(new Error(`La categoría "${args.category}" no existe. Válidas: ${ASSET_CATEGORIES.join(", ")}.`));
         }
         const found = searchAssets(args.query ?? "", args.category as AssetCategory | undefined, args.maxFootprint);
-        if (found.length === 0) return text("Không có asset nào khớp — thử từ khóa rộng hơn hoặc bỏ bộ lọc.");
+        if (found.length === 0) return text("Ninguna pieza coincide: prueba una palabra más amplia o quita filtros.");
         const lines = found.slice(0, 40).map((a) => {
           const cl = a.clearance
-            ? ` — khe hở${a.clearance.front ? ` trước ${a.clearance.front}` : ""}${a.clearance.sides ? ` bên ${a.clearance.sides}` : ""}`
+            ? ` — holgura${a.clearance.front ? ` frontal ${a.clearance.front}` : ""}${a.clearance.sides ? ` lateral ${a.clearance.sides}` : ""}`
             : "";
-          const treo = a.mountHeight != null ? ` — treo cao ${a.mountHeight}` : "";
-          return `${a.id} · ${a.label} · ${a.footprint.w}×${a.footprint.d}, cao ${a.footprint.h}${cl}${treo}`;
+          const treo = a.mountHeight != null ? ` — colgado a ${a.mountHeight}` : "";
+          return `${a.id} · ${a.label} · ${a.footprint.w}×${a.footprint.d}, alto ${a.footprint.h}${cl}${treo}`;
         });
-        if (found.length > 40) lines.push(`… và ${found.length - 40} asset nữa — lọc thêm bằng category/maxFootprint.`);
-        const note = `${found.length} asset khớp:\n${lines.join("\n")}`;
+        if (found.length > 40) lines.push(`… y ${found.length - 40} piezas más: filtra con category/maxFootprint.`);
+        const note = `${found.length} piezas coinciden:\n${lines.join("\n")}`;
         try {
           const svg = buildAssetsSheetSvg(
             found.slice(0, SHEET_CAPACITY),
-            args.query || args.category ? `KẾT QUẢ: ${args.query ?? args.category}` : "CATALOG NỘI THẤT — ARQUITECTO",
+            args.query || args.category ? `RESULTADO: ${args.query ?? args.category}` : "CATÁLOGO DE MOBILIARIO — ARQUITECTO",
           );
           const { svgToPng } = await import("./render/png.js");
           const png = await renderTempPng("arquitecto-assets-", (fp) => svgToPng(svg, fp));
@@ -391,7 +391,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
             ],
           };
         } catch {
-          return text(note); // không có Chromium vẫn dùng được bằng chữ
+          return text(note); // sin Chromium sigue sirviendo en texto
         }
       } catch (e) {
         return fail(e);
@@ -402,12 +402,12 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
   server.registerTool(
     "render_view",
     {
-      title: "Render mặt đứng / mặt cắt (PNG + SVG)",
+      title: "Dibujar elevación / corte (PNG + SVG)",
       description:
-        "Sinh MẶT ĐỨNG CHÍNH (chiếu cạnh mặt tiền site.front) hoặc MẶT CẮT A-A (vết dọc qua thang — cần model có thang) từ model, trả ảnh PNG nhìn ngay trong chat. Dùng để tự soi trước checkpoint pha E (nguyên tắc 5); mặt bằng vẫn là render_plan.",
+        "Genera la ELEVACIÓN PRINCIPAL (proyección del frente site.front) o el CORTE A-A (longitudinal por la escalera; requiere escalera) a partir del modelo y devuelve un PNG para verlo en el chat. Úsala para revisar antes del checkpoint de la fase E (principio 5); la planta sigue siendo render_plan.",
       inputSchema: {
         kind: z.enum(["elevation", "section"]),
-        scale: z.number().int().optional().describe("50/100 — mặc định tự chọn"),
+        scale: z.number().int().optional().describe("50/100 — por defecto se elige solo"),
       },
     },
     async (args) => {
@@ -427,13 +427,13 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
           const { svgToPng } = await import("./render/png.js");
           await svgToPng(r.svg, pngPath);
         } catch (e) {
-          return text(`Đã render ${r.title} (${r.scaleLabel}) → ${svgPath}\n(PNG lỗi: ${e instanceof Error ? e.message : String(e)} — xem SVG.)`);
+          return text(`Dibujado ${r.title} (${r.scaleLabel}) → ${svgPath}\n(Error en el PNG: ${e instanceof Error ? e.message : String(e)} — revisa el SVG.)`);
         }
         const png = readFileSync(pngPath).toString("base64");
         return {
           content: [
             { type: "image" as const, data: png, mimeType: "image/png" },
-            { type: "text" as const, text: `Đã render ${r.title} (${r.scaleLabel}) → ${svgPath}` },
+            { type: "text" as const, text: `Dibujado ${r.title} (${r.scaleLabel}) → ${svgPath}` },
           ],
         };
       } catch (e) {
@@ -445,16 +445,16 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
   server.registerTool(
     "variant_save",
     {
-      title: "Lưu phương án (A/B)",
+      title: "Guardar alternativa (A/B)",
       description:
-        "Chụp model hiện tại thành PHƯƠNG ÁN có tên (.arquitecto/phuong-an/) để so sánh A/B — vd trước khi thử một bố trí khác: variant_save('Phương án A — thang giữa nhà'). Cùng tên → cập nhật đè. Xem cạnh nhau: variant_compare hoặc trang /so-sanh trên editor.",
-      inputSchema: { name: z.string().min(1).describe("Tên phương án, vd 'Phương án A — bếp quay ra sau'") },
+        "Guarda el modelo actual como una ALTERNATIVA con nombre (.arquitecto/phuong-an/) para comparar A/B, p. ej. antes de probar otra distribución: variant_save('Alternativa A — escalera al centro'). Mismo nombre = se sobrescribe. Para verlas lado a lado: variant_compare o la página /so-sanh del editor.",
+      inputSchema: { name: z.string().min(1).describe("Nombre de la alternativa, p. ej. 'Alternativa A — cocina al fondo'") },
     },
     (args) => {
       try {
         const { slug, revision } = store.saveVariant(args.name);
         const all = store.listVariants().map((v) => `${v.slug} ("${v.name}", r${v.revision})`).join("; ");
-        return text(`✅ Đã lưu phương án "${args.name}" (slug: ${slug}, tại revision ${revision}).\nHiện có: ${all}.`);
+        return text(`✅ Alternativa "${args.name}" guardada (slug: ${slug}, en la revisión ${revision}).\nGuardadas: ${all}.`);
       } catch (e) {
         return fail(e);
       }
@@ -464,15 +464,15 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
   server.registerTool(
     "variant_open",
     {
-      title: "Chuyển sang phương án đã lưu",
+      title: "Pasar a una alternativa guardada",
       description:
-        "Checkout một phương án thành model đang làm — mọi tab editor tự nhận snapshot mới. ⚠ Model hiện tại KHÔNG tự lưu: nếu muốn giữ, variant_save trước rồi hãy mở. Revision tiếp tục tăng nên get_changes_since vẫn liền mạch.",
+        "Convierte una alternativa en el modelo de trabajo; todas las pestañas del editor reciben el nuevo estado. ⚠ El modelo actual NO se guarda solo: si quieres conservarlo, haz variant_save antes. La revisión sigue creciendo, así que get_changes_since mantiene la continuidad.",
       inputSchema: { slug: z.string().min(1) },
     },
     (args) => {
       try {
         const p = store.openVariant(args.slug);
-        return text(`✅ Đang làm việc trên phương án "${args.slug}".\n${projectBrief(p)}`);
+        return text(`✅ Trabajando sobre la alternativa "${args.slug}".\n${projectBrief(p)}`);
       } catch (e) {
         return fail(e);
       }
@@ -482,13 +482,13 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
   server.registerTool(
     "variant_compare",
     {
-      title: "So sánh 2 phương án cạnh nhau",
+      title: "Comparar 2 alternativas lado a lado",
       description:
-        "Đặt 2 mặt bằng CẠNH NHAU + bảng diff (diện tích từng phòng, số tường/cửa/nội thất, DỰ TOÁN từng bên) — trả ảnh PNG nhìn ngay trong chat. a/b là slug phương án hoặc 'hien-tai' (mặc định: a = phương án lưu gần nhất, b = model hiện tại). Người dùng xem bản tương tác tại <editor>/so-sanh?a=&b=&level=.",
+        "Pone 2 plantas LADO A LADO + tabla de diferencias (superficie por recinto, cantidad de muros/vanos/muebles, PRESUPUESTO de cada una) y devuelve un PNG para verlo en el chat. a/b son slugs de alternativas o 'hien-tai' (actual); por defecto a = la última guardada y b = el modelo actual. El usuario ve la versión interactiva en <editor>/so-sanh?token=…&a=&b=&level=.",
       inputSchema: {
         a: z.string().optional(),
         b: z.string().optional(),
-        level: z.string().optional().describe("ID tầng, mặc định tầng thấp nhất"),
+        level: z.string().optional().describe("ID del piso; por defecto el más bajo"),
       },
     },
     async (args) => {
@@ -504,22 +504,22 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
               const v = store.readVariant(latest.slug);
               return { label: v.name, model: v.model };
             }
-            throw new Error("Chưa có phương án nào — variant_save trước rồi mới so sánh được.");
+            throw new Error("Aún no hay alternativas: usa variant_save antes de comparar.");
           }
-          return { label: `HIỆN TẠI (r${store.current.meta.revision})`, model: store.current };
+          return { label: `ACTUAL (r${store.current.meta.revision})`, model: store.current };
         };
         const a = side(args.a, true);
         const b = side(args.b, false);
         const level = args.level ?? [...a.model.levels].sort((x, y) => x.elevation - y.elevation)[0]?.id;
-        if (!level) return fail(new Error("Model chưa có tầng nào."));
+        if (!level) return fail(new Error("El modelo aún no tiene pisos."));
 
         store.refreshDonGia();
         const report = compareProjects(a, b);
         const lines = [
-          `So sánh (${level}): A = ${report.a.label} · B = ${report.b.label}`,
+          `Comparación (${level}): A = ${report.a.label} · B = ${report.b.label}`,
           ...report.highlights.map((h) => `• ${h}`),
-          `Tổng DT phòng: A ${report.a.tongPhong_m2}m² · B ${report.b.tongPhong_m2}m²; dự toán: A ~${formatVnd(report.a.duToan_vnd)} · B ~${formatVnd(report.b.duToan_vnd)}.`,
-          ...(live.url ? [`Bản tương tác: ${live.url}/so-sanh?token=${live.ownerToken}${args.a ? `&a=${encodeURIComponent(args.a)}` : ""}`] : []),
+          `Superficie total de recintos: A ${report.a.tongPhong_m2}m² · B ${report.b.tongPhong_m2}m²; presupuesto: A ~${formatVnd(report.a.duToan_vnd)} · B ~${formatVnd(report.b.duToan_vnd)}.`,
+          ...(live.url ? [`Versión interactiva: ${live.url}/so-sanh?token=${live.ownerToken}${args.a ? `&a=${encodeURIComponent(args.a)}` : ""}`] : []),
         ];
         try {
           const html = compareHtml(a, b, level, store.current.meta.name);
@@ -532,7 +532,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
             ],
           };
         } catch {
-          return text(lines.join("\n")); // không có Chromium vẫn có diff chữ
+          return text(lines.join("\n")); // sin Chromium igual queda la comparación en texto
         }
       } catch (e) {
         return fail(e);
@@ -543,9 +543,9 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
   server.registerTool(
     "estimate_cost",
     {
-      title: "Dự toán chi phí sơ bộ",
+      title: "Presupuesto preliminar",
       description:
-        "Ước tính chi phí xây từ model: diện tích quy đổi (sàn 100%, móng ~40%, mái ~50%) × đơn giá phần thô + sàn thực × đơn giá hoàn thiện theo mức trong brief (muc để override: co-ban | trung-binh-kha | cao-cap). Tự so với ngân sách brief. Sai số ±15–20%, KHÔNG thay báo giá thầu — đơn giá là data người dùng sửa được ở packages/core/rules/don-gia.json. Tờ DỰ TOÁN SƠ BỘ cũng nằm trong bộ export (id 'estimate').",
+        "Estima el costo de construcción desde el modelo: superficie equivalente (losas 100 %, fundaciones ~40 %, techo ~50 %) × precio de obra gruesa + superficie útil × precio de terminaciones según el nivel del brief (muc lo fuerza: co-ban básico | trung-binh-kha medio | cao-cap alto). Compara con el presupuesto del brief. Margen ±15–20 %; NO reemplaza una cotización. Hoy solo hay tabla de precios para el legado VN: en proyectos chilenos da solo cantidades hasta cargar la tabla CLP/UF (E4). La lámina de presupuesto también va en el export (id 'estimate').",
       inputSchema: {
         muc: z.enum(["co-ban", "trung-binh-kha", "cao-cap"]).optional(),
       },
@@ -557,33 +557,33 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
         const e = estimateCost(p, args.muc as FinishLevel | undefined);
         const q = e.quantities;
         const lines: string[] = [];
-        lines.push(`DỰ TOÁN SƠ BỘ — "${p.meta.name}" (revision ${p.meta.revision})`);
+        lines.push(`PRESUPUESTO PRELIMINAR — "${p.meta.name}" (revisión ${p.meta.revision})`);
         lines.push("");
-        lines.push("Diện tích tính phí:");
+        lines.push("Superficies que se cobran:");
         for (const l of q.dien_tich) {
-          lines.push(`  ${l.label}${l.uoc_le ? " (ước lệ)" : ""}: ${l.dien_tich_m2}m² × ${l.he_so} = ${l.quy_doi_m2}m²`);
+          lines.push(`  ${l.label}${l.uoc_le ? " (estimada)" : ""}: ${l.dien_tich_m2}m² × ${l.he_so} = ${l.quy_doi_m2}m²`);
         }
-        lines.push(`  TỔNG QUY ĐỔI: ${q.tong_quy_doi_m2}m² · sàn thực ${q.san_thuc_m2}m²`);
+        lines.push(`  TOTAL EQUIVALENTE: ${q.tong_quy_doi_m2}m² · superficie útil ${q.san_thuc_m2}m²`);
         lines.push("");
-        lines.push("Chi phí:");
+        lines.push("Costos:");
         for (const i of e.items) {
-          lines.push(`  ${i.label}: ${i.don_gia_vnd.toLocaleString("vi-VN")}đ/m² → ${i.thanh_tien_vnd.toLocaleString("vi-VN")}đ`);
+          lines.push(`  ${i.label}: ${i.don_gia_vnd.toLocaleString("vi-VN")} VND/m² → ${i.thanh_tien_vnd.toLocaleString("vi-VN")} VND`);
         }
-        lines.push(`  ➤ TỔNG: ${e.tong_vnd.toLocaleString("vi-VN")}đ (~${formatVnd(e.tong_vnd)})`);
+        lines.push(`  ➤ TOTAL: ${e.tong_vnd.toLocaleString("vi-VN")} VND (~${formatVnd(e.tong_vnd)})`);
         if (e.ngan_sach) {
           const ns = e.ngan_sach;
           lines.push(
             ns.vnd == null
-              ? `Ngân sách brief "${ns.text}" — chưa quy được ra số.`
+              ? `Presupuesto del brief "${ns.text}": no se pudo convertir a número.`
               : ns.chenh_lech_vnd! >= 0
-                ? `Ngân sách brief ${formatVnd(ns.vnd)} → CÒN DƯ ~${formatVnd(ns.chenh_lech_vnd!)}.`
-                : `Ngân sách brief ${formatVnd(ns.vnd)} → VƯỢT ~${formatVnd(-ns.chenh_lech_vnd!)} — cân nhắc giảm mức hoàn thiện hoặc diện tích.`,
+                ? `Presupuesto del brief ${formatVnd(ns.vnd)} → SOBRAN ~${formatVnd(ns.chenh_lech_vnd!)}.`
+                : `Presupuesto del brief ${formatVnd(ns.vnd)} → SE EXCEDE ~${formatVnd(-ns.chenh_lech_vnd!)}: considera bajar el nivel de terminaciones o la superficie.`,
           );
         }
         lines.push("");
-        lines.push(`Khối lượng tham khảo: tường xây ${q.tuong_xay_m2}m², cửa ${q.cua_bo} bộ (${q.cua_m2}m²), thang ${q.bac_thang} bậc.`);
+        lines.push(`Cantidades de referencia: muros de albañilería ${q.tuong_xay_m2}m², puertas/ventanas ${q.cua_bo} unidades (${q.cua_m2}m²), escalera ${q.bac_thang} peldaños.`);
         for (const g of e.ghi_chu) lines.push(`⚠ ${g}`);
-        lines.push(`(Bảng đơn giá ${DON_GIA.version} — đặt bảng địa phương tại rules/don-gia.json trong thư mục dự án.)`);
+        lines.push(`(Tabla de precios ${DON_GIA.version}; una tabla local va en rules/don-gia.json dentro de la carpeta del proyecto.)`);
         return text(lines.join("\n"));
       } catch (e) {
         return fail(e);
@@ -594,9 +594,9 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
   server.registerTool(
     "export",
     {
-      title: "Xuất hồ sơ bản vẽ",
+      title: "Exportar la documentación",
       description:
-        "Xuất hồ sơ vào .arquitecto/exports/ho-so/. format: 'pdf' = BỘ tờ KT-01… một file A3 nhiều trang (bàn giao); 'svg' = mỗi tờ một file; 'dxf' = mỗi tờ hình học một file mm thật (mở CAD đo được; tờ bảng không có DXF); 'gltf' = MỘT file .glb toàn nhà (mét, mỗi entity một node theo id — mở viewer/Blender, kèm scripts/render-photoreal.py để render đẹp); 'ifc' = IFC4 concept (tường + lỗ cửa đúng quan hệ voids/fills, sàn có lỗ, thang, IfcSpace từng phòng — bàn giao KTS/BIM, KHÔNG phải hồ sơ thi công). sheets chỉ áp cho pdf/svg/dxf: plan-<levelId> | elevation | section | schedule | estimate. LUÔN validate + tự soi render trước khi bàn giao (checkpoint 5).",
+        "Exporta a .arquitecto/exports/ho-so/. format: 'pdf' = el JUEGO de láminas KT-01… en un solo A3 de varias páginas (para entregar); 'svg' = un archivo por lámina; 'dxf' = un archivo por lámina con geometría, en mm reales (se mide en CAD; las láminas de tablas no tienen DXF); 'gltf' = UN .glb de toda la casa (en metros, un nodo por entidad según su id; se abre en un visor o en Blender, con scripts/render-photoreal.py para render fotorrealista); 'ifc' = IFC4 de anteproyecto (muros + vanos con relaciones voids/fills, losas con perforaciones, escalera, IfcSpace por recinto: para pasar a un arquitecto/BIM, NO es un proyecto de construcción). sheets solo aplica a pdf/svg/dxf: plan-<levelId> | elevation | section | schedule | estimate. SIEMPRE validate y revisión del render antes de entregar (checkpoint 5).",
       inputSchema: {
         format: z.enum(["pdf", "svg", "dxf", "gltf", "ifc"]),
         sheets: z.array(z.string()).optional(),
@@ -609,20 +609,20 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
           const dir0 = path.join(store.exportDir, "ho-so");
           mkdirSync(dir0, { recursive: true });
           const issues0 = validateProject(p);
-          const vNote = `Validator: ${issues0.length === 0 ? "sạch." : `${issues0.length} vấn đề — chạy validate soi lại trước khi bàn giao.`}`;
+          const vNote = `Validador: ${issues0.length === 0 ? "limpio." : `${issues0.length} observaciones — ejecuta validate antes de entregar.`}`;
           if (args.format === "gltf") {
             const fp = safeJoin(dir0, `${p.meta.id}.glb`);
             const glb = modelToGlb(p);
             writeFileSync(fp, glb);
             return text(`✅ glTF (GLB) ${Math.round(glb.length / 1024)}KB → ${fp}
-Mét thật, mỗi entity một node theo id. Render photoreal: blender -b -P scripts/render-photoreal.py -- "${fp}" out.png
+En metros reales, un nodo por entidad según su id. Render fotorrealista: blender -b -P scripts/render-photoreal.py -- "${fp}" out.png
 ${vNote}`);
           }
           const fp = safeJoin(dir0, `${p.meta.id}.ifc`);
           const ifc = modelToIfc(p);
           writeFileSync(fp, ifc, "utf8");
-          return text(`✅ IFC4 concept → ${fp}
-Tường + lỗ cửa (voids/fills), sàn có lỗ, thang, IfcSpace từng phòng — mở bằng BIM viewer/BlenderBIM; KHÔNG thay hồ sơ thi công.
+          return text(`✅ IFC4 de anteproyecto → ${fp}
+Muros + vanos (voids/fills), losas con perforaciones, escalera, IfcSpace por recinto. Se abre en un visor BIM / Bonsai (BlenderBIM); NO reemplaza un proyecto de construcción.
 ${vNote}`);
         }
         store.refreshDonGia();
@@ -632,7 +632,7 @@ ${vNote}`);
         });
         if (set.sheets.length === 0) {
           const known = ["plan-<levelId>", "elevation", "section", "schedule", "estimate"].join(" | ");
-          return fail(new Error(`Không tờ nào khớp bộ lọc — id hợp lệ: ${known}.`));
+          return fail(new Error(`Ninguna lámina coincide con el filtro. IDs válidos: ${known}.`));
         }
         const dir = path.join(store.exportDir, "ho-so");
         mkdirSync(dir, { recursive: true });
@@ -641,14 +641,14 @@ ${vNote}`);
           const file = safeJoin(dir, `${p.meta.id}-ho-so.pdf`);
           const { svgsToPdf } = await import("./render/pdf.js");
           await svgsToPdf(set.sheets.map((s) => sheetSvg(s)), file);
-          lines.push(`✅ PDF ${set.sheets.length} trang → ${file}`);
+          lines.push(`✅ PDF de ${set.sheets.length} páginas → ${file}`);
         } else if (args.format === "svg") {
           for (const s of set.sheets) {
             const fp = safeJoin(dir, `${s.fileBase}.svg`);
             writeFileSync(fp, sheetSvg(s), "utf8");
             lines.push(`  ${s.no} ${s.title} → ${fp}`);
           }
-          lines.unshift(`✅ ${set.sheets.length} tờ SVG:`);
+          lines.unshift(`✅ Láminas SVG (${set.sheets.length}):`);
         } else {
           const withModel = set.sheets.filter((s) => s.hasModel);
           for (const s of withModel) {
@@ -656,12 +656,12 @@ ${vNote}`);
             writeFileSync(fp, sheetDxf(s), "utf8");
             lines.push(`  ${s.no} ${s.title} → ${fp}`);
           }
-          lines.unshift(`✅ ${withModel.length} tờ DXF (mm thật, layer TCVN):`);
+          lines.unshift(`✅ Láminas DXF (${withModel.length}; mm reales, capas del upstream TCVN):`);
         }
-        lines.push(`Bộ tờ: ${set.sheets.map((s) => `${s.no} ${s.title}`).join("; ")}.`);
-        for (const sk of set.skipped) lines.push(`⚠ Bỏ tờ ${sk.id}: ${sk.reason}`);
+        lines.push(`Juego de láminas: ${set.sheets.map((s) => `${s.no} ${s.title}`).join("; ")}.`);
+        for (const sk of set.skipped) lines.push(`⚠ Lámina omitida ${sk.id}: ${sk.reason}`);
         const issues = validateProject(p);
-        lines.push(`Validator: ${issues.length === 0 ? "sạch." : `${issues.length} vấn đề — chạy validate soi lại trước khi bàn giao.`}`);
+        lines.push(`Validador: ${issues.length === 0 ? "limpio." : `${issues.length} observaciones — ejecuta validate antes de entregar.`}`);
         return text(lines.join("\n"));
       } catch (e) {
         return fail(e);
@@ -672,12 +672,12 @@ ${vNote}`);
   server.registerTool(
     "underlay_import",
     {
-      title: "Nhập bản vẽ cũ / ảnh mặt bằng làm underlay đồ lại",
+      title: "Importar un plano antiguo / foto de planta como calco",
       description:
-        "Đặt DXF (bản CAD cũ) hoặc ảnh PNG/JPEG (chụp/scan mặt bằng) làm lớp MỜ dưới mặt bằng để dựng model theo — underlay là giàn giáo, KHÔNG vào bản vẽ xuất. Tỷ lệ: DXF thường tự suy từ $INSUNITS; nếu không (và luôn luôn với ảnh) hỏi người dùng MỘT đoạn đã biết chiều dài thật rồi truyền calibrate {a,b,mm} — a/b theo đơn vị nguồn (DXF unit / pixel ảnh; chỉ dùng KHOẢNG CÁCH nên đo hệ trục nào cũng được). Sau import: render_plan soi vị trí, chỉnh chỗ đặt bằng apply_ops update underlay U1 (origin/rotation/scale/opacity/level; origin ảnh = góc dưới-trái), DXF thì underlay_trace để dò tường. Xóa: apply_ops delete underlay U1.",
+        "Pone un DXF (CAD antiguo) o una imagen PNG/JPEG (foto o escaneo de una planta) como capa TENUE bajo la planta para levantar el modelo encima; ideal para levantar propiedades existentes. El calco es un andamio: NO sale en los planos exportados. Escala: el DXF suele deducirla de $INSUNITS; si no (y siempre con imágenes), pide al usuario UNA medida real conocida y pasa calibrate {a,b,mm}, con a/b en unidades de origen (unidad DXF / píxel; solo importa la DISTANCIA, así que sirve cualquier sistema de ejes). Después: render_plan para revisar la posición y ajustarla con apply_ops update underlay U1 (origin/rotation/scale/opacity/level; el origen de la imagen es su esquina inferior izquierda); con DXF, underlay_trace detecta muros. Borrar: apply_ops delete underlay U1.",
       inputSchema: {
         path: z.string().describe("Ruta del archivo .dxf/.png/.jpg DENTRO de la carpeta del proyecto (absoluta o relativa), máx. 20 MB"),
-        scale: z.number().positive().optional().describe("mm model trên MỘT đơn vị nguồn (DXF unit / pixel). Bỏ trống = calibrate hoặc $INSUNITS"),
+        scale: z.number().positive().optional().describe("mm del modelo por UNA unidad de origen (unidad DXF / píxel). Vacío = calibrate o $INSUNITS"),
         calibrate: z
           .object({
             a: z.tuple([z.number(), z.number()]),
@@ -685,57 +685,57 @@ ${vNote}`);
             mm: z.number().positive(),
           })
           .optional()
-          .describe("Hai điểm theo đơn vị NGUỒN + khoảng cách thật mm giữa chúng — tự tính scale"),
-        origin: z.tuple([z.number(), z.number()]).optional().describe("Điểm model mm nơi gốc (0,0) nguồn được đặt — mặc định [0,0]"),
-        rotation: z.number().optional().describe("Độ CCW quanh origin"),
-        opacity: z.number().min(0.05).max(1).optional().describe("Độ hiện 0..1, mặc định 0.35"),
-        level: z.string().optional().describe("Chỉ hiện ở tầng này (vd L1) — bỏ trống = mọi tầng"),
+          .describe("Dos puntos en unidades de ORIGEN + la distancia real en mm entre ellos: calcula la escala"),
+        origin: z.tuple([z.number(), z.number()]).optional().describe("Punto del modelo (mm) donde se ubica el origen (0,0) del calco; por defecto [0,0]"),
+        rotation: z.number().optional().describe("Grados antihorario alrededor de origin"),
+        opacity: z.number().min(0.05).max(1).optional().describe("Opacidad 0..1, por defecto 0.35"),
+        level: z.string().optional().describe("Mostrar solo en este piso (p. ej. L1); vacío = todos"),
       },
     },
     (args) => {
       try {
         const p = store.current;
         const src = safeJoin(store.baseDir, args.path); // M1: solo archivos dentro de la carpeta del proyecto
-        if (!existsSync(src)) return fail(new Error(`Không thấy file: ${src}`));
+        if (!existsSync(src)) return fail(new Error(`No se encuentra el archivo: ${src}`));
         if (statSync(src).size > UNDERLAY_MAX_BYTES) return fail(new Error("El archivo supera 20 MB."));
         const ext = path.extname(src).toLowerCase();
         const kind = ext === ".dxf" ? "dxf" : [".png", ".jpg", ".jpeg"].includes(ext) ? "image" : null;
-        if (!kind) return fail(new Error(`Chỉ nhận .dxf / .png / .jpg — nhận được "${ext}". PDF thì chụp/scan ra ảnh trước.`));
+        if (!kind) return fail(new Error(`Solo se aceptan .dxf / .png / .jpg (recibido "${ext}"). Un PDF hay que convertirlo antes a imagen.`));
 
         const info: string[] = [];
         let autoScale: number | null = null;
         if (kind === "dxf") {
           const d = parseDxf(readFileSync(src, "utf8"));
           if (d.polylines.length === 0) {
-            return fail(new Error("DXF không có nét đọc được (LINE/LWPOLYLINE/POLYLINE/CIRCLE/ARC) — file toàn block/INSERT thì explode ra entity thường trước."));
+            return fail(new Error("El DXF no tiene líneas legibles (LINE/LWPOLYLINE/POLYLINE/CIRCLE/ARC). Si es todo bloques/INSERT, hay que descomponerlo (explode) antes."));
           }
           autoScale = d.mmPerUnit;
           const nSkip = Object.entries(d.skipped).map(([k, v]) => `${k}×${v}`).join(", ");
-          info.push(`Nét đọc được: ${Object.entries(d.counts).map(([k, v]) => `${k}×${v}`).join(", ")}${nSkip ? ` (bỏ qua: ${nSkip})` : ""}`);
-          if (d.bounds) info.push(`Khung nguồn: ${Math.round(d.bounds.maxX - d.bounds.minX)}×${Math.round(d.bounds.maxY - d.bounds.minY)} đơn vị`);
+          info.push(`Líneas leídas: ${Object.entries(d.counts).map(([k, v]) => `${k}×${v}`).join(", ")}${nSkip ? ` (omitidas: ${nSkip})` : ""}`);
+          if (d.bounds) info.push(`Extensión del origen: ${Math.round(d.bounds.maxX - d.bounds.minX)}×${Math.round(d.bounds.maxY - d.bounds.minY)} unidades`);
         } else {
           const im = imageSize(readFileSync(src));
-          info.push(`Ảnh ${im.width}×${im.height}px`);
+          info.push(`Imagen ${im.width}×${im.height}px`);
         }
 
         let scale = args.scale ?? null;
-        let scaleFrom = "khai báo";
+        let scaleFrom = "indicada";
         if (!scale && args.calibrate) {
           const { a, b, mm } = args.calibrate;
           const d = Math.hypot(b[0] - a[0], b[1] - a[1]);
-          if (d < 1e-6) return fail(new Error("calibrate: hai điểm a/b trùng nhau."));
+          if (d < 1e-6) return fail(new Error("calibrate: los puntos a y b coinciden."));
           scale = mm / d;
-          scaleFrom = `calibrate (${Math.round(d)} đơn vị = ${args.calibrate.mm}mm)`;
+          scaleFrom = `calibrate (${Math.round(d)} unidades = ${args.calibrate.mm}mm)`;
         }
         if (!scale && autoScale) {
           scale = autoScale;
-          scaleFrom = "$INSUNITS của DXF";
+          scaleFrom = "$INSUNITS del DXF";
         }
         if (!scale) {
           return fail(new Error(
             kind === "dxf"
-              ? "DXF không khai $INSUNITS — hỏi người dùng một đoạn đã biết chiều dài thật rồi truyền calibrate {a,b,mm}, hoặc scale trực tiếp."
-              : "Ảnh bắt buộc có tỷ lệ — hỏi người dùng một đoạn đã biết chiều dài thật trên ảnh (đo pixel) rồi truyền calibrate {a,b,mm}, hoặc scale = mm/pixel.",
+              ? "El DXF no declara $INSUNITS: pide al usuario una medida real conocida y pasa calibrate {a,b,mm}, o la escala directamente."
+              : "Una imagen siempre necesita escala: pide al usuario una medida real conocida en la imagen (medida en píxeles) y pasa calibrate {a,b,mm}, o scale = mm/píxel.",
           ));
         }
 
@@ -762,10 +762,10 @@ ${vNote}`);
         if (!r.ok) return fail(new Error(r.errors.map((e) => e.message).join("; ")));
 
         return text([
-          `✅ Underlay ${kind} "${source}" (revision ${r.revision}) — tỷ lệ ${scale.toFixed(4)} mm/đơn vị (${scaleFrom}).`,
+          `✅ Calco ${kind} "${source}" (revisión ${r.revision}) — escala ${scale.toFixed(4)} mm/unidad (${scaleFrom}).`,
           ...info,
-          `Hiện MỜ dưới mặt bằng (editor + render_plan; bản vẽ XUẤT không có). Soi bằng render_plan rồi chỉnh chỗ đặt: apply_ops update underlay U1 (origin/rotation/scale/opacity/level).`,
-          ...(kind === "dxf" ? ["Dò tường từ nét DXF: underlay_trace."] : []),
+          `Se ve TENUE bajo la planta (editor + render_plan; NO sale en los planos exportados). Revisa con render_plan y ajusta la ubicación: apply_ops update underlay U1 (origin/rotation/scale/opacity/level).`,
+          ...(kind === "dxf" ? ["Detectar muros desde las líneas del DXF: underlay_trace."] : []),
         ].join("\n"));
       } catch (e) {
         return fail(e);
@@ -776,34 +776,34 @@ ${vNote}`);
   server.registerTool(
     "underlay_trace",
     {
-      title: "Dò tường từ underlay DXF (đề xuất, không tự áp)",
+      title: "Detectar muros desde el calco DXF (propuesta, no se aplica sola)",
       description:
-        "Heuristic đọc nét DXF của underlay: hai nét song song trục cách nhau một bề dày tường hợp lý, chồng lấp đủ dài → ứng viên tường ở đường tim. Trả về danh sách ops ĐỀ XUẤT (không tự áp) — duyệt bằng mắt với render_plan (underlay hiện dưới), bỏ ứng viên sai (đồ nội thất vẽ hai nét, ranh sân…), rồi tự apply_ops những op giữ lại. v1 chỉ dò nét thẳng trục x/y; ảnh raster không dò được — đồ tay theo underlay.",
+        "Heurística sobre las líneas DXF del calco: dos líneas paralelas a los ejes, separadas por un espesor de muro razonable y con traslape suficiente → candidato a muro en su eje. Devuelve una lista de ops PROPUESTAS (no se aplican): revísalas con render_plan (el calco se ve debajo), descarta las falsas (muebles dibujados con doble línea, deslindes…) y aplica tú con apply_ops las que queden. v1 solo detecta líneas rectas en x/y; las imágenes raster no se detectan: se calcan a mano.",
       inputSchema: {
-        level: z.string().describe("Tầng nhận tường đề xuất, vd L1"),
-        minOverlap: z.number().positive().optional().describe("Chồng lấp tối thiểu mm (mặc định 600 — tăng lên nếu ra quá nhiều rác)"),
-        thickness: z.tuple([z.number(), z.number()]).optional().describe("Khoảng bề dày chấp nhận [min,max] mm, mặc định [80,400]"),
+        level: z.string().describe("Piso que recibe los muros propuestos, p. ej. L1"),
+        minOverlap: z.number().positive().optional().describe("Traslape mínimo en mm (por defecto 600; súbelo si sale mucha basura)"),
+        thickness: z.tuple([z.number(), z.number()]).optional().describe("Rango de espesor aceptado [min,max] en mm; por defecto [80,400]"),
       },
     },
     (args) => {
       try {
         const p = store.current;
         const u = p.underlay;
-        if (!u) return fail(new Error("Chưa có underlay — underlay_import trước."));
-        if (u.kind !== "dxf") return fail(new Error("Underlay hiện là ảnh — dò tường chỉ chạy trên DXF; ảnh thì đồ tay theo nền mờ."));
+        if (!u) return fail(new Error("Aún no hay calco: usa underlay_import antes."));
+        if (u.kind !== "dxf") return fail(new Error("El calco actual es una imagen: la detección de muros solo funciona con DXF; la imagen se calca a mano."));
         if (!p.levels.some((l) => l.id === args.level)) {
-          return fail(new Error(`Không có level "${args.level}" — các level: ${p.levels.map((l) => l.id).join(", ")}.`));
+          return fail(new Error(`No existe el piso "${args.level}". Pisos: ${p.levels.map((l) => l.id).join(", ")}.`));
         }
         const cands = detectWalls(placedPolylines(u, store.baseDir), {
           ...(args.minOverlap ? { minOverlap: args.minOverlap } : {}),
           ...(args.thickness ? { thickness: args.thickness } : {}),
         });
         if (cands.length === 0) {
-          return text("Không dò được cặp nét song song nào ra dáng tường — thử hạ minOverlap, nới thickness, hoặc kiểm tra tỷ lệ underlay (bề dày tường sau scale phải rơi vào khoảng 80–400mm).");
+          return text("No se detectó ningún par de líneas paralelas con forma de muro: prueba bajar minOverlap, ampliar thickness o revisar la escala del calco (el espesor de muro ya escalado debe quedar entre 80 y 400 mm).");
         }
         const MAX = 40;
         const kept = cands.slice(0, MAX);
-        let n = 100; // W101… tránh đụng id model hiện có lẫn nhau trong batch
+        let n = 100; // W101…: no chocar con IDs del modelo ni entre sí dentro del lote
         const usedIds = new Set([...p.walls.map((w) => w.id)]);
         const ops = kept.map((c) => {
           do n++; while (usedIds.has(`W${n}`));
@@ -815,9 +815,9 @@ ${vNote}`);
           };
         });
         return text([
-          `Dò được ${cands.length} ứng viên tường${cands.length > MAX ? ` (trả ${MAX} dài nhất — còn lại chạy lại với minOverlap cao hơn)` : ""} — ĐỀ XUẤT, chưa áp:`,
+          `Se detectaron ${cands.length} candidatos a muro${cands.length > MAX ? ` (se devuelven los ${MAX} más largos; para el resto, vuelve a correr con un minOverlap mayor)` : ""}. PROPUESTA, sin aplicar:`,
           JSON.stringify(ops, null, 2),
-          `Duyệt trước khi áp: render_plan (nét underlay xanh mờ nằm dưới), bỏ op sai (nội thất hai nét, ranh sân…), chỉnh from/to nếu cần bám trục, rồi apply_ops với baseRevision ${p.meta.revision}.`,
+          `Revisa antes de aplicar: render_plan (las líneas azules tenues del calco quedan debajo), descarta las ops falsas (muebles de doble línea, deslindes…), ajusta from/to si hace falta alinear con los ejes y luego apply_ops con baseRevision ${p.meta.revision}.`,
         ].join("\n"));
       } catch (e) {
         return fail(e);
@@ -868,11 +868,11 @@ function queryModel(
     furniture: p.furniture.filter((e) => keepId(e) && keepLevel(e)),
     styles: p.styles,
     finishes: p.finishes,
-    underlay: p.underlay ?? "(chưa có underlay — dùng underlay_import)",
+    underlay: p.underlay ?? "(sin calco: usa underlay_import)",
   };
 
   const base: Record<string, unknown> = select.entity
-    ? { [select.entity]: slices[select.entity] ?? `(không có mục "${select.entity}")` }
+    ? { [select.entity]: slices[select.entity] ?? `(no existe la sección "${select.entity}")` }
     : { meta: p.meta, revision: p.meta.revision, ...slices };
 
   if (computed) {

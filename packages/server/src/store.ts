@@ -96,14 +96,14 @@ export class ProjectStore {
 
   get current(): Project {
     if (!this.project) {
-      throw new Error("Chưa mở dự án nào — gọi project_new (tạo mới) hoặc project_open trước.");
+      throw new Error("No hay ningún proyecto abierto: llama antes a project_new (crear) o project_open.");
     }
     return this.project;
   }
 
   newProject(name: string, template?: string, siteBoundary?: Point[], brief?: Project["brief"]): Project {
     if (existsSync(this.filePath)) {
-      throw new Error(`Đã có dự án tại ${this.filePath} — dùng project_open, hoặc xóa file nếu muốn làm lại từ đầu.`);
+      throw new Error(`Ya existe un proyecto en ${this.filePath}: usa project_open, o borra el archivo si quieres empezar de cero.`);
     }
     let p: Project;
     if (template) {
@@ -130,7 +130,7 @@ export class ProjectStore {
       revision: 0,
       at: new Date().toISOString(),
       origin: "system",
-      summary: template ? `khởi tạo từ template ${template}` : "khởi tạo dự án trống",
+      summary: template ? `creado desde la plantilla ${template}` : "proyecto en blanco creado",
       ops: [],
     });
     this.emit({ kind: "project", reason: "created" });
@@ -140,7 +140,7 @@ export class ProjectStore {
   openProject(file?: string): Project {
     const fp = file ? safeJoin(this.baseDir, file) : this.filePath; // M3: solo dentro de la carpeta del proyecto
     if (!existsSync(fp)) {
-      throw new Error(`Không thấy ${fp} — kiểm tra đường dẫn hoặc tạo mới bằng project_new.`);
+      throw new Error(`No se encuentra ${fp}: revisa la ruta o crea uno nuevo con project_new.`);
     }
     let raw: Project;
     try {
@@ -150,7 +150,7 @@ export class ProjectStore {
       throw new Error(`${fp} no es JSON válido.`);
     }
     if (typeof raw?.meta?.revision !== "number" || raw.meta.unit !== "mm") {
-      throw new Error(`${fp} không phải file dự án Arquitecto hợp lệ (thiếu meta.revision / unit mm).`);
+      throw new Error(`${fp} no es un proyecto de Arquitecto válido (falta meta.revision / unit mm).`);
     }
     assertValidIds(raw, fp);
     this.project = raw;
@@ -168,7 +168,7 @@ export class ProjectStore {
           currentRevision: this.current.meta.revision,
           errors: [{
             rule: "LOCK-01", severity: "block", entities: hit,
-            message: `${hit.join(", ")} đang được người dùng chỉnh trực tiếp — khóa tự nhả ~5s sau khi họ thả tay. Chờ rồi get_changes_since để xem họ đã đổi gì trước khi thử lại.`,
+            message: `${hit.join(", ")} lo está editando el usuario en este momento: el bloqueo se libera ~5 s después de que suelta. Espera y usa get_changes_since para ver qué cambió antes de reintentar.`,
           }],
         };
       }
@@ -252,8 +252,8 @@ export class ProjectStore {
     if (!/^[a-z0-9-]+$/.test(slug)) throw new Error(`Slug inválido ${JSON.stringify(slug)}: solo a-z, 0-9 y "-".`);
     const fp = path.join(this.variantsDir, `${slug}.json`);
     if (!existsSync(fp)) {
-      const known = this.listVariants().map((v) => v.slug).join(", ") || "(chưa có phương án nào)";
-      throw new Error(`Không có phương án "${slug}" — hiện có: ${known}.`);
+      const known = this.listVariants().map((v) => v.slug).join(", ") || "(aún no hay alternativas)";
+      throw new Error(`No existe la alternativa "${slug}". Guardadas: ${known}.`);
     }
     const v = JSON.parse(readFileSync(fp, "utf8")) as { name?: string; savedAt?: string; model: Project };
     return { name: v.name ?? slug, savedAt: v.savedAt ?? "", model: v.model };
@@ -266,7 +266,7 @@ export class ProjectStore {
    */
   openVariant(slug: string): Project {
     const { name, model } = this.readVariant(slug);
-    assertValidIds(model, `phương án "${slug}"`);
+    assertValidIds(model, `alternativa "${slug}"`);
     const next = structuredClone(model);
     next.meta.revision = this.current.meta.revision + 1;
     this.project = next;
@@ -275,7 +275,7 @@ export class ProjectStore {
       revision: next.meta.revision,
       at: new Date().toISOString(),
       origin: "system",
-      summary: `chuyển sang phương án "${name}" (${slug})`,
+      summary: `paso a la alternativa "${name}" (${slug})`,
       ops: [],
     });
     this.emit({ kind: "project", reason: "opened" }); // mọi tab nhận snapshot + session token mới
@@ -343,11 +343,11 @@ function touchedIds(p: Project, ops: Op[]): Set<string> {
 export function blankProject(brief?: Project["brief"]): Project {
   const boundary: Point[] = brief?.dat?.ranh_gioi ?? [[0, 0], [10000, 0], [10000, 10000], [0, 10000]];
   return {
-    meta: { id: "du-an-moi", name: "Dự án mới", revision: 0, unit: "mm", app: "arquitecto/0.1" },
+    meta: { id: "proyecto-nuevo", name: "Proyecto nuevo", revision: 0, unit: "mm", app: "arquitecto/0.1" },
     brief: brief ? structuredClone(brief) : {},
     site: { boundary: structuredClone(boundary), north: 0, front: 0 },
     axes: { x: [], y: [] },
-    levels: [{ id: "L1", name: "Tầng 1", elevation: 0, height: 3600 }],
+    levels: [{ id: "L1", name: "Piso 1", elevation: 0, height: 3600 }],
     walls: [],
     openings: [],
     slabs: [],
