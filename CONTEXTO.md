@@ -4,15 +4,15 @@
 
 ## Estado actual
 
-- **Etapa:** E2 completada (2026-10-11). Siguiente: E3, a la espera de la confirmación del usuario. Volver a modo de permisos manual antes de E3 (parte de E2 corrió en bypass/auto por decisión del usuario).
+- **Etapa:** E3 completada (2026-10-11). Siguiente: E4, a la espera de la confirmación del usuario. E2 y E3 corrieron en auto mode por decisión del usuario; volver a modo manual antes de E4.
 - Al terminar cada etapa, actualiza esta sección. Registra la etapa completada, los commits y lo que quedó pendiente o falló.
 
 | Etapa | Estado | Commits / notas |
 |---|---|---|
 | E0 Línea base | completada | `6ec6023` import (tag `upstream-import`), `8a6e7a0` audit baseline; luego commit de `CONTEXTO.md` + `PROMPT-INICIAL.md` |
 | E1 Limpieza e identidad | completada | `2af29c8` limpieza, `3b41efb` renombre, `e41e7c1` docs, `836cdb3` identidad |
-| E2 Seguridad | completada | A1 `7297c1a` + `79336ae` (scripts demo); A2 `fca078e`; M2+M3 `3de5489`; M1 `8e27aa0`; LOW `6be626c`; DEPS (commit `fix(security): DEPS …`) |
-| E3 Español y región Chile | pendiente | — |
+| E2 Seguridad | completada | A1 `7297c1a` + `79336ae` (scripts demo); A2 `fca078e`; M2+M3 `3de5489`; M1 `8e27aa0`; LOW `6be626c`; DEPS `fc4c906`; test flaky `84b7afa` |
+| E3 Español y región Chile | completada | `d2993eb` plantillas/región, `b058ec3` tools/store/live/compare, `eac5d2b` core + plantillas traducidas, `935a7c4` web; cierre en commit `docs: record E3…` |
 | E4 Rule pack OGUC | pendiente | — |
 | E5 App completa | pendiente | — |
 | E6 Registro y prueba final | pendiente | — |
@@ -54,6 +54,28 @@
 - **DEPS** (2026-10-11): ver `docs/security-tests/DEPS.md`. SDK MCP 1.29.0→1.32.1, vitest 3.2.7→4.1.11 (mayor mínima que elimina `tinypool`), hono 4.12.29→4.13.13 y @hono/node-server 2.0.8→2.1.4 (parches dentro de rango, fuera del texto original del ítem). `pnpm audit`: 37 → 0. Sin cambios en config ni tests; 248 passed, 1 failed (Chromium), 17 skipped.
 - **Pendiente para E5:** ejecutar `live-e2e.test.ts`, `cli/smoke.mts` y los scripts demo (actualizados en A1, no ejecutados por falta del editor compilado).
 - **Post-E2** (2026-10-11): Chromium de Playwright instalado a pedido del usuario (`pnpm --filter @arquitecto/server exec playwright install chromium --with-deps`; revisión v1228 fijada por `playwright@1.61.1`, en `%LOCALAPPDATA%\ms-playwright`). El test de PDF pasa. Quedó expuesto un test intermitente: `mcp.test.ts › phương án A/B … compare` (con Chromium, `variant_compare` renderiza PNG y bajo la suite en paralelo superaba los 5 s). Se le puso `{ timeout: 15_000 }` solo a ese test (`test.slow()` es de Playwright Test y no existe en vitest); el timeout global no cambia. Suite completa 3 veces seguidas: 249 passed, 0 failed, 17 skipped (`live-e2e`, falta `pnpm build:web`).
+
+### Resultado E3
+
+- **Decisión del usuario:** ocultar el legado VN en E3 y borrarlo en E4, para no perder la red de tests.
+- **Plantillas y región (E3a):** se ofrecen `casa-1-piso`, `casa-2-pisos` y `depto-2d`. `nha-ong-4x16-2t`, `nha-vuon` y `detached-uk` quedan ocultas (solo tests). Los proyectos nuevos usan la región `generic` (pack de muestra, sin precios VND) hasta que exista `cl`.
+- **Superficies traducidas a español:**
+  - Las 18 herramientas MCP (títulos, descripciones, mensajes), con nombres, claves de schema y enums intactos.
+  - `store.ts`, `live.ts` (páginas y mensajes del editor) y `compare.ts` (`/so-sanh`).
+  - Core: mensajes `OPS-*`, resúmenes del historial, `geo.json`, `std-generic.json`, notas y etiquetas del presupuesto, y las etiquetas de `don-gia.json` (precios intactos).
+  - Plantillas visibles: los nombres de recintos, pisos y vanos se traducen al crearlas, y el brief VN se vacía. Las fixtures no se tocan.
+  - Web: español por defecto (diccionario ES de 79 claves), botón ES/EN, `vi` solo con `?lang=vi`, `index.html` en español.
+- **Verificación:** `pnpm build:web` + Chromium. Suite completa **267/267, incluidos los 17 `live-e2e`**, que además prueban en navegador real el flujo con token de A1. Un `grep` de caracteres vietnamitas da 0 en las superficies traducidas y en las 3 plantillas visibles (hay un test que lo comprueba).
+- **Tests:** las aserciones de texto pasaron al español con la misma comprobación. Hay un test menos en i18n (de 6 a 5) porque se eliminó la autodetección por zona horaria vietnamita.
+- **Pendiente fuera de E3** (no estaba en el plan):
+  - Nombres del catálogo de mobiliario en español: hoy se muestra `labelEn`, y la búsqueda funciona con los nombres en inglés o vietnamita.
+  - Rótulos dentro de los planos exportados (SVG/PDF/DXF: «MẶT BẰNG», cajetín…), que cambian los snapshots dorados.
+  - Comentarios de código en vietnamita.
+  - El pin `TZ=Asia/Ho_Chi_Minh` de `vitest.config.ts` quedó sin propósito.
+- **Errores propios corregidos antes de commitear:**
+  - Un detector de vietnamita incompleto (sin `à è ì ò ù ã õ â ê ô`), ampliado después; encontró 2 mensajes que se habían escapado.
+  - Un `sed` que rompió una línea de test.
+  - Un regex que escribió en `data-i18n-title` en vez de en `title`: `index.html` se restauró y se regeneró.
 
 ## Origen y objetivo
 
@@ -212,6 +234,11 @@ Una etapa por sesión. Se para al final de cada etapa, se actualiza este archivo
 
 ### E4 · Rule pack Chile (OGUC)
 
+- **Heredado de E3 (decisión «ocultar en E3, borrar en E4»):**
+  - Crear la región `cl` (`registerRegion`) y hacerla la región de las plantillas visibles y de los proyectos nuevos (hoy usan `generic`).
+  - Migrar los tests que usan las fixtures VN (`nha-ong-4x16` y otras: ~78 usos en 17 archivos) a fixtures chilenas, y luego borrar `std-vn.json`, `loban.json`, `evaluators-lbb.ts`, `phong_thuy`, las plantillas ocultas y el diccionario `vi` del web.
+  - Decidir si `pln.json` (distanciamientos/densidad desde el brief) se reutiliza para Chile o se reemplaza por reglas OGUC.
+  - Presupuesto: tabla CLP/UF con valores «por completar» (los da el usuario) ligada a la región `cl`, reemplazando `formatVnd`.
 - **Investigar el texto oficial** (bcn.cl / minvu.gob.cl):
   - Habitabilidad: alturas mínimas, iluminación y ventilación.
   - Escaleras: huella, contrahuella y ancho.

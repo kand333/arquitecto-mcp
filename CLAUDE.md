@@ -6,7 +6,7 @@
 - Sin remotos ni push salvo pedido explícito.
 
 ## Convenciones
-- UI, descripciones de herramientas MCP, mensajes y docs: español. Código, identificadores y commits: inglés. (Hasta E3, muchos textos siguen en vietnamita.)
+- UI, descripciones de herramientas MCP, mensajes y docs: español. Código, identificadores y commits: inglés. Legado VN oculto hasta E4: plantillas `hidden` en `TEMPLATES`, packs `std-vn`/`loban`/`pln`, diccionario web `vi` (solo `?lang=vi`). No lo expongas al usuario; las superficies nuevas van en español.
 - Nombres: `@arquitecto/{core,server,web}`, bin `arquitecto-mcp`, servidor MCP `arquitecto`, env `ARQUITECTO_*`, archivos `arquitecto.project.json` y `.arquitecto/`.
 - No renombres «Atelier» en: `LICENSE`, URLs `github.com/lebac-svg/Atelier`, `docs/reference-en/`, `packages/core/assets/license-manifest.json`. Es atribución o referencia upstream.
 - `@arquitecto/core` es puro: sin imports `node:` ni DOM en `src/` (salvo tests). Disco, red y render van en `server`.
@@ -19,7 +19,7 @@
 
 ## Tests
 - `pnpm typecheck` y `pnpm test`.
-- Sin Chromium de Playwright falla `render-p4.test.ts › PDF`; sin `pnpm build:web` se saltan los 17 tests de `live-e2e.test.ts`. Ambos son esperados hasta E5.
+- `render-p4 › PDF` necesita Chromium de Playwright (`pnpm --filter @arquitecto/server exec playwright install chromium`); los 17 `live-e2e` se saltan si falta `packages/web/dist` (`pnpm build:web`). Con ambos, la suite completa debe dar 0 fallos.
 - Snapshots SVG dorados en `packages/server/src/render/__snapshots__/`. Si cambian, revisa el diff antes de aceptar `vitest -u`.
 
 ## Seguridad

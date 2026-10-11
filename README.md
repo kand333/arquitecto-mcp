@@ -7,7 +7,7 @@ Arquitecto IA local que se conecta a Claude Code mediante **MCP**. Sirve para do
 
 Deriva de [Atelier](https://github.com/lebac-svg/Atelier) (MIT, © 2026 Bắc Lê). Ver [`LICENSE`](LICENSE).
 
-> **Estado: en desarrollo.** Hoy el código es el de Atelier renombrado. La UI y las reglas siguen en vietnamita/inglés con normas TCVN/UK. El español y las reglas de Chile (OGUC) llegan en etapas posteriores.
+> **Estado: en desarrollo.** Seguridad endurecida (E2) e interfaz en español (E3): herramientas MCP, editor web y plantillas `casa-1-piso`, `casa-2-pisos` y `depto-2d`. Todavía **no hay normas chilenas**: los proyectos nuevos se validan con un pack de muestra genérico y el presupuesto da solo cantidades. Las reglas OGUC y la tabla CLP/UF llegan en E4. Los nombres del catálogo de mobiliario y los rótulos de los planos exportados aún no están en español.
 
 > **Seguridad:** el editor web escucha solo en `127.0.0.1` y exige un token que se genera en cada arranque (`editor_open` abre la URL con él). El resto de la etapa de seguridad (E2: validación de IDs y rutas) sigue en curso; no expongas el puerto fuera de tu equipo.
 
