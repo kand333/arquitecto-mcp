@@ -2,7 +2,7 @@ import { mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { loadNhaOng4x16 } from "@arquitecto/core";
+import { loadCasaPrueba2p } from "@arquitecto/core";
 import { buildElevationScene } from "./elevation-scene.js";
 import { buildSectionScene, cutIntervals } from "./section-scene.js";
 import { buildScheduleScene } from "./schedule-scene.js";
@@ -11,7 +11,7 @@ import { sceneToDxf } from "./dxf-writer.js";
 import { buildSheetSet, sheetDxf, sheetSvg } from "./sheets.js";
 import { renderElevationSvg, renderScheduleSvg, renderSectionSvg } from "./render.js";
 
-const p = loadNhaOng4x16();
+const p = loadCasaPrueba2p();
 
 describe("P4 — mặt đứng", () => {
   it("chiếu đúng mặt tiền: silhouette + cửa D1/S1/S3 + cao độ + trục", () => {

@@ -20,7 +20,7 @@ describe.skipIf(!hasDist)("E2E editor thật (chromium headless)", () => {
 
   beforeAll(async () => {
     store = new ProjectStore(mkdtempSync(path.join(tmpdir(), "arquitecto-e2e-")));
-    store.newProject("Nhà anh Ba", "nha-ong-4x16-2t");
+    store.newProject("Nhà anh Ba", "casa-prueba-2p");
     live = new LiveServer(store, { port: 0, lockReleaseMs: 300 }); // khóa nguội ngắn cho test
     baseUrl = await live.start();
     browser = await chromium.launch();

@@ -12,7 +12,7 @@ import { mkdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
-import { loadBietThuDoc, validateProject, type Op, type Project } from "@arquitecto/core";
+import { loadCasa2Pisos, validateProject, type Op, type Project } from "@arquitecto/core";
 import { LiveServer } from "../src/live.js";
 import { ProjectStore } from "../src/store.js";
 import { buildSheetSet, sheetSvg } from "../src/render/sheets.js";
@@ -38,7 +38,7 @@ console.log('   Gia chủ: "lô góc 12×15m hai mặt đường, đất dốc ~
 // ── 0) Brief từ phỏng vấn pha A → project chỉ có ĐẤT (site + terrain), chưa có nhà ──
 rmSync(DIR, { recursive: true, force: true });
 mkdirSync(DIR, { recursive: true });
-const villa = loadBietThuDoc();
+const villa = loadCasa2Pisos();
 const đấtTrống: Project = {
   ...villa,
   meta: { ...villa.meta, id: "nha-co-tu", name: "Biệt thự nhà cô Tư — lô góc đồi", revision: 0 },

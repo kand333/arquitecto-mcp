@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { loadNhaOng4x16, type Furniture, type Opening, type Project, type Wall } from "@arquitecto/core";
+import { loadCasaPrueba2p, type Furniture, type Opening, type Project, type Wall } from "@arquitecto/core";
 import { modelDeltaToPaper, modelToPaper, paperToModel, type PlanTf } from "./plan-geom.js";
 import { furnitureDragSession, openingDragSession, wallDragSession, type SnapOpts } from "./drag.js";
 import { invertOps, UndoStack } from "./undo.js";
@@ -42,7 +42,7 @@ function opData(op: { op: string } | null | undefined): Record<string, unknown> 
 }
 
 function fixture(): Project {
-  return loadNhaOng4x16();
+  return loadCasaPrueba2p();
 }
 
 function wallOf(p: Project, id: string): Wall {

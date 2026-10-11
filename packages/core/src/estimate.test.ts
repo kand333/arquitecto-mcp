@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { loadNhaOng4x16 } from "./fixture.js";
+import { loadCasaPrueba2p } from "./fixture.js";
 import {
   computeQuantities, donGiaFor, estimateCost, formatMonto, formatVnd, parseBudgetVnd, parsePresupuesto, setDonGia, suggestFinishLevel,
 } from "./estimate.js";
 
 describe("dự toán sơ bộ — khối lượng từ fixture 4×16m", () => {
-  const p = loadNhaOng4x16();
+  const p = loadCasaPrueba2p();
   const q = computeQuantities(p);
 
   it("diện tích quy đổi: móng 40% + 2 sàn + mái ước lệ 50%", () => {
@@ -44,7 +44,7 @@ describe("dự toán sơ bộ — khối lượng từ fixture 4×16m", () => {
 });
 
 describe("dự toán sơ bộ — chi phí + ngân sách", () => {
-  const p = loadNhaOng4x16();
+  const p = loadCasaPrueba2p();
 
   it("mức hoàn thiện suy từ brief ('trung bình khá')", () => {
     expect(suggestFinishLevel(p)).toBe("trung-binh-kha");
@@ -87,7 +87,7 @@ describe("dự toán sơ bộ — chi phí + ngân sách", () => {
 
 describe("E4b — presupuesto Chile en UF", () => {
   const cl = () => {
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     p.config = { ...p.config, region: "cl" };
     return p;
   };

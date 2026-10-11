@@ -10,7 +10,7 @@ const freshStore = (): ProjectStore => new ProjectStore(mkdtempSync(path.join(tm
 describe("ProjectStore", () => {
   it("tạo từ template, revision 0, file ghi ra đĩa", () => {
     const store = freshStore();
-    const p = store.newProject("Nhà anh Ba", "nha-ong-4x16-2t");
+    const p = store.newProject("Nhà anh Ba", "casa-prueba-2p");
     expect(p.meta.id).toBe("nha-anh-ba");
     expect(p.meta.revision).toBe(0);
     const onDisk = JSON.parse(readFileSync(store.filePath, "utf8")) as Project;
@@ -26,7 +26,7 @@ describe("ProjectStore", () => {
 
   it("apply thành công → persist + journal; apply phạm block → file không đổi", () => {
     const store = freshStore();
-    store.newProject("Nhà anh Ba", "nha-ong-4x16-2t");
+    store.newProject("Nhà anh Ba", "casa-prueba-2p");
     const ok = store.apply(0, [
       { op: "add", entity: "wall", data: { id: "W99", level: "L1", from: [220, 3000], to: [3780, 3000], thickness: 110, kind: "gach" } },
     ], "tường thử");
@@ -50,7 +50,7 @@ describe("ProjectStore", () => {
 
   it("đóng mở lại giữ nguyên model (openProject roundtrip)", () => {
     const store = freshStore();
-    store.newProject("Nhà anh Ba", "nha-ong-4x16-2t");
+    store.newProject("Nhà anh Ba", "casa-prueba-2p");
     store.apply(0, [{ op: "update", entity: "level", id: "L2", data: { height: 3500 } }]);
     const reopened = new ProjectStore(store.baseDir).openProject();
     expect(reopened.meta.revision).toBe(1);
@@ -68,7 +68,7 @@ describe("ProjectStore", () => {
 describe("A2 — openProject/openVariant rechazan IDs inválidos", () => {
   const craft = (mutate: (p: Project) => void): { store: ProjectStore; file: string } => {
     const store = freshStore();
-    store.newProject("Nhà anh Ba", "nha-ong-4x16-2t");
+    store.newProject("Nhà anh Ba", "casa-prueba-2p");
     const p = structuredClone(store.current);
     mutate(p);
     const file = path.join(store.baseDir, "crafted.json");
@@ -96,7 +96,7 @@ describe("A2 — openProject/openVariant rechazan IDs inválidos", () => {
 
   it("project_new con nombre largo: meta.id ≤32, sin guion final, y el proyecto se puede reabrir", () => {
     const store = freshStore();
-    const p = store.newProject("Casa Pérez Cañete 3 dormitorios 2 pisos", "nha-ong-4x16-2t");
+    const p = store.newProject("Casa Pérez Cañete 3 dormitorios 2 pisos", "casa-prueba-2p");
     expect(p.meta.id.length).toBeLessThanOrEqual(32);
     expect(p.meta.id).toMatch(/^[a-z0-9-]+$/);
     expect(p.meta.id.endsWith("-")).toBe(false);
@@ -111,7 +111,7 @@ describe("A2 — openProject/openVariant rechazan IDs inválidos", () => {
 describe("M2 — readVariant solo acepta slugs ^[a-z0-9-]+$", () => {
   it("rechaza traversal y slugs mal formados; no lee .json fuera de phuong-an/", () => {
     const store = freshStore();
-    store.newProject("Nhà anh Ba", "nha-ong-4x16-2t");
+    store.newProject("Nhà anh Ba", "casa-prueba-2p");
     writeFileSync(path.join(store.baseDir, "secreto.json"), JSON.stringify({ name: "SECRETO", model: store.current }), "utf8");
     for (const slug of ["../../secreto", "..\..\secreto", "A", "a b", ""]) {
       expect(() => store.readVariant(slug), JSON.stringify(slug)).toThrowError(/Slug inválido/);
@@ -126,9 +126,9 @@ describe("M2 — readVariant solo acepta slugs ^[a-z0-9-]+$", () => {
 describe("M3 — openProject solo dentro de la carpeta del proyecto y sin filtrar contenido", () => {
   it("ruta fuera de la carpeta (absoluta o relativa) → error; el proyecto actual no cambia", () => {
     const outside = freshStore();
-    outside.newProject("Otra casa", "nha-ong-4x16-2t");
+    outside.newProject("Otra casa", "casa-prueba-2p");
     const store = freshStore();
-    store.newProject("Nhà anh Ba", "nha-ong-4x16-2t");
+    store.newProject("Nhà anh Ba", "casa-prueba-2p");
     expect(() => store.openProject(outside.filePath)).toThrowError(/fuera del directorio/);
     expect(() => store.openProject(path.relative(store.baseDir, outside.filePath))).toThrowError(/fuera del directorio/);
     expect(store.current.meta.name).toBe("Nhà anh Ba");
@@ -136,7 +136,7 @@ describe("M3 — openProject solo dentro de la carpeta del proyecto y sin filtra
 
   it("JSON inválido: el error no reenvía el contenido del archivo", () => {
     const store = freshStore();
-    store.newProject("Nhà anh Ba", "nha-ong-4x16-2t");
+    store.newProject("Nhà anh Ba", "casa-prueba-2p");
     writeFileSync(path.join(store.baseDir, "roto.json"), "SECRETO-123 esto no es json", "utf8");
     let msg = "";
     try {
@@ -156,7 +156,7 @@ describe("E3 — plantillas ofrecidas y región", () => {
     expect(VISIBLE_TEMPLATES).toEqual(["casa-1-piso", "casa-2-pisos", "depto-2d"]);
     expect(freshStore().newProject("Casa Pérez", "casa-1-piso").config?.region).toBe("cl");
     expect(freshStore().newProject("En blanco").config?.region).toBe("cl");
-    expect(freshStore().newProject("Legado", "nha-ong-4x16-2t").config?.region).toBeUndefined();
+    expect(freshStore().newProject("Legado", "casa-prueba-2p").config?.region).toBeUndefined();
     expect(() => freshStore().newProject("X", "no-existe")).toThrowError(/casa-1-piso, casa-2-pisos, depto-2d/);
   });
 

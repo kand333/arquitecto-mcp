@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { loadNhaOng4x16 } from "@arquitecto/core";
+import { loadCasaPrueba2p } from "@arquitecto/core";
 import { renderPlanSvg } from "../render/render.js";
 import { detectWalls } from "./detect.js";
 import { parseDxf, placePoint } from "./dxf.js";
@@ -122,7 +122,7 @@ describe("loadUnderlay + render — nền mờ dưới mặt bằng", () => {
   it("DXF: polyline đặt đúng scale/origin, SVG có layer UNDERLAY nét xanh mờ, bộ tờ KHÔNG có", () => {
     const dir = makeDir();
     writeFileSync(path.join(dir, ".arquitecto", "underlay", "cu.dxf"), DXF, "utf8");
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     p.underlay = { id: "U1", kind: "dxf", source: "cu.dxf", origin: [0, 0], scale: 1, opacity: 0.4 };
 
     const u = loadUnderlay(p, dir);
@@ -141,7 +141,7 @@ describe("loadUnderlay + render — nền mờ dưới mặt bằng", () => {
   it("underlay khóa theo tầng chỉ hiện ở tầng đó", () => {
     const dir = makeDir();
     writeFileSync(path.join(dir, ".arquitecto", "underlay", "cu.dxf"), DXF, "utf8");
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     p.underlay = { id: "U1", kind: "dxf", source: "cu.dxf", origin: [0, 0], scale: 1, level: "L1" };
     const u = loadUnderlay(p, dir)!;
     expect(renderPlanSvg(p, "L1", { underlay: u, embedFont: false }).svg).toContain('data-layer="UNDERLAY"');
@@ -151,7 +151,7 @@ describe("loadUnderlay + render — nền mờ dưới mặt bằng", () => {
   it("ảnh PNG: nhúng data URI + đặt theo mm/pixel; file mất → null (render không gãy)", () => {
     const dir = makeDir();
     writeFileSync(path.join(dir, ".arquitecto", "underlay", "anh.png"), PNG_1PX);
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     p.underlay = { id: "U1", kind: "image", source: "anh.png", origin: [0, 0], scale: 4000 };
     const u = loadUnderlay(p, dir);
     expect(u?.image?.href.startsWith("data:image/png;base64,")).toBe(true);
@@ -174,7 +174,7 @@ describe("M1 — loadUnderlay no lee fuera de .arquitecto/underlay", () => {
     mkdirSync(path.join(dir, ".arquitecto", "underlay"), { recursive: true });
     writeFileSync(path.join(dir, "secreto.png"), PNG1);
     writeFileSync(path.join(dir, ".arquitecto", "underlay", "plano.png"), PNG1);
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     p.underlay = { id: "U1", kind: "image", source: "../../secreto.png", origin: [0, 0], scale: 1 };
     expect(loadUnderlay(p, dir)).toBeNull();
     p.underlay = { id: "U1", kind: "image", source: "plano.png", origin: [0, 0], scale: 1 };

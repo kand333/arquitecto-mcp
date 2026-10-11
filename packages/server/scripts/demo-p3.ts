@@ -67,7 +67,7 @@ mkdirSync(DIR, { recursive: true });
 
 const store = new ProjectStore(DIR);
 const live = new LiveServer(store, { lockReleaseMs: HEADLESS ? 400 : 5000 });
-store.newProject("Nhà anh Ba", "nha-ong-4x16-2t");
+store.newProject("Nhà anh Ba", "casa-prueba-2p");
 await live.start();
 const url = live.editorUrl()!; // A1: URL con token del propietario
 

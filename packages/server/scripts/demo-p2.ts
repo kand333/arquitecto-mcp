@@ -9,7 +9,7 @@
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { loadNhaOng4x16, validateProject, type Op } from "@arquitecto/core";
+import { loadCasaPrueba2p, validateProject, type Op } from "@arquitecto/core";
 import { LiveServer, openInBrowser } from "../src/live.js";
 import { ProjectStore } from "../src/store.js";
 
@@ -28,7 +28,7 @@ function chunk<T>(arr: T[], n: number): T[][] {
 }
 
 // ── Kịch bản: phát lại fixture theo nhịp thi công ─────────────
-const f = loadNhaOng4x16();
+const f = loadCasaPrueba2p();
 const batches: Array<{ note: string; ops: Op[] }> = [];
 
 batches.push({

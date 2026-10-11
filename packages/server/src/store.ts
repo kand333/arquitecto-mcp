@@ -1,7 +1,7 @@
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import {
-  applyOps, findInvalidId, loadBietThuDoc, loadCanHo, loadDetachedUk, loadNhaCap4, loadNhaOng4x16, loadNhaVuon, setDonGia, validateProject,
+  applyOps, findInvalidId, loadCasa2Pisos, loadDepto2d, loadDetachedUk, loadCasa1Piso, loadCasaPrueba2p, loadNhaVuon, setDonGia, validateProject,
   type ApplyResult, type Issue, type Op, type OpOrigin, type Point, type Project,
 } from "@arquitecto/core";
 import { SoftLocks } from "./locks.js";
@@ -28,10 +28,10 @@ export type StoreEvent =
  * ofrece al usuario y se elimina en E4, cuando exista la región "cl".
  */
 export const TEMPLATES: Record<string, { label: string; load: () => Project; hidden?: true }> = {
-  "casa-1-piso": { label: "Casa de 1 piso — 2 dormitorios, techo de planchas", load: loadNhaCap4 },
-  "casa-2-pisos": { label: "Casa de 2 pisos — techo inclinado, sitio en esquina con pendiente", load: loadBietThuDoc },
-  "depto-2d": { label: "Departamento 2 dormitorios — remodelación dentro de una estructura existente", load: loadCanHo },
-  "nha-ong-4x16-2t": { label: "Nhà ống 4×16m, 2 tầng, 3PN", load: loadNhaOng4x16, hidden: true },
+  "casa-1-piso": { label: "Casa de 1 piso — 2 dormitorios, techo de planchas", load: loadCasa1Piso },
+  "casa-2-pisos": { label: "Casa de 2 pisos — techo inclinado, sitio en esquina con pendiente", load: loadCasa2Pisos },
+  "depto-2d": { label: "Departamento 2 dormitorios — remodelación dentro de una estructura existente", load: loadDepto2d },
+  "casa-prueba-2p": { label: "Nhà ống 4×16m, 2 tầng, 3PN", load: loadCasaPrueba2p, hidden: true },
   "nha-vuon": { label: "Nhà vườn — 1 tầng mái ngói", load: loadNhaVuon, hidden: true },
   "detached-uk": { label: "UK detached — 3 bed gable roof", load: loadDetachedUk, hidden: true },
 };

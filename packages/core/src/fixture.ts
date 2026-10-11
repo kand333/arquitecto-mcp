@@ -1,34 +1,34 @@
 import type { Project } from "./types.js";
-import nhaOng4x16Json from "../fixtures/nha-ong-4x16.json" with { type: "json" };
-import bietThuDocJson from "../fixtures/biet-thu-doc.json" with { type: "json" };
-import nhaCap4Json from "../fixtures/nha-cap-4.json" with { type: "json" };
+import casaPrueba2pJson from "../fixtures/casa-prueba-2p.json" with { type: "json" };
+import casa2PisosJson from "../fixtures/casa-2-pisos.json" with { type: "json" };
+import casa1PisoJson from "../fixtures/casa-1-piso.json" with { type: "json" };
 import nhaVuonJson from "../fixtures/nha-vuon.json" with { type: "json" };
-import canHoJson from "../fixtures/can-ho.json" with { type: "json" };
+import depto2dJson from "../fixtures/depto-2d.json" with { type: "json" };
 import detachedUkJson from "../fixtures/detached-uk.json" with { type: "json" };
 
 /** Fixture chuẩn: nhà ống 4×16m, 2 tầng, 3PN — dùng cho golden tests + template. */
-export const NHA_ONG_4X16 = nhaOng4x16Json as unknown as Project;
+export const CASA_PRUEBA_2P = casaPrueba2pJson as unknown as Project;
 
 /** Bản sao sâu để test/mutation không làm bẩn fixture gốc. */
-export function loadNhaOng4x16(): Project {
-  return structuredClone(NHA_ONG_4X16);
+export function loadCasaPrueba2p(): Project {
+  return structuredClone(CASA_PRUEBA_2P);
 }
 
 /**
  * Fixture P7 (DoD doc 12): biệt thự 2 tầng MÁI HIP trên LÔ GÓC 2 mặt tiền,
  * ĐẤT DỐC ~1.1m — bài tổng hợp mái dốc + đa mặt tiền + địa hình.
  */
-export const BIET_THU_DOC = bietThuDocJson as unknown as Project;
+export const CASA_2_PISOS = casa2PisosJson as unknown as Project;
 
-export function loadBietThuDoc(): Project {
-  return structuredClone(BIET_THU_DOC);
+export function loadCasa2Pisos(): Project {
+  return structuredClone(CASA_2_PISOS);
 }
 
 /** Fixture P8: nhà cấp 4 một tầng — không thang, mái tôn gable, mẫu nhập môn. */
-export const NHA_CAP_4 = nhaCap4Json as unknown as Project;
+export const CASA_1_PISO = casa1PisoJson as unknown as Project;
 
-export function loadNhaCap4(): Project {
-  return structuredClone(NHA_CAP_4);
+export function loadCasa1Piso(): Project {
+  return structuredClone(CASA_1_PISO);
 }
 
 /** Fixture P8: nhà vườn — lô lớn méo + terrain nhẹ, 1 tầng mái ngói hip, mật độ ~21%. */
@@ -39,10 +39,10 @@ export function loadNhaVuon(): Project {
 }
 
 /** Fixture P8: căn hộ cải tạo — KHÔNG lô đất, boundary = khung căn hộ có sẵn. */
-export const CAN_HO = canHoJson as unknown as Project;
+export const DEPTO_2D = depto2dJson as unknown as Project;
 
-export function loadCanHo(): Project {
-  return structuredClone(CAN_HO);
+export function loadDepto2d(): Project {
+  return structuredClone(DEPTO_2D);
 }
 
 /**

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { estimateCost, loadBietThuDoc, loadNhaOng4x16 } from "@arquitecto/core";
+import { estimateCost, loadCasa2Pisos, loadCasaPrueba2p } from "@arquitecto/core";
 import { buildPlanScene } from "./plan-scene.js";
 import { buildElevationScene } from "./elevation-scene.js";
 import { buildSectionScene } from "./section-scene.js";
@@ -14,7 +14,7 @@ import { sceneToDxf } from "./dxf-writer.js";
  * đi nhánh no-op y hệt cũ (5 snapshot golden ở render.test/render-p4.test lo).
  */
 describe("P7 — biệt thự mái dốc trên lô góc đất dốc", () => {
-  const villa = loadBietThuDoc();
+  const villa = loadCasa2Pisos();
 
   it("mặt bằng L2: mép mái + 4 hông + nóc trên layer MAI (hip = 6 nét)", () => {
     const plan = buildPlanScene(villa, "L2");
@@ -62,7 +62,7 @@ describe("P7 — biệt thự mái dốc trên lô góc đất dốc", () => {
   });
 
   it("nhà ống không mái/terrain: KHÔNG item MAI, đất vẫn line ngang z=0 (no-op)", () => {
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     const elev = buildElevationScene(p);
     expect(elev.items.filter((i) => i.layer === "MAI")).toHaveLength(0);
     const sect = buildSectionScene(p);

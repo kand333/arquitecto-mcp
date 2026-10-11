@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { registerAsset } from "../../src/catalog.js";
-import { loadBietThuDoc, loadCanHo, loadDetachedUk, loadNhaCap4, loadNhaOng4x16, loadNhaVuon } from "../../src/fixture.js";
+import { loadCasa2Pisos, loadDepto2d, loadDetachedUk, loadCasa1Piso, loadCasaPrueba2p, loadNhaVuon } from "../../src/fixture.js";
 import { applyOps } from "../../src/ops/apply.js";
 import { estimateCost } from "../../src/estimate.js";
 import type { Issue, Severity } from "../../src/issues.js";
@@ -12,7 +12,7 @@ import { RULERS } from "../../src/validate/rules.js";
 
 /** Mutation → validate; kiểm rule nổ đúng chỗ phạm và im ở fixture chuẩn. */
 function violate(mutate: (p: Project) => void): Issue[] {
-  const p = loadNhaOng4x16();
+  const p = loadCasaPrueba2p();
   mutate(p);
   return validateProject(p);
 }
@@ -29,7 +29,7 @@ describe("bộ rule — tổng quan", () => {
   });
 
   it("fixture chuẩn hoàn toàn sạch (0 issue) — golden", () => {
-    expect(validateProject(loadNhaOng4x16())).toEqual([]);
+    expect(validateProject(loadCasaPrueba2p())).toEqual([]);
   });
 
   it("toàn bộ rule đã đối chiếu nguồn (verified) — hết cờ ⚠ từ 13/07/2026", () => {
@@ -128,7 +128,7 @@ describe("PLN — quy hoạch địa phương (params từ brief, không khai = 
     const issues = violate((p) => { p.brief.dat!.quy_hoach!.tang_max = 1; });
     const i = expectRule(issues, "PLN-04", "error");
     expect(i.message).toContain("2");
-    expect(validateProject(loadNhaOng4x16()).filter((x) => x.rule === "PLN-04")).toEqual([]); // tang_max=4 sẵn trong fixture
+    expect(validateProject(loadCasaPrueba2p()).filter((x) => x.rule === "PLN-04")).toEqual([]); // tang_max=4 sẵn trong fixture
   });
 
   it("PLN-05: chiều cao đỉnh công trình — fixture +7000", () => {
@@ -289,17 +289,17 @@ describe("LBB — thước Lỗ Ban (advisory, bật qua brief)", () => {
 
 describe("P6 — kiến trúc rule-pack (doc 12)", () => {
   it("project VN (không khai config) chọn đúng bộ builtin theo thứ tự cũ", () => {
-    const packs = packsFor(loadNhaOng4x16());
+    const packs = packsFor(loadCasaPrueba2p());
     expect(packs.map((p) => p.id)).toEqual(["geo", "std-vn", "loban", "pln"]);
   });
 
   it("golden bất biến: pack-aware default == builtin (validate fixture vẫn sạch)", () => {
     // đã có test 0-issue ở trên; ở đây chốt activeRules(project) == activeRules() cho VN.
-    expect(activeRules(loadNhaOng4x16()).map((r) => r.id)).toEqual(activeRules().map((r) => r.id));
+    expect(activeRules(loadCasaPrueba2p()).map((r) => r.id)).toEqual(activeRules().map((r) => r.id));
   });
 
   it("region ngoài VN: bỏ toàn bộ TCVN/Lỗ Ban/PLN, chỉ còn lõi geo + pack region đó", () => {
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     p.config = { region: "generic" };
     const ids = activeRules(p).map((r) => r.id);
     expect(ids.some((id) => id.startsWith("GEO-"))).toBe(true); // lõi luôn chạy
@@ -311,7 +311,7 @@ describe("P6 — kiến trúc rule-pack (doc 12)", () => {
 
   it("pack mẫu tái dùng evaluator STD-03: chỉ nổ khi region generic được chọn", () => {
     // Hạ trần tầng trệt xuống dưới 2400 → GEN-CEIL-01 phải nổ; STD-03 (VN) thì không (pack không chọn).
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     p.config = { region: "generic" };
     p.levels.find((l) => l.id === "L1")!.height = 2200;
     const issues = validateProject(p);
@@ -320,7 +320,7 @@ describe("P6 — kiến trúc rule-pack (doc 12)", () => {
   });
 
   it("config.packs = [] → chỉ còn core geo (pack chuẩn tắt hết, hình học vẫn kiểm)", () => {
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     p.config = { packs: [] };
     const ids = activeRules(p).map((r) => r.id);
     expect(ids.length).toBeGreaterThan(0);
@@ -349,7 +349,7 @@ describe("P6 — kiến trúc rule-pack (doc 12)", () => {
     registerPack(testPack);
     expect(getPack("test-typ")).toBeDefined();
 
-    const base = loadNhaOng4x16();
+    const base = loadCasaPrueba2p();
     base.config = { region: "test" };
     // Không khai typology → rule gắn typologies bị lọc bỏ.
     expect(activeRules(base).some((r) => r.id === "TST-VILLA-01")).toBe(false);
@@ -362,13 +362,13 @@ describe("P6 — kiến trúc rule-pack (doc 12)", () => {
 describe("P7 — mái dốc, đa mặt tiền, địa hình (doc 12)", () => {
   /** Mutation trên fixture BIỆT THỰ (lô góc 2 mặt tiền, đất dốc, mái hip). */
   function violateVilla(mutate: (p: Project) => void): Issue[] {
-    const p = loadBietThuDoc();
+    const p = loadCasa2Pisos();
     mutate(p);
     return validateProject(p);
   }
 
   it("fixture biệt thự hoàn toàn sạch (0 issue) — golden P7", () => {
-    expect(validateProject(loadBietThuDoc())).toEqual([]);
+    expect(validateProject(loadCasa2Pisos())).toEqual([]);
   });
 
   it("PLN-07: tường phạm khoảng lùi cạnh #1 (mặt tiền phụ lô góc)", () => {
@@ -416,7 +416,7 @@ describe("P7 — mái dốc, đa mặt tiền, địa hình (doc 12)", () => {
   });
 
   it("ops: add/update/delete roof đi qua apply_ops như mọi entity, undo được cấu trúc", () => {
-    const p = loadBietThuDoc();
+    const p = loadCasa2Pisos();
     const r1 = applyOps(p, 1, [{ op: "update", entity: "roof", id: "RF1", data: { pitch: 25 } }], { validate: validateProject });
     expect(r1.ok).toBe(true);
     if (r1.ok) {
@@ -428,7 +428,7 @@ describe("P7 — mái dốc, đa mặt tiền, địa hình (doc 12)", () => {
   });
 
   it("file cũ KHÔNG có mảng roofs: add roof vẫn chạy (tự khởi tạo)", () => {
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     expect(p.roofs).toBeUndefined();
     const r = applyOps(p, 1, [{
       op: "add", entity: "roof",
@@ -441,7 +441,7 @@ describe("P7 — mái dốc, đa mặt tiền, địa hình (doc 12)", () => {
 
 describe("P8 — thư viện template (doc 12): mỗi fixture một golden", () => {
   it("nhà cấp 4 sạch (1 tầng, gable tôn, không thang)", () => {
-    expect(validateProject(loadNhaCap4())).toEqual([]);
+    expect(validateProject(loadCasa1Piso())).toEqual([]);
   });
 
   it("nhà vườn sạch (lô méo + terrain, hip ngói, mật độ thấp)", () => {
@@ -449,18 +449,18 @@ describe("P8 — thư viện template (doc 12): mỗi fixture một golden", () 
   });
 
   it("căn hộ sạch (không lô đất — boundary là khung có sẵn; không roof/thang)", () => {
-    const p = loadCanHo();
+    const p = loadDepto2d();
     expect(p.roofs).toBeUndefined();
     expect(p.stairs).toEqual([]);
     expect(validateProject(p)).toEqual([]);
   });
 
   it("đối chứng cấp 4: bỏ cửa sổ bếp → STD-09; bóp hành lang → STD-04", () => {
-    const p1 = loadNhaCap4();
+    const p1 = loadCasa1Piso();
     p1.openings = p1.openings.filter((o) => o.id !== "S3");
     expectRule(validateProject(p1), "STD-09", "info");
 
-    const p2 = loadNhaCap4();
+    const p2 = loadCasa1Piso();
     p2.rooms.find((r) => r.id === "R3")!.polygon = [[1110, 7000], [8890, 7000], [8890, 7900], [1110, 7900]];
     expectRule(validateProject(p2), "STD-04", "error");
   });
@@ -500,7 +500,7 @@ describe("P9 — lớp region (doc 12): UK Approved Documents, DoD không TCVN/L
 
   it("pack UK chưa đối chiếu văn bản → unverifiedRules(p) > 0 (bản vẽ in cờ ⚠); VN vẫn 0", () => {
     expect(unverifiedRules(loadDetachedUk()).length).toBeGreaterThan(0);
-    expect(unverifiedRules(loadNhaOng4x16())).toEqual([]);
+    expect(unverifiedRules(loadCasaPrueba2p())).toEqual([]);
     expect(unverifiedRules()).toEqual([]); // không truyền project = builtin như cũ
   });
 
@@ -521,7 +521,7 @@ describe("P9 — lớp region (doc 12): UK Approved Documents, DoD không TCVN/L
 
   it("STD-05 (P9 fix): cửa chính nhà LÙI TRONG LÔ được nhận là cửa chính (ra sân = ra ngoài)", () => {
     // biệt thự P7 lùi 3m: bóp D1 xuống 750 < chinh 800 → phải nổ đúng LOẠI cửa chính
-    const p = loadBietThuDoc();
+    const p = loadCasa2Pisos();
     p.openings.find((o) => o.id === "D1")!.width = 750;
     const i = expectRule(validateProject(p), "STD-05", "error");
     expect(i.message).toContain("cửa chính");

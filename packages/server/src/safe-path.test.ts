@@ -20,7 +20,7 @@ describe("A2 — safeJoin y sinks de exporte", () => {
   it("renderPlanFiles con level.id manipulado no escribe fuera del directorio", async () => {
     const root = mkdtempSync(path.join(tmpdir(), "arquitecto-a2-"));
     const store = new ProjectStore(root);
-    store.newProject("Nhà anh Ba", "nha-ong-4x16-2t");
+    store.newProject("Nhà anh Ba", "casa-prueba-2p");
     const p = structuredClone(store.current);
     const evil = "../../../escape";
     p.levels.push({ ...p.levels[0]!, id: evil });

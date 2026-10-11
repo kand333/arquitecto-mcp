@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import fc from "fast-check";
-import { loadNhaOng4x16 } from "../fixture.js";
+import { loadCasaPrueba2p } from "../fixture.js";
 import type { Issue } from "../issues.js";
 import type { Project } from "../types.js";
 import { wallLength } from "../geometry/wall.js";
@@ -16,7 +16,7 @@ const addWall = (id: string, y = 3000): Op => ({
 
 describe("applyOps — transaction + revision", () => {
   it("từ chối baseRevision cũ (REV-01) và chỉ đường get_changes_since", () => {
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     const r = applyOps(p, p.meta.revision - 1, [addWall("W99")]);
     expect(r.ok).toBe(false);
     if (!r.ok) {
@@ -27,7 +27,7 @@ describe("applyOps — transaction + revision", () => {
   });
 
   it("thành công: revision +1, không mutate model gốc", () => {
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     const before = structuredClone(p);
     const r = applyOps(p, p.meta.revision, [addWall("W99")]);
     expect(r.ok).toBe(true);
@@ -40,7 +40,7 @@ describe("applyOps — transaction + revision", () => {
   });
 
   it("summary của update ghi giá trị cũ → mới (nuôi get_changes_since)", () => {
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     const w = p.walls[0]!;
     const next = w.thickness === 110 ? 220 : 110;
     const r = applyOps(p, p.meta.revision, [
@@ -51,7 +51,7 @@ describe("applyOps — transaction + revision", () => {
   });
 
   it("cả batch cùng hủy khi một op lỗi (transaction)", () => {
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     const r = applyOps(p, p.meta.revision, [
       addWall("W99"),
       { op: "add", entity: "wall", data: { id: "W1", level: "L1", from: [0, 0], to: [100, 0], thickness: 110, kind: "gach" } }, // trùng ID
@@ -61,7 +61,7 @@ describe("applyOps — transaction + revision", () => {
   });
 
   it("xóa tường cascade xóa opening neo trên nó", () => {
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     expect(p.openings.some((o) => o.wall === "W1")).toBe(true);
     const r = applyOps(p, p.meta.revision, [{ op: "delete", entity: "wall", id: "W1" }]);
     expect(r.ok).toBe(true);
@@ -72,7 +72,7 @@ describe("applyOps — transaction + revision", () => {
   });
 
   it("update shallow-merge GIỮ trường lạ (forward-compatible)", () => {
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     const r1 = applyOps(p, p.meta.revision, [
       { op: "add", entity: "wall", data: { ...addWall("W99").data as object, ghi_chu: "tường thử nghiệm" } as never },
     ]);
@@ -90,7 +90,7 @@ describe("applyOps — transaction + revision", () => {
   });
 
   it("chặn xóa level còn thực thể, chặn đổi id, chặn style đang dùng", () => {
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     const del = applyOps(p, p.meta.revision, [{ op: "delete", entity: "level", id: "L1" }]);
     expect(!del.ok && del.errors[0]!.rule).toBe("OPS-04");
     const ren = applyOps(p, p.meta.revision, [{ op: "update", entity: "wall", id: "W1", data: { id: "W100" } }]);
@@ -100,7 +100,7 @@ describe("applyOps — transaction + revision", () => {
   });
 
   it("opening phải neo vào tường + style có thật (OPS-06)", () => {
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     const r = applyOps(p, p.meta.revision, [
       { op: "add", entity: "opening", data: { id: "D99", wall: "W404", kind: "door", style: "DC", offset: 100, width: 800, height: 2100, sill: 0 } },
     ]);
@@ -108,7 +108,7 @@ describe("applyOps — transaction + revision", () => {
   });
 
   it("validator tiêm vào: block hủy transaction, warn cho qua kèm cảnh báo", () => {
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     const blockAll = (): Issue[] => [{ rule: "GEO-01", severity: "block", entities: [], message: "chặn" }];
     const warnAll = (): Issue[] => [{ rule: "STD-01", severity: "warn", entities: [], message: "nhắc" }];
     const r1 = applyOps(p, p.meta.revision, [addWall("W99")], { validate: blockAll });
@@ -127,7 +127,7 @@ describe("applyOps — underlay (singleton U1)", () => {
   });
 
   it("add → update merge → delete; summary có nhãn", () => {
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     const r1 = applyOps(p, p.meta.revision, [addUnderlay()]);
     expect(r1.ok).toBe(true);
     if (!r1.ok) return;
@@ -147,7 +147,7 @@ describe("applyOps — underlay (singleton U1)", () => {
   });
 
   it("singleton: add lần 2 bị chặn; id phải U1; kind/source/scale bắt buộc; level phải có thật", () => {
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     const ok = applyOps(p, p.meta.revision, [addUnderlay()]);
     if (!ok.ok) throw new Error("setup fail");
     expect(applyOps(ok.project, ok.revision, [addUnderlay()]).ok).toBe(false);
@@ -196,7 +196,7 @@ describe("applyOps — property-based (fast-check)", () => {
 
     fc.assert(
       fc.property(fc.array(opArb, { maxLength: 25 }), (specs) => {
-        let model = loadNhaOng4x16();
+        let model = loadCasaPrueba2p();
         for (const s of specs) {
           const before = model;
           const op: Op =
@@ -238,7 +238,7 @@ describe("A2 — IDs con formato seguro", () => {
   });
 
   it("add con id inválido se bloquea (OPS-02) en arrays, records y ejes", () => {
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     for (const id of BAD) {
       const ops: Op[] = [
         { op: "add", entity: "level", data: { id, name: "X", elevation: 9000, height: 3000 } },
@@ -256,11 +256,11 @@ describe("A2 — IDs con formato seguro", () => {
   });
 
   it("findInvalidId encuentra IDs inválidos en un modelo cargado de disco", () => {
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     expect(findInvalidId(p)).toBeNull();
     p.levels[0]!.id = "../../evil";
     expect(findInvalidId(p)).toBe("../../evil");
-    const q = loadNhaOng4x16();
+    const q = loadCasaPrueba2p();
     q.meta.id = "../evil";
     expect(findInvalidId(q)).toBe("../evil");
   });
@@ -274,7 +274,7 @@ describe("M1 — underlay.source es solo un nombre de archivo", () => {
   });
 
   it("add/update con una ruta en source → OPS-08", () => {
-    const p = loadNhaOng4x16();
+    const p = loadCasaPrueba2p();
     for (const s of ["../../secreto.png", "..\\secreto.png", "a/b.png", "C:\\x.png", "/etc/x.png", "..", "."]) {
       const r = applyOps(p, p.meta.revision, [addU(s)]);
       expect(r.ok, JSON.stringify(s)).toBe(false);

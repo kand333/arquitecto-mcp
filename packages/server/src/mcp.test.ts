@@ -46,7 +46,7 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
   // variant_compare renderiza PNG con Chromium: bajo la suite en paralelo puede pasar de 5 s
   it("phương án A/B: save → sửa → compare thấy khác biệt → open quay lại", { timeout: 15_000 }, async () => {
     const { client, store } = await connect();
-    await client.callTool({ name: "project_new", arguments: { name: "Nhà anh Ba", template: "nha-ong-4x16-2t" } });
+    await client.callTool({ name: "project_new", arguments: { name: "Nhà anh Ba", template: "casa-prueba-2p" } });
 
     const saved = await client.callTool({ name: "variant_save", arguments: { name: "Phương án A — gốc" } });
     expect(textOf(saved)).toContain("phuong-an-a-goc");
@@ -75,7 +75,7 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
 
   it("estimate_cost: tổng tiền + so ngân sách brief + override mức hoàn thiện", async () => {
     const { client } = await connect();
-    await client.callTool({ name: "project_new", arguments: { name: "Nhà anh Ba", template: "nha-ong-4x16-2t" } });
+    await client.callTool({ name: "project_new", arguments: { name: "Nhà anh Ba", template: "casa-prueba-2p" } });
     const r = await client.callTool({ name: "estimate_cost", arguments: {} });
     const msg = textOf(r);
     expect(msg).toContain("TOTAL EQUIVALENTE");
@@ -99,7 +99,7 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
 
   it("export dxf: xuất tờ hình học, bỏ tờ thống kê; gltf + ifc mỗi định dạng một file", async () => {
     const { client, store } = await connect();
-    await client.callTool({ name: "project_new", arguments: { name: "Nhà anh Ba", template: "nha-ong-4x16-2t" } });
+    await client.callTool({ name: "project_new", arguments: { name: "Nhà anh Ba", template: "casa-prueba-2p" } });
 
     const dxf = await client.callTool({ name: "export", arguments: { format: "dxf" } });
     const msg = textOf(dxf);
@@ -130,7 +130,7 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
 
   it("underlay: import DXF tự lấy tỷ lệ $INSUNITS → trace đề xuất tường → apply được", async () => {
     const { client, store } = await connect();
-    await client.callTool({ name: "project_new", arguments: { name: "Nhà anh Ba", template: "nha-ong-4x16-2t" } });
+    await client.callTool({ name: "project_new", arguments: { name: "Nhà anh Ba", template: "casa-prueba-2p" } });
 
     // DXF hai cặp nét song song (tường 110 nằm ngang + dọc), mm
     const dxf = [
@@ -181,7 +181,7 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
 
   it("export svg lọc theo sheets giữ đúng số KT trong bộ", async () => {
     const { client } = await connect();
-    await client.callTool({ name: "project_new", arguments: { name: "Nhà anh Ba", template: "nha-ong-4x16-2t" } });
+    await client.callTool({ name: "project_new", arguments: { name: "Nhà anh Ba", template: "casa-prueba-2p" } });
     const r = await client.callTool({ name: "export", arguments: { format: "svg", sheets: ["elevation"] } });
     const msg = textOf(r);
     expect(msg).toContain("Láminas SVG (1)");
@@ -192,7 +192,7 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
     const { client, live } = await connect();
     await client.callTool({
       name: "project_new",
-      arguments: { name: "Nhà anh Ba", template: "nha-ong-4x16-2t" },
+      arguments: { name: "Nhà anh Ba", template: "casa-prueba-2p" },
     });
 
     const opened = await client.callTool({
@@ -215,7 +215,7 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
 
     const created = await client.callTool({
       name: "project_new",
-      arguments: { name: "Nhà anh Ba", template: "nha-ong-4x16-2t" },
+      arguments: { name: "Nhà anh Ba", template: "casa-prueba-2p" },
     });
     expect(textOf(created)).toContain("✅");
 
@@ -265,7 +265,7 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
 describe("M1 — underlay_import confinado", () => {
   it("archivo fuera de la carpeta del proyecto → error; >20 MB → error", async () => {
     const { client, store } = await connect();
-    await client.callTool({ name: "project_new", arguments: { name: "Nhà anh Ba", template: "nha-ong-4x16-2t" } });
+    await client.callTool({ name: "project_new", arguments: { name: "Nhà anh Ba", template: "casa-prueba-2p" } });
     const { mkdtempSync: mk, writeFileSync: wf } = await import("node:fs");
     const { tmpdir: td } = await import("node:os");
     const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64");
@@ -293,7 +293,7 @@ describe("LOW — assets_search no deja carpetas temporales", () => {
     const { tmpdir: td } = await import("node:os");
     const count = (): number => readdirSync(td()).filter((f) => f.startsWith("arquitecto-assets-")).length;
     const { client } = await connect();
-    await client.callTool({ name: "project_new", arguments: { name: "Nhà anh Ba", template: "nha-ong-4x16-2t" } });
+    await client.callTool({ name: "project_new", arguments: { name: "Nhà anh Ba", template: "casa-prueba-2p" } });
     const before = count();
     await client.callTool({ name: "assets_search", arguments: {} });
     expect(count()).toBe(before);

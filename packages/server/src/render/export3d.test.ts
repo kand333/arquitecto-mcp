@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { getAsset, loadNhaOng4x16, stairLayout } from "@arquitecto/core";
+import { getAsset, loadCasaPrueba2p, stairLayout } from "@arquitecto/core";
 import { buildMeshes, earClip, modelToGlb } from "./gltf-writer.js";
 import { ifcGuid, modelToIfc } from "./ifc-writer.js";
 
-const P = loadNhaOng4x16();
+const P = loadCasaPrueba2p();
 
 describe("gltf-writer — GLB xuất cho Blender/viewer", () => {
   it("earClip: vuông 2 tam giác (cả CW), chữ L lõm 4 tam giác, suy biến rỗng", () => {

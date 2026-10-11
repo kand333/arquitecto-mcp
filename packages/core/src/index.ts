@@ -6,8 +6,8 @@ export * from "./catalog.js";
 export * from "./issues.js";
 export * from "./model.js";
 export {
-  BIET_THU_DOC, CAN_HO, DETACHED_UK, NHA_CAP_4, NHA_ONG_4X16, NHA_VUON,
-  loadBietThuDoc, loadCanHo, loadDetachedUk, loadNhaCap4, loadNhaOng4x16, loadNhaVuon,
+  CASA_2_PISOS, DEPTO_2D, DETACHED_UK, CASA_1_PISO, CASA_PRUEBA_2P, NHA_VUON,
+  loadCasa2Pisos, loadDepto2d, loadDetachedUk, loadCasa1Piso, loadCasaPrueba2p, loadNhaVuon,
 } from "./fixture.js";
 
 export * from "./geometry/vec.js";

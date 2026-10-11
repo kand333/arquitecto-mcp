@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { loadBietThuDoc, loadNhaCap4, loadNhaOng4x16 } from "../../src/fixture.js";
+import { loadCasa2Pisos, loadCasa1Piso, loadCasaPrueba2p } from "../../src/fixture.js";
 import { pointInPolygon } from "../../src/geometry/polygon.js";
 import { openingSidePoints } from "../../src/geometry/wall.js";
 import { getWall } from "../../src/model.js";
@@ -23,7 +23,7 @@ const docs = readFileSync(path.join(here, "..", "..", "..", "..", "docs", "oguc-
 /** Filas de la tabla «Reglas» del doc: `| \`CL-…\` | …`. */
 const docRows = new Map([...docs.matchAll(/^\| `(CL-[A-Z0-9-]+)` \|(.*)$/gm)].map((m) => [m[1]!, m[2]!]));
 
-const chile = (p: Project = loadNhaCap4()): Project => {
+const chile = (p: Project = loadCasa1Piso()): Project => {
   p.config = { ...p.config, region: "cl" };
   return p;
 };
@@ -104,7 +104,7 @@ describe("E4 — CL-ALT-01 (OGUC 4.1.1, altura piso a cielo ≥ 2,30 m en locale
   });
 
   it("indeterminado: falta la losa del piso superior → no se asume espesor", () => {
-    const p = chile(loadBietThuDoc());
+    const p = chile(loadCasa2Pisos());
     p.slabs = p.slabs.filter((s) => !(s.level === "L2" && s.kind === "floor"));
     const out = validateProject(p);
     expect(hits(out, "CL-ALT-01", "R1")).toEqual([]);
@@ -140,7 +140,7 @@ describe("E4 — CL-VEN-01 (OGUC 4.1.2, al menos una ventana al exterior en loca
   it("negativo: la luz que llega solo por el vano de la escalera NO cuenta como ventana (a diferencia de STD-09)", () => {
     // nha-ong-4x16: R2 es el único recinto adyacente a la escalera R6, que tiene vano en la losa superior.
     // Se usa como living (habitable) para tener el caso que STD-09 da por iluminado vía la escalera.
-    const p = chile(loadNhaOng4x16());
+    const p = chile(loadCasaPrueba2p());
     const living = p.rooms.find((r) => r.id === "R2")!;
     living.use = "khach";
     // quitar toda ventana que dé a R1
@@ -168,7 +168,7 @@ describe("E4b — cl-cip: normas urbanísticas del CIP declaradas por el usuario
     validateProject(p).filter((i) => i.rule === "CL-INDET" && i.message.includes(rule));
 
   it("positivo: valores del CIP declarados y respetados → sin error ni indeterminado", () => {
-    const villa = chile(loadBietThuDoc()); // pisos 3, altura 12000, ocupación 60 %, distanciamientos por deslinde
+    const villa = chile(loadCasa2Pisos()); // pisos 3, altura 12000, ocupación 60 %, distanciamientos por deslinde
     for (const rule of ["CL-CIP-PIS", "CL-CIP-ALT", "CL-CIP-COS", "CL-CIP-DIS"]) {
       expect(errs(villa, rule), rule).toEqual([]);
       expect(cipIndet(villa, rule), rule).toEqual([]);
@@ -180,7 +180,7 @@ describe("E4b — cl-cip: normas urbanísticas del CIP declaradas por el usuario
 
   it("negativo: cada valor declarado y excedido → error de su regla", () => {
     const qh = (p: Project) => (p.brief.dat!.quy_hoach ??= {});
-    const villa = (mut: (p: Project) => void): Project => { const p = chile(loadBietThuDoc()); mut(p); return p; };
+    const villa = (mut: (p: Project) => void): Project => { const p = chile(loadCasa2Pisos()); mut(p); return p; };
     expect(errs(villa((p) => (qh(p).tang_max = 1)), "CL-CIP-PIS")).toHaveLength(1);
     expect(errs(villa((p) => (qh(p).chieu_cao_max = 1000)), "CL-CIP-ALT")).toHaveLength(1);
     expect(errs(villa((p) => (qh(p).mat_do_max = 1)), "CL-CIP-COS")).toHaveLength(1);

@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { loadNhaOng4x16 } from "@arquitecto/core";
+import { loadCasaPrueba2p } from "@arquitecto/core";
 import { buildPlanScene } from "./plan-scene.js";
 import { sceneToSvg } from "./svg-writer.js";
 
 /** Golden SVG (doc 10): đổi renderer phải diff có chủ đích. Font không nhúng cho snapshot gọn. */
 function render(levelId: string): string {
-  const { items, tf } = buildPlanScene(loadNhaOng4x16(), levelId, { date: "13/07/2026", designer: "anh Ba" });
+  const { items, tf } = buildPlanScene(loadCasaPrueba2p(), levelId, { date: "13/07/2026", designer: "anh Ba" });
   return sceneToSvg(items, tf);
 }
 
@@ -55,12 +55,12 @@ describe("renderer 2D — mặt bằng", () => {
   });
 
   it("nhà dọc được xoay ngang trang, 1:50", () => {
-    const { tf } = buildPlanScene(loadNhaOng4x16(), "L1");
+    const { tf } = buildPlanScene(loadCasaPrueba2p(), "L1");
     expect(tf.rotated).toBe(true);
     expect(tf.scale).toBe(50);
   });
 
   it("level không tồn tại → lỗi tiếng Việt chỉ đường", () => {
-    expect(() => buildPlanScene(loadNhaOng4x16(), "L9")).toThrowError(/các level hiện có: L1, L2/);
+    expect(() => buildPlanScene(loadCasaPrueba2p(), "L9")).toThrowError(/các level hiện có: L1, L2/);
   });
 });

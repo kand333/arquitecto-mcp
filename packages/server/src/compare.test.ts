@@ -2,13 +2,13 @@ import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { applyOps, loadNhaOng4x16 } from "@arquitecto/core";
+import { applyOps, loadCasaPrueba2p } from "@arquitecto/core";
 import { compareHtml, compareProjects } from "./compare.js";
 import { ProjectStore } from "./store.js";
 
 function freshStore(): ProjectStore {
   const store = new ProjectStore(mkdtempSync(path.join(tmpdir(), "arquitecto-variant-")));
-  store.newProject("Nhà anh Ba", "nha-ong-4x16-2t");
+  store.newProject("Nhà anh Ba", "casa-prueba-2p");
   return store;
 }
 
@@ -44,7 +44,7 @@ describe("phương án A/B — store", () => {
 
 describe("phương án A/B — compare engine", () => {
   it("bắt được phòng đổi diện tích + chênh dự toán, tính bằng thứ gia chủ hiểu", () => {
-    const a = loadNhaOng4x16();
+    const a = loadCasaPrueba2p();
     const b = structuredClone(a);
     // phương án B: thu phòng ngủ chính (dời W13 4310 như demo) — sửa polygon R8
     const r8 = b.rooms.find((r) => r.id === "R8")!;
@@ -60,7 +60,7 @@ describe("phương án A/B — compare engine", () => {
   });
 
   it("compareHtml: 2 SVG cạnh nhau + bảng tổng + dự toán", () => {
-    const a = loadNhaOng4x16();
+    const a = loadCasaPrueba2p();
     const b = structuredClone(a);
     const r = applyOps(b, b.meta.revision, [{ op: "delete", entity: "furniture", id: "F1" }]);
     const html = compareHtml(

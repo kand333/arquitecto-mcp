@@ -58,7 +58,7 @@ const brief = {
 // ── PHA B: template gần nhất + biến đổi theo brief
 show("project_new (template nhà ống + brief)", await call("project_new", {
   name: "Nhà anh Ba",
-  template: "nha-ong-4x16-2t",
+  template: "casa-prueba-2p",
   brief,
 }));
 

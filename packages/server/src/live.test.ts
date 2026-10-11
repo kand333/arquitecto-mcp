@@ -17,7 +17,7 @@ afterEach(async () => {
 
 async function boot(opts: LiveOptions = {}): Promise<{ store: ProjectStore; live: LiveServer; url: string; t: string }> {
   const store = new ProjectStore(mkdtempSync(path.join(tmpdir(), "arquitecto-live-")));
-  store.newProject("Nhà anh Ba", "nha-ong-4x16-2t");
+  store.newProject("Nhà anh Ba", "casa-prueba-2p");
   const live = new LiveServer(store, { port: 0, ...opts });
   const url = await live.start();
   cleanups.push(() => live.stop());

@@ -39,7 +39,7 @@ await client.connect(transport);
 const { tools } = await client.listTools();
 ok(tools.length === 18, `listTools: ${tools.length} tools`);
 
-const created = await client.callTool({ name: "project_new", arguments: { name: "Nhà thử gói", template: "nha-ong-4x16-2t" } });
+const created = await client.callTool({ name: "project_new", arguments: { name: "Nhà thử gói", template: "casa-prueba-2p" } });
 ok(textOf(created).includes("✅"), "project_new từ template");
 
 const plan = await client.callTool({ name: "render_plan", arguments: { level: "L1" } });

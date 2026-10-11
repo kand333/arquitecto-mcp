@@ -14,7 +14,7 @@ import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium, type Page } from "playwright";
-import { loadNhaOng4x16, validateProject, type Op, type Point } from "@arquitecto/core";
+import { loadCasaPrueba2p, validateProject, type Op, type Point } from "@arquitecto/core";
 import { LiveServer } from "../src/live.js";
 import { ProjectStore } from "../src/store.js";
 
@@ -80,13 +80,13 @@ const url = live.editorUrl()!; // A1: URL con token del propietario
 
 const browser = await chromium.launch({ headless: HEADLESS, args: HEADLESS ? [] : ["--window-size=1500,960"] });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-store.newProject("Nhà anh Ba", undefined, loadNhaOng4x16().site.boundary, loadNhaOng4x16().brief);
+store.newProject("Nhà anh Ba", undefined, loadCasaPrueba2p().site.boundary, loadCasaPrueba2p().brief);
 await page.goto(url);
 await page.waitForSelector("#paper", { timeout: 15_000 });
 nói("Trình duyệt đã mở editor — Claude bắt đầu dựng, làm đến đâu mọc đến đó.");
 
 // ── 1) Claude dựng nhà TỪNG NHỊP (như demo P2, nén nhịp) ─────────
-const f = loadNhaOng4x16();
+const f = loadCasaPrueba2p();
 const batches: Array<{ note: string; ops: Op[] }> = [];
 batches.push({
   note: "Khung tầng",

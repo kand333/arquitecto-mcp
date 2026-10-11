@@ -41,7 +41,7 @@ const show = (title: string, content: ToolContent): void => {
 console.log("📁 Arquitecto — demo P4: hồ sơ bản vẽ hoàn chỉnh (pha E)\n");
 
 // nhà mẫu (các pha A–D đã diễn ra ở demo P1–P3)
-show("Mở nhà mẫu", await call("project_new", { name: "Nhà ống 4×16m — 2 tầng 3PN", template: "nha-ong-4x16-2t" }));
+show("Mở nhà mẫu", await call("project_new", { name: "Nhà ống 4×16m — 2 tầng 3PN", template: "casa-prueba-2p" }));
 
 // nguyên tắc 5 — tự soi từng loại tờ trước khi đóng bộ
 show("validate", await call("validate", {}));

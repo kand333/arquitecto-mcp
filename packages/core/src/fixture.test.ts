@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { getAsset } from "./catalog.js";
-import { loadNhaOng4x16 } from "./fixture.js";
+import { loadCasaPrueba2p } from "./fixture.js";
 import { collectIds } from "./ids.js";
 
 describe("fixture nha-ong-4x16", () => {
-  const p = loadNhaOng4x16();
+  const p = loadCasaPrueba2p();
 
   it("meta đúng quy ước", () => {
     expect(p.meta.unit).toBe("mm");
