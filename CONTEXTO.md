@@ -4,7 +4,7 @@
 
 ## Estado actual
 
-- **Etapa:** E4b (limpieza VN + `cl-cip` + presupuesto UF) completada (2026-10-11). Siguiente: validación de reglas por el usuario (`docs/oguc-sources.md`, filas `CL-*` y `CL-CIP-*`) y E5, a la espera de confirmación. Volver a modo de permisos manual.
+- **Etapa:** E5 (app local compilada) completada (2026-10-11). Siguiente: E6 (registro en Claude Code y prueba final), a la espera de confirmación. Sigue pendiente que el usuario valide las reglas (`docs/oguc-sources.md`, filas `CL-*` y `CL-CIP-*`). Volver a modo de permisos manual.
 - Al terminar cada etapa, actualiza esta sección. Registra la etapa completada, los commits y lo que quedó pendiente o falló.
 
 | Etapa | Estado | Commits / notas |
@@ -14,8 +14,8 @@
 | E2 Seguridad | completada | A1 `7297c1a` + `79336ae` (scripts demo); A2 `fca078e`; M2+M3 `3de5489`; M1 `8e27aa0`; LOW `6be626c`; DEPS `fc4c906`; test flaky `84b7afa` |
 | E3 Español y región Chile | completada | `d2993eb` plantillas/región, `b058ec3` tools/store/live/compare, `eac5d2b` core + plantillas traducidas, `935a7c4` web; cierre en commit `docs: record E3…` |
 | E4 Rule pack OGUC | completada (MVP) | `ac5ebba` pack + evaluadores + docs + tests, `ca1246d` región cl por defecto + aviso en validate; cierre en commit `docs: record E4…` |
-| E4b Limpieza VN + presupuesto | completada | `f090b76` cl-cip, `9b124b6` presupuesto UF, `77f1ba0` renombre de fixtures, commit «remove Vietnamese legacy (E4b-3b/4)» con el cierre |
-| E5 App completa | pendiente | — |
+| E4b Limpieza VN + presupuesto | completada | `f090b76` cl-cip, `9b124b6` presupuesto UF, `77f1ba0` renombre de fixtures, `5442444` borrado del legado + cierre |
+| E5 App completa | completada | bundle web regenerado + smoke adaptado + cierre en commit «build: … (E5)» |
 | E6 Registro y prueba final | pendiente | — |
 
 ### Resultado E0
@@ -102,6 +102,42 @@
 - **Incidencias propias:**
   - Un archivo `NUL` vacío creado por error en la raíz del repo por un script de extracción; detectado en `git status` y borrado antes del commit.
   - Se usó una sonda temporal `_probe.test.ts`, borrada antes del commit.
+
+### Resultado E4b
+
+- **Decisiones del usuario:** presupuesto en UF/m² con valor de la UF opcional para mostrar CLP. Plan aprobado en `C:\Users\cavbs\.claude\plans\foamy-wishing-peach.md`.
+- **`pln` → pack `cl-cip`** (`rules/cl-cip.json`): `CL-CIP-ANT/FON/COS/PIS/ALT/DIS` envuelven los evaluadores `PLN-01/02/03/04/05/07` y comparan contra los valores del CIP que **declara el usuario** en `brief.dat.quy_hoach` y `site.edges[].setback`. Si falta un valor, emiten `CL-INDET` (`info`). Fundamento del CIP (OGUC 1.4.4) cotejado contra el PDF oficial; filas en `docs/oguc-sources.md`.
+- **Presupuesto** (`rules/don-gia-cl.json`, UF/m²): precios y coeficientes `null` («por completar», salvo losas = 1). Sin precios: cantidades sin total, y la lámina de presupuesto se omite. `vnd`→`monto`, `parsePresupuesto` (UF; `$` y «millones» solo con `valor_clp`) y `formatMonto` (UF + CLP). El usuario completa `<proyecto>/rules/don-gia.json`.
+- **Fixtures:** `nha-ong-4x16` se neutralizó como `casa-prueba-2p` (misma geometría e IDs, nombres en español, sin `phong_thuy`, plantilla oculta solo para tests). Las plantillas visibles quedaron traducidas permanentemente (`casa-1-piso`, `casa-2-pisos`, `depto-2d`) y desaparecen `TEMPLATE_ES`/`localizeTemplate`. Las plantillas visibles se crean con el brief vacío, sin datos de CIP de ejemplo.
+- **Borrado:** `std-vn.json`, `loban.json`, `pln.json`, `don-gia.json` (VND), `evaluators-lbb.ts`, `loban.ts`, `nha-vuon.json`, `RULERS`, la región `vn`, `phong_thuy`, `parseBudgetVnd`/`formatVnd`, el evaluador muerto `std12` y el diccionario web `vi`. Región por defecto: `cl` (`packsFor`, `donGiaFor`, `newProject`).
+- **Se conserva:** el pack UK y `detached-uk` (solo tests: prueba P9 de segunda región) y `std-generic.json`.
+- **Tests:**
+  - `rules.test.ts`: los evaluadores `STD-*` se prueban con un pack de test (región `lib`) con los params del upstream; `PLN-*` se migraron a `CL-CIP-*`. Se borraron 7 tests junto con su funcionalidad (5 de LBB y 2 de `nha-vuon`): de 58 a 51.
+  - 5 snapshots SVG regenerados; el diff solo cambia líneas `<text>`, no geometría.
+  - El test MCP del flujo completo espera ahora solo `CL-INDET/info` (sin `block/error/warn`) en vez de «0 observaciones»: bajo `cl` nunca se declara cumplimiento.
+  - Suite completa **282/282** (con Chromium y `web/dist`), typecheck en verde, scripts demo compilan con `tsc --strict`.
+- **Pendiente (fuera de alcance):**
+  - Nombres del catálogo en español.
+  - Rótulos de planos exportados («MẶT BẰNG», capas TCVN, `schedule-scene.ts`).
+  - Claves internas del esquema.
+  - Comentarios y narración en vietnamita de los scripts demo.
+  - Rasantes y coeficiente de constructibilidad.
+- **Incidencias propias:** el heredoc de Bash colapsa las barras invertidas dobles, lo que rompió algunas ediciones por script; se rehicieron con la herramienta Edit. Un reemplazo por patrón corrompió `l.label.includes` en `estimate.test`; se detectó y corrigió.
+### Resultado E5
+
+- **Build propio:** `pnpm build:cli` genera `packages/cli/dist/main.mjs` (1,3 MB, no versionado: `dist/` está en `.gitignore`) y copia el editor a `packages/cli/web/`. El bundle web versionado se regeneró: el anterior era de antes de E3/E4b y aún traía el diccionario `vi`.
+- **Smoke del bundle** (`pnpm exec tsx packages/cli/smoke.mts packages/cli`): 8/8 en verde por MCP stdio:
+  - 18 herramientas, `project_new` con la plantilla visible `casa-1-piso` y `render_plan` en PNG.
+  - `estimate_cost` sin total con la tabla empaquetada, y con total en UF usando `rules/don-gia.json` del proyecto.
+  - Editor servido con URL `?token=` y fuente incrustada.
+  - Se adaptó a E4b: antes esperaba un total desde la tabla VND. Mensajes en español y uso con el `tsx` local (sin `npx`).
+- **El smoke deja una carpeta de prueba** en `%TEMP%\arquitecto-smoke-*` (comportamiento del upstream); se puede borrar a mano.
+- **Programas externos:**
+  - **Chromium (Playwright):** obligatorio para PNG/PDF; ya instalado (`pnpm --filter @arquitecto/server exec playwright install chromium`).
+  - **Blender** (opcional): render fotorrealista desde `.glb` con `scripts/render-photoreal.py`. Instalar solo si se quieren imágenes de presentación.
+  - **CAD** (LibreCAD o QCAD, gratuitos): para abrir y editar los `.dxf`. Instalar cuando se entregue un plano a un dibujante o arquitecto.
+  - **BIM** (FreeCAD o Bonsai): para abrir los `.ifc`. Solo si un tercero pide el modelo BIM.
+- **Electron:** no hace falta. El servidor local + el navegador ya funcionan como app, y Claude Code arranca el servidor por stdio.
 
 ## Origen y objetivo
 
@@ -257,27 +293,6 @@ Una etapa por sesión. Se para al final de cada etapa, se actualiza este archivo
   - Eliminar `nha-ong`, `nha-vuon` y `detached-uk`, con sus fixtures y tests.
 - **Presupuesto:** el motor se conserva. `rules/don-gia.json` pasa a una tabla CLP/UF con valores marcados «por completar»; los precios los da el usuario y no se inventan.
 - **Feynman:** «reglas como datos». El motor es una balanza y el rule pack son las pesas: se cambian las pesas sin tocar la balanza.
-
-### Resultado E4b
-
-- **Decisiones del usuario:** presupuesto en UF/m² con valor de la UF opcional para mostrar CLP. Plan aprobado en `C:\Users\cavbs\.claude\plans\foamy-wishing-peach.md`.
-- **`pln` → pack `cl-cip`** (`rules/cl-cip.json`): `CL-CIP-ANT/FON/COS/PIS/ALT/DIS` envuelven los evaluadores `PLN-01/02/03/04/05/07` y comparan contra los valores del CIP que **declara el usuario** en `brief.dat.quy_hoach` y `site.edges[].setback`. Si falta un valor, emiten `CL-INDET` (`info`). Fundamento del CIP (OGUC 1.4.4) cotejado contra el PDF oficial; filas en `docs/oguc-sources.md`.
-- **Presupuesto** (`rules/don-gia-cl.json`, UF/m²): precios y coeficientes `null` («por completar», salvo losas = 1). Sin precios: cantidades sin total, y la lámina de presupuesto se omite. `vnd`→`monto`, `parsePresupuesto` (UF; `$` y «millones» solo con `valor_clp`) y `formatMonto` (UF + CLP). El usuario completa `<proyecto>/rules/don-gia.json`.
-- **Fixtures:** `nha-ong-4x16` se neutralizó como `casa-prueba-2p` (misma geometría e IDs, nombres en español, sin `phong_thuy`, plantilla oculta solo para tests). Las plantillas visibles quedaron traducidas permanentemente (`casa-1-piso`, `casa-2-pisos`, `depto-2d`) y desaparecen `TEMPLATE_ES`/`localizeTemplate`. Las plantillas visibles se crean con el brief vacío, sin datos de CIP de ejemplo.
-- **Borrado:** `std-vn.json`, `loban.json`, `pln.json`, `don-gia.json` (VND), `evaluators-lbb.ts`, `loban.ts`, `nha-vuon.json`, `RULERS`, la región `vn`, `phong_thuy`, `parseBudgetVnd`/`formatVnd`, el evaluador muerto `std12` y el diccionario web `vi`. Región por defecto: `cl` (`packsFor`, `donGiaFor`, `newProject`).
-- **Se conserva:** el pack UK y `detached-uk` (solo tests: prueba P9 de segunda región) y `std-generic.json`.
-- **Tests:**
-  - `rules.test.ts`: los evaluadores `STD-*` se prueban con un pack de test (región `lib`) con los params del upstream; `PLN-*` se migraron a `CL-CIP-*`. Se borraron 7 tests junto con su funcionalidad (5 de LBB y 2 de `nha-vuon`): de 58 a 51.
-  - 5 snapshots SVG regenerados; el diff solo cambia líneas `<text>`, no geometría.
-  - El test MCP del flujo completo espera ahora solo `CL-INDET/info` (sin `block/error/warn`) en vez de «0 observaciones»: bajo `cl` nunca se declara cumplimiento.
-  - Suite completa **282/282** (con Chromium y `web/dist`), typecheck en verde, scripts demo compilan con `tsc --strict`.
-- **Pendiente (fuera de alcance):**
-  - Nombres del catálogo en español.
-  - Rótulos de planos exportados («MẶT BẰNG», capas TCVN, `schedule-scene.ts`).
-  - Claves internas del esquema.
-  - Comentarios y narración en vietnamita de los scripts demo.
-  - Rasantes y coeficiente de constructibilidad.
-- **Incidencias propias:** el heredoc de Bash colapsa las barras invertidas dobles, lo que rompió algunas ediciones por script; se rehicieron con la herramienta Edit. Un reemplazo por patrón corrompió `l.label.includes` en `estimate.test`; se detectó y corrigió.
 
 ### E4 · Rule pack Chile (OGUC) — rediseñado por el usuario el 2026-10-11
 
