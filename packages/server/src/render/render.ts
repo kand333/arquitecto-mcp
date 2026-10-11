@@ -2,6 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Project } from "@arquitecto/core";
+import { safeJoin } from "../safe-path.js";
 import { buildElevationScene, type ElevationOptions } from "./elevation-scene.js";
 import { buildPlanScene, type PlanOptions } from "./plan-scene.js";
 import { buildScheduleScene, type ScheduleOptions } from "./schedule-scene.js";
@@ -82,11 +83,11 @@ export async function renderPlanFiles(
   opts: RenderPlanOptions = {},
 ): Promise<RenderedFiles> {
   const plan = renderPlanSvg(p, levelId, opts);
-  mkdirSync(dir, { recursive: true });
   const base = `mat-bang-${levelId.toLowerCase()}`;
-  const svgPath = path.join(dir, `${base}.svg`);
+  const svgPath = safeJoin(dir, `${base}.svg`); // A2: antes de crear nada en disco
+  let pngPath: string | null = safeJoin(dir, `${base}.png`);
+  mkdirSync(dir, { recursive: true });
   writeFileSync(svgPath, plan.svg, "utf8");
-  let pngPath: string | null = path.join(dir, `${base}.png`);
   let pngError: string | undefined;
   try {
     const { svgToPng } = await import("./png.js");

@@ -1,4 +1,5 @@
 import { getAsset } from "../catalog.js";
+import { isValidId } from "../ids.js";
 import { hasBlocking, type Issue } from "../issues.js";
 import type { Axis, EntityKind, Project } from "../types.js";
 import type { Op } from "./ops.js";
@@ -29,6 +30,10 @@ const ARRAY_KEY: Record<ArrayKind, "levels" | "walls" | "openings" | "slabs" | "
 
 const issue = (rule: string, severity: Issue["severity"], entities: string[], message: string): Issue =>
   ({ rule, severity, entities, message });
+
+/** A2: el id llega a nombres de archivo y claves de objeto. */
+const invalidId = (id: string): Issue =>
+  issue("OPS-02", "block", [], `ID inválido ${JSON.stringify(id)}: solo letras, números, "_" o "-" (1–32 caracteres).`);
 
 /**
  * Cổng mutation duy nhất: áp cả batch như MỘT transaction trên bản sao.
@@ -117,6 +122,7 @@ function applyArray(draft: Project, op: Op): Issue | null {
     if (typeof id !== "string" || id.length === 0) {
       return issue("OPS-02", "block", [], `Op add ${kind} thiếu data.id (client phải tự tạo ID).`);
     }
+    if (!isValidId(id)) return invalidId(id);
     if (allIds(draft).has(id)) {
       return issue("OPS-02", "block", [id], `ID ${id} đã tồn tại — chọn ID khác (vd. dùng nextId).`);
     }
@@ -188,6 +194,7 @@ function applyRecord(draft: Project, op: Op, kind: "style" | "finish"): Issue | 
   if (op.op === "add") {
     const { id, ...rest } = op.data;
     if (typeof id !== "string" || id.length === 0) return issue("OPS-02", "block", [], `Op add ${kind} thiếu data.id.`);
+    if (!isValidId(id)) return invalidId(id);
     if (allIds(draft).has(id)) return issue("OPS-02", "block", [id], `ID ${id} đã tồn tại.`);
     record[id] = structuredClone(rest);
     return null;
@@ -255,6 +262,7 @@ function applyAxis(draft: Project, op: Op): Issue | null {
   if (op.op === "add") {
     const { id, dir } = op.data as { id?: string; dir?: string };
     if (typeof id !== "string" || id.length === 0) return issue("OPS-02", "block", [], "Op add axis thiếu data.id.");
+    if (!isValidId(id)) return invalidId(id);
     if (dir !== "x" && dir !== "y") return issue("OPS-08", "block", [id], `Axis ${id} cần data.dir = "x" | "y".`);
     if (allIds(draft).has(id)) return issue("OPS-02", "block", [id], `ID ${id} đã tồn tại.`);
     draft.axes[dir].push(structuredClone(op.data) as unknown as Axis);

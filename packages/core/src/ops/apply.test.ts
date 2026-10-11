@@ -4,6 +4,7 @@ import { loadNhaOng4x16 } from "../fixture.js";
 import type { Issue } from "../issues.js";
 import type { Project } from "../types.js";
 import { wallLength } from "../geometry/wall.js";
+import { findInvalidId, isValidId } from "../ids.js";
 import { applyOps } from "./apply.js";
 import type { Op } from "./ops.js";
 
@@ -223,5 +224,44 @@ describe("applyOps — property-based (fast-check)", () => {
       }),
       { numRuns: 50 },
     );
+  });
+});
+
+// ── A2: formato de IDs (docs/security-tests/A2.md) ──────────────────
+
+describe("A2 — IDs con formato seguro", () => {
+  const BAD = ["../x", "..\\x", "a/b", "a b", "x".repeat(33), "__proto__", "constructor", "prototype"];
+
+  it("isValidId: acepta prefijo+número y rechaza rutas, espacios, >32 y claves de prototipo", () => {
+    for (const ok of ["W12", "L1", "ST1", "door-900", "a_b", "x".repeat(32)]) expect(isValidId(ok)).toBe(true);
+    for (const bad of BAD) expect(isValidId(bad)).toBe(false);
+  });
+
+  it("add con id inválido se bloquea (OPS-02) en arrays, records y ejes", () => {
+    const p = loadNhaOng4x16();
+    for (const id of BAD) {
+      const ops: Op[] = [
+        { op: "add", entity: "level", data: { id, name: "X", elevation: 9000, height: 3000 } },
+        addWall(id),
+        { op: "add", entity: "style", data: { id, kind: "door", width: 900, height: 2100 } },
+        { op: "add", entity: "axis", data: { id, dir: "x", pos: 0 } },
+      ];
+      for (const op of ops) {
+        const r = applyOps(p, p.meta.revision, [op]);
+        expect(r.ok, `${op.entity} ${JSON.stringify(id)}`).toBe(false);
+        if (!r.ok) expect(r.errors[0]!.rule).toBe("OPS-02");
+      }
+    }
+    expect(({} as Record<string, unknown>).kind).toBeUndefined(); // sin prototype pollution
+  });
+
+  it("findInvalidId encuentra IDs inválidos en un modelo cargado de disco", () => {
+    const p = loadNhaOng4x16();
+    expect(findInvalidId(p)).toBeNull();
+    p.levels[0]!.id = "../../evil";
+    expect(findInvalidId(p)).toBe("../../evil");
+    const q = loadNhaOng4x16();
+    q.meta.id = "../evil";
+    expect(findInvalidId(q)).toBe("../evil");
   });
 });

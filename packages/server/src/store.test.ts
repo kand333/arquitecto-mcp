@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
@@ -60,5 +60,48 @@ describe("ProjectStore", () => {
   it("slugify tiếng Việt", () => {
     expect(slugify("Nhà Ống 4×16 — Anh Ba & Bà Nội")).toBe("nha-ong-4-16-anh-ba-ba-noi");
     expect(slugify("Đường Đá Đỏ")).toBe("duong-da-do");
+  });
+});
+
+// ── A2: IDs validados al cargar de disco (docs/security-tests/A2.md) ──
+
+describe("A2 — openProject/openVariant rechazan IDs inválidos", () => {
+  const craft = (mutate: (p: Project) => void): { store: ProjectStore; file: string } => {
+    const store = freshStore();
+    store.newProject("Nhà anh Ba", "nha-ong-4x16-2t");
+    const p = structuredClone(store.current);
+    mutate(p);
+    const file = path.join(store.baseDir, "crafted.json");
+    writeFileSync(file, JSON.stringify(p), "utf8");
+    return { store, file };
+  };
+
+  it("openProject con level.id o meta.id con ../ → error", () => {
+    const a = craft((p) => (p.levels[0]!.id = "../../evil"));
+    expect(() => a.store.openProject("crafted.json")).toThrowError(/ID inválido/);
+    const b = craft((p) => (p.meta.id = "../evil"));
+    expect(() => b.store.openProject("crafted.json")).toThrowError(/ID inválido/);
+  });
+
+  it("openVariant con un modelo manipulado → error y el proyecto actual no cambia", () => {
+    const { store } = craft(() => {});
+    const bad = structuredClone(store.current);
+    bad.levels[0]!.id = "../../evil";
+    mkdirSync(store.variantsDir, { recursive: true });
+    writeFileSync(path.join(store.variantsDir, "mala.json"), JSON.stringify({ name: "Mala", model: bad }), "utf8");
+    const before = store.current.meta.revision;
+    expect(() => store.openVariant("mala")).toThrowError(/ID inválido/);
+    expect(store.current.meta.revision).toBe(before);
+  });
+
+  it("project_new con nombre largo: meta.id ≤32, sin guion final, y el proyecto se puede reabrir", () => {
+    const store = freshStore();
+    const p = store.newProject("Casa Pérez Cañete 3 dormitorios 2 pisos", "nha-ong-4x16-2t");
+    expect(p.meta.id.length).toBeLessThanOrEqual(32);
+    expect(p.meta.id).toMatch(/^[a-z0-9-]+$/);
+    expect(p.meta.id.endsWith("-")).toBe(false);
+    expect(() => store.openProject()).not.toThrow();
+    // slugify no se recorta: nombra variantes y recortarlo podría pisar dos con el mismo prefijo
+    expect(slugify("Casa Pérez Cañete 3 dormitorios 2 pisos").length).toBe(39);
   });
 });

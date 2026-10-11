@@ -24,5 +24,5 @@
 
 ## Seguridad
 - Editor (`live.ts`, A1): escucha solo en `127.0.0.1`; WS y `/share`, `/share/rotate`, `/plan`, `/so-sanh` exigen `?token=` (propietario = escritura, link compartido = solo lectura); Host y Origin deben ser `localhost`/`127.0.0.1:<port>`. Toda ruta o cliente nuevo debe respetarlo.
-- Hasta cerrar E2, los IDs llegan a rutas de archivo sin validar (A2, M1–M3).
+- IDs (A2): `isValidId` (core) en todo `add` y al cargar de disco; toda escritura de exportes pasa por `safeJoin` (`server/src/safe-path.ts`). Pendientes M1–M3 (underlay, slug de variantes, ruta de `project_open`).
 - En E2, cada fix lleva un test que primero falla; el output rojo y el verde se guardan en `docs/security-tests/<id>.md`.

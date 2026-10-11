@@ -1,7 +1,7 @@
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import {
-  applyOps, loadBietThuDoc, loadCanHo, loadDetachedUk, loadNhaCap4, loadNhaOng4x16, loadNhaVuon, setDonGia, validateProject,
+  applyOps, findInvalidId, loadBietThuDoc, loadCanHo, loadDetachedUk, loadNhaCap4, loadNhaOng4x16, loadNhaVuon, setDonGia, validateProject,
   type ApplyResult, type Issue, type Op, type OpOrigin, type Point, type Project,
 } from "@arquitecto/core";
 import { SoftLocks } from "./locks.js";
@@ -108,7 +108,8 @@ export class ProjectStore {
     } else {
       p = blankProject(brief);
     }
-    p.meta = { ...p.meta, id: slugify(name), name, revision: 0 };
+    // A2: meta.id es un ID (≤32); se recorta aquí y no en slugify, que también nombra variantes
+    p.meta = { ...p.meta, id: slugify(name).slice(0, 32).replace(/-+$/, "") || "du-an", name, revision: 0 };
     if (brief) p.brief = structuredClone(brief); // brief từ pha A phỏng vấn — nguồn đối chiếu mọi pha sau
     if (siteBoundary) {
       p.site.boundary = siteBoundary;
@@ -136,6 +137,7 @@ export class ProjectStore {
     if (typeof raw?.meta?.revision !== "number" || raw.meta.unit !== "mm") {
       throw new Error(`${fp} không phải file dự án Arquitecto hợp lệ (thiếu meta.revision / unit mm).`);
     }
+    assertValidIds(raw, fp);
     this.project = raw;
     this.emit({ kind: "project", reason: "opened" });
     return raw;
@@ -247,6 +249,7 @@ export class ProjectStore {
    */
   openVariant(slug: string): Project {
     const { name, model } = this.readVariant(slug);
+    assertValidIds(model, `phương án "${slug}"`);
     const next = structuredClone(model);
     next.meta.revision = this.current.meta.revision + 1;
     this.project = next;
@@ -348,4 +351,12 @@ export function slugify(s: string): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "") || "du-an";
+}
+
+/** A2: un modelo cargado de disco no pasó por ops — sus IDs se validan antes de usarlo. */
+function assertValidIds(p: Project, where: string): void {
+  const bad = findInvalidId(p);
+  if (bad != null) {
+    throw new Error(`${where}: ID inválido ${JSON.stringify(bad)} — solo letras, números, "_" o "-" (1–32 caracteres).`);
+  }
 }

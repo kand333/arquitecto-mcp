@@ -18,6 +18,7 @@ import { detectWalls } from "./import/detect.js";
 import { parseDxf } from "./import/dxf.js";
 import { imageSize } from "./import/image-size.js";
 import { loadUnderlay, placedPolylines, underlayDir } from "./import/underlay.js";
+import { safeJoin } from "./safe-path.js";
 import { ProjectStore, TEMPLATES } from "./store.js";
 
 const ENTITY = z.enum([
@@ -602,14 +603,14 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
           const issues0 = validateProject(p);
           const vNote = `Validator: ${issues0.length === 0 ? "sạch." : `${issues0.length} vấn đề — chạy validate soi lại trước khi bàn giao.`}`;
           if (args.format === "gltf") {
-            const fp = path.join(dir0, `${p.meta.id}.glb`);
+            const fp = safeJoin(dir0, `${p.meta.id}.glb`);
             const glb = modelToGlb(p);
             writeFileSync(fp, glb);
             return text(`✅ glTF (GLB) ${Math.round(glb.length / 1024)}KB → ${fp}
 Mét thật, mỗi entity một node theo id. Render photoreal: blender -b -P scripts/render-photoreal.py -- "${fp}" out.png
 ${vNote}`);
           }
-          const fp = path.join(dir0, `${p.meta.id}.ifc`);
+          const fp = safeJoin(dir0, `${p.meta.id}.ifc`);
           const ifc = modelToIfc(p);
           writeFileSync(fp, ifc, "utf8");
           return text(`✅ IFC4 concept → ${fp}
@@ -629,13 +630,13 @@ ${vNote}`);
         mkdirSync(dir, { recursive: true });
         const lines: string[] = [];
         if (args.format === "pdf") {
-          const file = path.join(dir, `${p.meta.id}-ho-so.pdf`);
+          const file = safeJoin(dir, `${p.meta.id}-ho-so.pdf`);
           const { svgsToPdf } = await import("./render/pdf.js");
           await svgsToPdf(set.sheets.map((s) => sheetSvg(s)), file);
           lines.push(`✅ PDF ${set.sheets.length} trang → ${file}`);
         } else if (args.format === "svg") {
           for (const s of set.sheets) {
-            const fp = path.join(dir, `${s.fileBase}.svg`);
+            const fp = safeJoin(dir, `${s.fileBase}.svg`);
             writeFileSync(fp, sheetSvg(s), "utf8");
             lines.push(`  ${s.no} ${s.title} → ${fp}`);
           }
@@ -643,7 +644,7 @@ ${vNote}`);
         } else {
           const withModel = set.sheets.filter((s) => s.hasModel);
           for (const s of withModel) {
-            const fp = path.join(dir, `${s.fileBase}.dxf`);
+            const fp = safeJoin(dir, `${s.fileBase}.dxf`);
             writeFileSync(fp, sheetDxf(s), "utf8");
             lines.push(`  ${s.no} ${s.title} → ${fp}`);
           }

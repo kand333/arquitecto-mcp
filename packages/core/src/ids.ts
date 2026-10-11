@@ -34,6 +34,24 @@ export function collectIds(p: Project): Set<string> {
   return ids;
 }
 
+const ID_RE = /^[A-Za-z0-9_-]{1,32}$/;
+const PROTO_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+
+/**
+ * A2: los IDs terminan en nombres de archivo y en claves de objeto — solo
+ * [A-Za-z0-9_-], 1–32 caracteres, y nunca una clave de prototipo.
+ */
+export function isValidId(id: unknown): id is string {
+  return typeof id === "string" && ID_RE.test(id) && !PROTO_KEYS.has(id);
+}
+
+/** A2: primer ID inválido de un modelo cargado de disco (meta.id + todas las entidades), o null. */
+export function findInvalidId(p: Project): string | null {
+  if (!isValidId(p.meta?.id)) return String(p.meta?.id);
+  for (const id of collectIds(p)) if (!isValidId(id)) return String(id);
+  return null;
+}
+
 /** Sinh ID trống kế tiếp theo tiền tố: nextId(model, "W") → "W9". */
 export function nextId(p: Project, prefix: string): string {
   const ids = collectIds(p);
