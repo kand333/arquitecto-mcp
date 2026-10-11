@@ -4,12 +4,12 @@ import path from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import {
-  areaM2, ASSET_CATEGORIES, DON_GIA, estimateCost, formatVnd, getLevel, searchAssets,
+  areaM2, ASSET_CATEGORIES, estimateCost, formatMonto, getLevel, searchAssets,
   stairLayout, unverifiedRules, validateProject,
   type AssetCategory, type CaptureCamera, type FinishLevel, type Issue, type Op, type Project,
 } from "@arquitecto/core";
 import { buildAssetsSheetSvg, SHEET_CAPACITY } from "./render/assets-sheet.js";
-import { compareHtml, compareProjects } from "./compare.js";
+import { compareHtml, compareProjects, money } from "./compare.js";
 import { DEFAULT_WEB_DIST, LiveServer, openInBrowser } from "./live.js";
 import { renderElevationSvg, renderPlanFiles, renderSectionSvg } from "./render/render.js";
 import { buildSheetSet, sheetDxf, sheetSvg } from "./render/sheets.js";
@@ -523,7 +523,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
         const lines = [
           `Comparación (${level}): A = ${report.a.label} · B = ${report.b.label}`,
           ...report.highlights.map((h) => `• ${h}`),
-          `Superficie total de recintos: A ${report.a.tongPhong_m2}m² · B ${report.b.tongPhong_m2}m²; presupuesto: A ~${formatVnd(report.a.duToan_vnd)} · B ~${formatVnd(report.b.duToan_vnd)}.`,
+          `Superficie total de recintos: A ${report.a.tongPhong_m2}m² · B ${report.b.tongPhong_m2}m²; presupuesto: A ${money(report.a.presupuesto, report.a.tabla)} · B ${money(report.b.presupuesto, report.b.tabla)}.`,
           ...(live.url ? [`Versión interactiva: ${live.url}/so-sanh?token=${live.ownerToken}${args.a ? `&a=${encodeURIComponent(args.a)}` : ""}`] : []),
         ];
         try {
@@ -570,25 +570,33 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
         }
         lines.push(`  TOTAL EQUIVALENTE: ${q.tong_quy_doi_m2}m² · superficie útil ${q.san_thuc_m2}m²`);
         lines.push("");
-        lines.push("Costos:");
-        for (const i of e.items) {
-          lines.push(`  ${i.label}: ${i.don_gia_vnd.toLocaleString("vi-VN")} VND/m² → ${i.thanh_tien_vnd.toLocaleString("vi-VN")} VND`);
-        }
-        lines.push(`  ➤ TOTAL: ${e.tong_vnd.toLocaleString("vi-VN")} VND (~${formatVnd(e.tong_vnd)})`);
-        if (e.ngan_sach) {
-          const ns = e.ngan_sach;
-          lines.push(
-            ns.vnd == null
-              ? `Presupuesto del brief "${ns.text}": no se pudo convertir a número.`
-              : ns.chenh_lech_vnd! >= 0
-                ? `Presupuesto del brief ${formatVnd(ns.vnd)} → SOBRAN ~${formatVnd(ns.chenh_lech_vnd!)}.`
-                : `Presupuesto del brief ${formatVnd(ns.vnd)} → SE EXCEDE ~${formatVnd(-ns.chenh_lech_vnd!)}: considera bajar el nivel de terminaciones o la superficie.`,
-          );
+        const t = e.tabla;
+        if (t) {
+          const sym = t.currency.symbol;
+          lines.push(`Costos (${t.currency.code}):`);
+          for (const i of e.items) {
+            lines.push(
+              i.precio_m2 == null
+                ? `  ${i.label}: precio por completar`
+                : `  ${i.label}: ${i.precio_m2.toLocaleString(t.currency.locale)} ${sym}/m² → ${formatMonto(i.monto!, t)}`,
+            );
+          }
+          lines.push(e.total == null ? "  ➤ TOTAL: por completar (faltan precios)" : `  ➤ TOTAL: ${formatMonto(e.total, t)}`);
+          if (e.ngan_sach) {
+            const ns = e.ngan_sach;
+            lines.push(
+              ns.monto == null || ns.diferencia == null
+                ? `Presupuesto del brief "${ns.text}": no se puede comparar (sin total o sin monto reconocible).`
+                : ns.diferencia >= 0
+                  ? `Presupuesto del brief ${formatMonto(ns.monto, t)} → SOBRAN ~${formatMonto(ns.diferencia, t)}.`
+                  : `Presupuesto del brief ${formatMonto(ns.monto, t)} → SE EXCEDE ~${formatMonto(-ns.diferencia, t)}: considera bajar el nivel de terminaciones o la superficie.`,
+            );
+          }
         }
         lines.push("");
         lines.push(`Cantidades de referencia: muros de albañilería ${q.tuong_xay_m2}m², puertas/ventanas ${q.cua_bo} unidades (${q.cua_m2}m²), escalera ${q.bac_thang} peldaños.`);
         for (const g of e.ghi_chu) lines.push(`⚠ ${g}`);
-        lines.push(`(Tabla de precios ${DON_GIA.version}; una tabla local va en rules/don-gia.json dentro de la carpeta del proyecto.)`);
+        if (t) lines.push(`(Tabla de precios ${t.version}; una tabla local va en rules/don-gia.json dentro de la carpeta del proyecto.)`);
         return text(lines.join("\n"));
       } catch (e) {
         return fail(e);

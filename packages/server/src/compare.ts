@@ -1,4 +1,4 @@
-import { areaM2, estimateCost, formatVnd, type Project } from "@arquitecto/core";
+import { areaM2, estimateCost, formatMonto, type DonGia, type Project } from "@arquitecto/core";
 import { renderPlanSvg } from "./render/render.js";
 
 /**
@@ -17,9 +17,12 @@ export type RoomDiff = {
   b_m2: number | null;
 };
 
+/** presupuesto null = sin tabla o precios por completar (no se compara). */
+type Side = { label: string; tongPhong_m2: number; walls: number; openings: number; furniture: number; presupuesto: number | null; tabla: DonGia | null };
+
 export type CompareReport = {
-  a: { label: string; tongPhong_m2: number; walls: number; openings: number; furniture: number; duToan_vnd: number };
-  b: { label: string; tongPhong_m2: number; walls: number; openings: number; furniture: number; duToan_vnd: number };
+  a: Side;
+  b: Side;
   rooms: RoomDiff[];
   /** Các dòng đáng nói nhất — nuôi text cho Claude + phần "khác biệt chính" trên trang. */
   highlights: string[];
@@ -27,14 +30,16 @@ export type CompareReport = {
 
 const r1 = (v: number): number => Math.round(v * 10) / 10;
 
-function sideStats(label: string, p: Project): CompareReport["a"] {
+function sideStats(label: string, p: Project): Side {
+  const e = estimateCost(p);
   return {
     label,
     tongPhong_m2: r1(p.rooms.reduce((s, r) => s + areaM2(r.polygon), 0)),
     walls: p.walls.length,
     openings: p.openings.length,
     furniture: p.furniture.length,
-    duToan_vnd: estimateCost(p).tong_vnd,
+    presupuesto: e.total,
+    tabla: e.tabla,
   };
 }
 
@@ -69,15 +74,21 @@ export function compareProjects(a: VariantSide, b: VariantSide): CompareReport {
       highlights.push(`${r.name} (${r.id}): ${r.a_m2}m² → ${r.b_m2}m² (${d > 0 ? "+" : ""}${d}m²)`);
     }
   }
-  const dTien = sb.duToan_vnd - sa.duToan_vnd;
-  if (Math.abs(dTien) >= 5_000_000) {
-    highlights.push(`Presupuesto: ${formatVnd(sa.duToan_vnd)} → ${formatVnd(sb.duToan_vnd)} (${dTien > 0 ? "más caro" : "más barato"} ~${formatVnd(Math.abs(dTien))})`);
+  // diferencia de presupuesto: solo si ambos lados tienen total y difieren más de un 1 %
+  if (sa.presupuesto != null && sb.presupuesto != null && sa.tabla) {
+    const dTien = sb.presupuesto - sa.presupuesto;
+    if (Math.abs(dTien) > 0.01 * Math.max(Math.abs(sa.presupuesto), Math.abs(sb.presupuesto))) {
+      highlights.push(`Presupuesto: ${formatMonto(sa.presupuesto, sa.tabla)} → ${formatMonto(sb.presupuesto, sa.tabla)} (${dTien > 0 ? "más caro" : "más barato"} ~${formatMonto(Math.abs(dTien), sa.tabla)})`);
+    }
   }
   if (sa.furniture !== sb.furniture) highlights.push(`Mobiliario: ${sa.furniture} → ${sb.furniture} piezas`);
   if (highlights.length === 0) highlights.push("Las dos alternativas son prácticamente iguales en recintos y costo.");
 
   return { a: sa, b: sb, rooms: roomList, highlights };
 }
+
+/** Monto legible o «—» si no hay total (sin tabla o precios por completar). */
+export const money = (v: number | null, tabla: DonGia | null): string => (v == null || !tabla ? "—" : formatMonto(v, tabla));
 
 const esc = (s: string): string =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -106,8 +117,8 @@ export function compareHtml(a: VariantSide, b: VariantSide, levelId: string, pro
     `<td class="so">${report.a.tongPhong_m2}</td><td class="so">${report.b.tongPhong_m2}</td>` +
     `<td class="so">${r1(report.b.tongPhong_m2 - report.a.tongPhong_m2)}</td></tr>` +
     `<tr class="tong"><td></td><td>PRESUPUESTO PRELIMINAR</td><td></td>` +
-    `<td class="so">${formatVnd(report.a.duToan_vnd)}</td><td class="so">${formatVnd(report.b.duToan_vnd)}</td>` +
-    `<td class="so">${formatVnd(report.b.duToan_vnd - report.a.duToan_vnd)}</td></tr>`;
+    `<td class="so">${money(report.a.presupuesto, report.a.tabla)}</td><td class="so">${money(report.b.presupuesto, report.b.tabla)}</td>` +
+    `<td class="so">${report.a.presupuesto != null && report.b.presupuesto != null ? money(report.b.presupuesto - report.a.presupuesto, report.a.tabla) : "—"}</td></tr>`;
 
   return `<!doctype html><html lang="es"><head><meta charset="utf-8">
 <title>Comparación de alternativas — ${esc(projectName)}</title>

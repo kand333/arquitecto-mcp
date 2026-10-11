@@ -2,15 +2,16 @@
   "version": "2026-H2",
   "ghi_chu": "Precios de REFERENCIA del mercado de vivienda urbana en Vietnam, segundo semestre 2026 (legado del upstream; sin cotejar con cotizaciones reales, tham_khao=true). Presupuesto preliminar con margen ±15–20 %. vnd = dong por m² de superficie equivalente. La tabla chilena (CLP/UF) llega en E4.",
   "tham_khao": true,
+  "currency": { "code": "VND", "symbol": "₫", "locale": "vi-VN" },
   "don_gia_m2": {
     "xay_tho": {
       "label": "Obra gruesa + mano de obra de terminaciones",
-      "vnd": 3800000
+      "monto": 3800000
     },
     "hoan_thien": {
-      "co-ban": { "label": "Terminaciones básicas", "vnd": 2800000 },
-      "trung-binh-kha": { "label": "Terminaciones de nivel medio", "vnd": 3500000 },
-      "cao-cap": { "label": "Terminaciones de alto estándar", "vnd": 5500000 }
+      "co-ban": { "label": "Terminaciones básicas", "monto": 2800000 },
+      "trung-binh-kha": { "label": "Terminaciones de nivel medio", "monto": 3500000 },
+      "cao-cap": { "label": "Terminaciones de alto estándar", "monto": 5500000 }
     }
   },
   "he_so_quy_doi": {

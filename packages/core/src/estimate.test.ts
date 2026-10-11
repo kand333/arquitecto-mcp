@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { loadNhaOng4x16 } from "./fixture.js";
 import {
-  computeQuantities, DON_GIA, estimateCost, formatVnd, parseBudgetVnd, suggestFinishLevel,
+  computeQuantities, donGiaFor, estimateCost, formatMonto, formatVnd, parseBudgetVnd, parsePresupuesto, setDonGia, suggestFinishLevel,
 } from "./estimate.js";
 
 describe("dự toán sơ bộ — khối lượng từ fixture 4×16m", () => {
@@ -54,17 +54,17 @@ describe("dự toán sơ bộ — chi phí + ngân sách", () => {
     const e = estimateCost(p);
     expect(e.items).toHaveLength(2);
     const tho = e.items[0]!;
-    expect(tho.thanh_tien_vnd).toBe(Math.round(e.quantities.tong_quy_doi_m2 * DON_GIA.don_gia_m2.xay_tho.vnd));
-    expect(e.tong_vnd).toBe(e.items[0]!.thanh_tien_vnd + e.items[1]!.thanh_tien_vnd);
+    expect(tho.monto).toBe(Math.round(e.quantities.tong_quy_doi_m2 * donGiaFor(undefined)!.don_gia_m2.xay_tho.monto!));
+    expect(e.total).toBe(e.items[0]!.monto! + e.items[1]!.monto!);
     // brief fixture: "~1.8 tỷ" — nhà 2 tầng 128m² mức TB khá phải nằm trong ngân sách
-    expect(e.ngan_sach?.vnd).toBe(1_800_000_000);
-    expect(e.ngan_sach?.chenh_lech_vnd).toBeGreaterThan(0);
+    expect(e.ngan_sach?.monto).toBe(1_800_000_000);
+    expect(e.ngan_sach?.diferencia).toBeGreaterThan(0);
     expect(e.ghi_chu.some((g) => g.includes("don-gia.json"))).toBe(true);
   });
 
   it("mức override đổi đơn giá hoàn thiện", () => {
-    const kha = estimateCost(p, "trung-binh-kha").tong_vnd;
-    const sang = estimateCost(p, "cao-cap").tong_vnd;
+    const kha = estimateCost(p, "trung-binh-kha").total!;
+    const sang = estimateCost(p, "cao-cap").total!;
     expect(sang).toBeGreaterThan(kha);
   });
 
@@ -80,5 +80,58 @@ describe("dự toán sơ bộ — chi phí + ngân sách", () => {
   it("formatVnd đọc được", () => {
     expect(formatVnd(1_234_000_000)).toBe("1,23 tỷ");
     expect(formatVnd(850_000_000)).toBe("850 triệu");
+  });
+});
+
+// ── E4b-2: presupuesto Chile en UF (tabla rules/don-gia-cl.json, precios por completar) ──
+
+describe("E4b — presupuesto Chile en UF", () => {
+  const cl = () => {
+    const p = loadNhaOng4x16();
+    p.config = { ...p.config, region: "cl" };
+    return p;
+  };
+
+  it("tabla empaquetada: precios por completar → sin total inventado, solo losas como base", () => {
+    setDonGia(null);
+    const e = estimateCost(cl());
+    expect(e.tabla?.currency.code).toBe("CLF");
+    expect(e.items.every((i) => i.precio_m2 == null && i.monto == null)).toBe(true);
+    expect(e.total).toBeNull();
+    expect(e.ghi_chu.some((g) => g.includes("por completar"))).toBe(true);
+    // sin coeficientes VN: no hay líneas de fundaciones ni techo, solo losas
+    expect(e.quantities.dien_tich.every((l) => l.label.startsWith("Losa"))).toBe(true);
+  });
+
+  it("con precios del usuario (tabla del proyecto): total en UF y equivalente en CLP", () => {
+    try {
+      setDonGia({
+        valor_clp: 40_000,
+        don_gia_m2: {
+          xay_tho: { label: "Obra gruesa", monto: 10 },
+          hoan_thien: { "trung-binh-kha": { label: "Terminaciones medias", monto: 5 } },
+        },
+      });
+      const p = cl();
+      p.brief.ngan_sach = { muc: "3.500 UF", hoan_thien: "medio" };
+      const e = estimateCost(p, "trung-binh-kha");
+      const esperado = e.quantities.tong_quy_doi_m2 * 10 + e.quantities.san_thuc_m2 * 5;
+      expect(e.total).toBeCloseTo(esperado, 1);
+      expect(formatMonto(1234.5, e.tabla!)).toBe("1.234,5 UF (≈ $49.380.000)");
+      expect(e.ngan_sach?.monto).toBe(3500);
+      expect(e.ngan_sach?.diferencia).toBeCloseTo(3500 - e.total!, 1);
+    } finally {
+      setDonGia(null);
+    }
+  });
+
+  it("parsePresupuesto: UF directo; pesos solo si se declaró el valor de la UF", () => {
+    const uf = { currency: { code: "CLF", symbol: "UF", locale: "es-CL" }, valor_clp: 40_000 };
+    expect(parsePresupuesto("3.500 UF", uf)).toBe(3500);
+    expect(parsePresupuesto("UF 2.800,5", uf)).toBe(2800.5);
+    expect(parsePresupuesto("$120.000.000", uf)).toBe(3000);
+    expect(parsePresupuesto("120 millones", uf)).toBe(3000);
+    expect(parsePresupuesto("$120.000.000", { ...uf, valor_clp: null })).toBeNull();
+    expect(parsePresupuesto("lo que alcance", uf)).toBeNull();
   });
 });

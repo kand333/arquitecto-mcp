@@ -493,7 +493,7 @@ describe("P9 — lớp region (doc 12): UK Approved Documents, DoD không TCVN/L
   it("DoD: estimate region uk không một đồng VND — chỉ khối lượng + ghi chú đóng góp", () => {
     const est = estimateCost(loadDetachedUk());
     expect(est.items).toEqual([]);
-    expect(est.tong_vnd).toBe(0);
+    expect(est.total).toBeNull();
     expect(est.quantities.san_thuc_m2).toBeGreaterThan(100); // khối lượng thật vẫn có
     expect(est.ghi_chu.join(" ")).toContain("No hay tabla de precios");
   });

@@ -1,4 +1,4 @@
-import { DON_GIA, donGiaFor, estimateCost, formatVnd, unverifiedRules, type Project } from "@arquitecto/core";
+import { estimateCost, formatMonto, unverifiedRules, type Project } from "@arquitecto/core";
 import { drawSheetFrame } from "./frame.js";
 import { drawTable, type Col } from "./schedule-scene.js";
 import { type LayerName, type Prim, type Scene2D } from "./scene.js";
@@ -21,21 +21,21 @@ export type EstimateOptions = { date?: string; designer?: string; sheetNo?: stri
 
 type Push = (layer: LayerName, prim: Prim, dataId?: string, space?: "model" | "paper") => void;
 
-const vnd = (n: number): string => n.toLocaleString("vi-VN");
-
 export function buildEstimateScene(p: Project, opts: EstimateOptions = {}): EstimateBuild {
-  // Region chưa có bảng đơn giá (P9) → tờ dự toán tự rút khỏi bộ hồ sơ
-  // (tryBuild bắt throw → vào skipped, như mặt cắt khi không có thang).
-  if (!donGiaFor(p.config?.region)) {
-    throw new Error(`Region "${p.config?.region}" chưa có bảng đơn giá — bỏ tờ dự toán (đóng góp theo docs/13).`);
-  }
+  // Sin tabla o con precios por completar → la lámina de presupuesto se omite del juego
+  // (tryBuild captura el throw y la informa como omitida, igual que el corte sin escalera).
+  const e = estimateCost(p);
+  const tabla = e.tabla;
+  if (!tabla) throw new Error(`La región "${p.config?.region}" no tiene tabla de precios: se omite la lámina de presupuesto.`);
+  if (e.total == null) throw new Error(`Precios por completar en la tabla ${tabla.version}: se omite la lámina de presupuesto.`);
+  const total = e.total;
+  const num = (n: number): string => n.toLocaleString(tabla.currency.locale);
   const items: Scene2D = [];
   const push: Push = (layer, prim, dataId, space) => {
     items.push({ layer, prim, ...(dataId ? { dataId } : {}), ...(space ? { space } : {}) });
   };
   const tf = planTransform({ minX: 0, minY: 0, maxX: 1000, maxY: 1000 }, 100, { noRotate: true });
 
-  const e = estimateCost(p);
   const q = e.quantities;
 
   // ── bảng 1: diện tích quy đổi ─────────────────────────────
@@ -67,24 +67,25 @@ export function buildEstimateScene(p: Project, opts: EstimateOptions = {}): Esti
   // ── bảng 3: chi phí ───────────────────────────────────────
   const costCols: Col[] = [
     { w: 96, label: "Chi phí" },
-    { w: 40, label: "Đơn giá (đ/m²)", anchor: "end" },
-    { w: 44, label: "Thành tiền (đ)", anchor: "end" },
+    { w: 40, label: `Đơn giá (${tabla.currency.symbol}/m²)`, anchor: "end" },
+    { w: 44, label: `Thành tiền (${tabla.currency.symbol})`, anchor: "end" },
   ];
+  // total != null ⇒ todos los ítems tienen precio y monto
   const costRows = e.items.map((i) => ({
-    cells: [i.label, vnd(i.don_gia_vnd), vnd(i.thanh_tien_vnd)],
+    cells: [i.label, num(i.precio_m2!), num(i.monto!)],
   }));
-  costRows.push({ cells: [`TỔNG DỰ TOÁN (${formatVnd(e.tong_vnd)})`, null as never, vnd(e.tong_vnd)], bold: true } as never);
+  costRows.push({ cells: [`TỔNG DỰ TOÁN (${formatMonto(total, tabla)})`, null as never, num(total)], bold: true } as never);
   if (e.ngan_sach) {
     const ns = e.ngan_sach;
     const so =
-      ns.vnd == null
+      ns.monto == null || ns.diferencia == null
         ? `Ngân sách brief: "${ns.text}" — chưa quy được ra số`
-        : ns.chenh_lech_vnd! >= 0
-          ? `Ngân sách brief ${formatVnd(ns.vnd)} — CÒN DƯ ~${formatVnd(ns.chenh_lech_vnd!)}`
-          : `Ngân sách brief ${formatVnd(ns.vnd)} — VƯỢT ~${formatVnd(-ns.chenh_lech_vnd!)}`;
+        : ns.diferencia >= 0
+          ? `Ngân sách brief ${formatMonto(ns.monto, tabla)} — CÒN DƯ ~${formatMonto(ns.diferencia, tabla)}`
+          : `Ngân sách brief ${formatMonto(ns.monto, tabla)} — VƯỢT ~${formatMonto(-ns.diferencia, tabla)}`;
     costRows.push({ cells: [so, null as never, null as never], bold: true } as never);
   }
-  const yCost = drawTable(push, 16 + 146 + 14, 16, `CHI PHÍ SƠ BỘ — ${DON_GIA.don_gia_m2.hoan_thien[e.muc]?.label ?? e.muc}`, costCols, costRows);
+  const yCost = drawTable(push, 16 + 146 + 14, 16, `CHI PHÍ SƠ BỘ — ${tabla.don_gia_m2.hoan_thien[e.muc]?.label ?? e.muc}`, costCols, costRows);
 
   // ── ghi chú ───────────────────────────────────────────────
   let gy = yCost + 8;
@@ -93,7 +94,7 @@ export function buildEstimateScene(p: Project, opts: EstimateOptions = {}): Esti
   const notes = [
     ...e.ghi_chu,
     "Dự toán sơ bộ mức concept — chốt chi phí bằng báo giá thầu có khối lượng chi tiết.",
-    `Bảng đơn giá phiên bản ${DON_GIA.version} — đặt bảng địa phương tại rules/don-gia.json trong thư mục dự án.`,
+    `Bảng đơn giá phiên bản ${tabla.version} — đặt bảng địa phương tại rules/don-gia.json trong thư mục dự án.`,
   ];
   for (const n of notes) {
     push("KHUNG", { kind: "text", at: [16 + 146 + 14, gy], text: `• ${n}`, size: 2.3 }, undefined, "paper");

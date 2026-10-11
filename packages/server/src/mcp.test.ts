@@ -313,3 +313,15 @@ describe("E4 — validate en un proyecto chileno", () => {
     expect(msg).not.toMatch(/STD-|LBB-|PLN-|UK-|GEN-/);
   });
 });
+
+describe("E4b — estimate_cost en un proyecto chileno", () => {
+  it("casa-1-piso: tabla en UF con precios por completar, sin VND ni total inventado", async () => {
+    const { client } = await connect();
+    await client.callTool({ name: "project_new", arguments: { name: "Casa Pérez", template: "casa-1-piso" } });
+    const msg = textOf(await client.callTool({ name: "estimate_cost", arguments: {} }));
+    expect(msg).toContain("Costos (CLF)");
+    expect(msg).toContain("precio por completar");
+    expect(msg).toContain("TOTAL: por completar");
+    expect(msg).not.toMatch(/VND|₫|tỷ|triệu/);
+  });
+});

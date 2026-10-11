@@ -56,7 +56,7 @@ describe("phương án A/B — compare engine", () => {
     expect(report.highlights.some((h) => h.includes("solo existe en Gốc"))).toBe(true);
     const r8diff = report.rooms.find((r) => r.id === "R8")!;
     expect(r8diff.a_m2).toBeGreaterThan(r8diff.b_m2!);
-    expect(report.a.duToan_vnd).toBeGreaterThan(0);
+    expect(report.a.presupuesto).toBeGreaterThan(0);
   });
 
   it("compareHtml: 2 SVG cạnh nhau + bảng tổng + dự toán", () => {
