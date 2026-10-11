@@ -1,5 +1,5 @@
 /**
- * Schema model tham số — theo docs/04-schema-du-lieu.md.
+ * Schema model tham số — theo docs/reference-en/04-data-schema.md.
  *
  * Quy ước:
  * - Đơn vị mm, SỐ NGUYÊN. Không dùng float cho kích thước.

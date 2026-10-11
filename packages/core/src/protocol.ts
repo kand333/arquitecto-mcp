@@ -3,7 +3,7 @@ import type { Op, OpOrigin } from "./ops/ops.js";
 import type { Project } from "./types.js";
 
 /**
- * Giao thức WebSocket agent/browser ↔ server — theo docs/06-giao-thuc-sync.md.
+ * Giao thức WebSocket agent/browser ↔ server — theo docs/reference-en/06-sync-protocol.md.
  * Chỉ types (core thuần, không I/O). JSON một message một dòng.
  */
 
