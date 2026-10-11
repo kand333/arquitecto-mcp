@@ -43,7 +43,8 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
     ].sort());
   });
 
-  it("phương án A/B: save → sửa → compare thấy khác biệt → open quay lại", async () => {
+  // variant_compare renderiza PNG con Chromium: bajo la suite en paralelo puede pasar de 5 s
+  it("phương án A/B: save → sửa → compare thấy khác biệt → open quay lại", { timeout: 15_000 }, async () => {
     const { client, store } = await connect();
     await client.callTool({ name: "project_new", arguments: { name: "Nhà anh Ba", template: "nha-ong-4x16-2t" } });
 
