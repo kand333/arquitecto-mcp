@@ -15,7 +15,10 @@ import { activeRules, getRegion, unverifiedRules, type RuleDef } from "../../src
 // ── E4: pack Chile (OGUC) — fuentes en docs/oguc-sources.md ─────────
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const pack = JSON.parse(readFileSync(path.join(here, "..", "cl.json"), "utf8")) as { rules: RuleDef[] };
+const readPack = (f: string): RuleDef[] => (JSON.parse(readFileSync(path.join(here, "..", f), "utf8")) as { rules: RuleDef[] }).rules;
+/** Ambos packs chilenos (cl-oguc + cl-cip) responden a la misma tabla de docs/oguc-sources.md. */
+const pack = { rules: [...readPack("cl.json"), ...readPack("cl-cip.json")] };
+const CIP_IDS = ["CL-CIP-ALT", "CL-CIP-ANT", "CL-CIP-COS", "CL-CIP-DIS", "CL-CIP-FON", "CL-CIP-PIS"];
 const docs = readFileSync(path.join(here, "..", "..", "..", "..", "docs", "oguc-sources.md"), "utf8");
 /** Filas de la tabla «Reglas» del doc: `| \`CL-…\` | …`. */
 const docRows = new Map([...docs.matchAll(/^\| `(CL-[A-Z0-9-]+)` \|(.*)$/gm)].map((m) => [m[1]!, m[2]!]));
@@ -52,8 +55,8 @@ describe("E4 — trazabilidad: cl.json ↔ docs/oguc-sources.md", () => {
 });
 
 describe("E4 — región cl: solo GEO + OGUC; lo pendiente no se presenta como verificado", () => {
-  it("la región cl existe, sin moneda (presupuesto solo cantidades hasta E4b)", () => {
-    expect(getRegion("cl")).toMatchObject({ id: "cl", packs: ["cl-oguc"] });
+  it("la región cl existe con ambos packs, sin moneda (presupuesto solo cantidades hasta E4b-2)", () => {
+    expect(getRegion("cl")).toMatchObject({ id: "cl", packs: ["cl-oguc", "cl-cip"] });
     expect(getRegion("cl")!.currency).toBeUndefined();
   });
 
@@ -66,7 +69,7 @@ describe("E4 — región cl: solo GEO + OGUC; lo pendiente no se presenta como v
   });
 
   it("las reglas activas sin validar se reportan como tales (unverifiedRules) y su mensaje lo dice", () => {
-    expect(unverifiedRules(chile()).map((r) => r.id).sort()).toEqual(["CL-ALT-01", "CL-VEN-01"]);
+    expect(unverifiedRules(chile()).map((r) => r.id).sort()).toEqual(["CL-ALT-01", ...CIP_IDS, "CL-VEN-01"].sort());
     for (const r of pack.rules.filter((x) => x.source?.verified === false)) expect(r.message, r.id).toMatch(/sin validar/);
   });
 });
@@ -154,5 +157,58 @@ describe("E4 — CL-VEN-01 (OGUC 4.1.2, al menos una ventana al exterior en loca
     const h = hits(validateProject(p), "CL-VEN-01", "R2");
     expect(h).toHaveLength(1);
     expect(h[0]!.severity).toBe("error");
+  });
+});
+
+// ── E4b-1: pack cl-cip (OGUC 1.4.4 n°5 — valores declarados del CIP) ──
+
+describe("E4b — cl-cip: normas urbanísticas del CIP declaradas por el usuario", () => {
+  const errs = (p: Project, rule: string): Issue[] => hits(validateProject(p), rule).filter((i) => i.severity === "error");
+  const cipIndet = (p: Project, rule: string): Issue[] =>
+    validateProject(p).filter((i) => i.rule === "CL-INDET" && i.message.includes(rule));
+
+  it("positivo: valores del CIP declarados y respetados → sin error ni indeterminado", () => {
+    const villa = chile(loadBietThuDoc()); // pisos 3, altura 12000, ocupación 60 %, distanciamientos por deslinde
+    for (const rule of ["CL-CIP-PIS", "CL-CIP-ALT", "CL-CIP-COS", "CL-CIP-DIS"]) {
+      expect(errs(villa, rule), rule).toEqual([]);
+      expect(cipIndet(villa, rule), rule).toEqual([]);
+    }
+    const casa = chile(); // antejardín 1500 declarado
+    expect(errs(casa, "CL-CIP-ANT")).toEqual([]);
+    expect(cipIndet(casa, "CL-CIP-ANT")).toEqual([]);
+  });
+
+  it("negativo: cada valor declarado y excedido → error de su regla", () => {
+    const qh = (p: Project) => (p.brief.dat!.quy_hoach ??= {});
+    const villa = (mut: (p: Project) => void): Project => { const p = chile(loadBietThuDoc()); mut(p); return p; };
+    expect(errs(villa((p) => (qh(p).tang_max = 1)), "CL-CIP-PIS")).toHaveLength(1);
+    expect(errs(villa((p) => (qh(p).chieu_cao_max = 1000)), "CL-CIP-ALT")).toHaveLength(1);
+    expect(errs(villa((p) => (qh(p).mat_do_max = 1)), "CL-CIP-COS")).toHaveLength(1);
+    expect(errs(villa((p) => (p.site.edges = p.site.edges!.map((e) => ({ ...e, setback: 100_000 })))), "CL-CIP-DIS").length).toBeGreaterThan(0);
+    const casa = (mut: (p: Project) => void): Project => { const p = chile(); mut(p); return p; };
+    expect(errs(casa((p) => (qh(p).khoang_lui_truoc = 100_000)), "CL-CIP-ANT").length).toBeGreaterThan(0);
+    expect(errs(casa((p) => (qh(p).khoang_lui_sau = 100_000)), "CL-CIP-FON").length).toBeGreaterThan(0);
+  });
+
+  it("indeterminado: sin datos del CIP → un CL-INDET por regla, nunca «cumple»", () => {
+    const p = chile();
+    p.brief = {};
+    delete p.site.setbacks;
+    delete p.site.edges;
+    const out = validateProject(p);
+    for (const rule of CIP_IDS) {
+      expect(hits(out, rule), rule).toEqual([]);
+      const i = out.filter((x) => x.rule === "CL-INDET" && x.message.includes(rule));
+      expect(i, rule).toHaveLength(1);
+      expect(i[0]!.severity).toBe("info");
+      expect(i[0]!.message).toMatch(/CIP|losa/);
+    }
+  });
+
+  it("indeterminado: ocupación declarada pero sin losa del primer piso → no se calcula", () => {
+    const p = chile();
+    p.slabs = p.slabs.filter((s) => !(s.level === "L1" && s.kind === "floor"));
+    expect(hits(validateProject(p), "CL-CIP-COS")).toEqual([]);
+    expect(cipIndet(p, "CL-CIP-COS")[0]?.message).toMatch(/losa del primer piso/);
   });
 });

@@ -7,6 +7,7 @@ import plnJson from "../../rules/pln.json" with { type: "json" };
 import genericJson from "../../rules/std-generic.json" with { type: "json" };
 import ukJson from "../../rules/uk-approved-docs.json" with { type: "json" };
 import clJson from "../../rules/cl.json" with { type: "json" };
+import clCipJson from "../../rules/cl-cip.json" with { type: "json" };
 
 export type RuleSource = { vanBan?: string; dieu?: string; verified: boolean };
 
@@ -94,6 +95,7 @@ registerPack(toPack(genericJson as PackJson));
 registerPack(toPack(ukJson as PackJson));
 // Chile — OGUC (E4 MVP): citas y estado de validación en docs/oguc-sources.md.
 registerPack(toPack(clJson as PackJson));
+registerPack(toPack(clCipJson as PackJson));
 
 /* ── Region (P9 — doc 12): đơn vị hiển thị + bộ pack mặc định + tiền tệ ── */
 
@@ -149,7 +151,7 @@ registerRegion({
   id: "cl",
   title: "Chile",
   units: "metric",
-  packs: ["cl-oguc"],
+  packs: ["cl-oguc", "cl-cip"],
 });
 
 export const ALL_RULES: RuleDef[] = BUILTIN_PACKS.flatMap((p) => p.rules);

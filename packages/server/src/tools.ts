@@ -92,7 +92,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
         name: z.string().min(1).describe("Nombre del proyecto, p. ej. 'Casa Pérez'"),
         template: z.string().optional().describe("ID de la plantilla inicial (vacío = proyecto en blanco)"),
         siteBoundary: z.array(z.tuple([z.number().int(), z.number().int()])).min(3).optional(),
-        brief: z.record(z.unknown()).optional().describe("Brief de la fase A: dat (terreno), gia_dinh (familia), nhu_cau (necesidades), ngan_sach (presupuesto), gu (estilo), uu_tien (prioridades)"),
+        brief: z.record(z.unknown()).optional().describe("Brief de la fase A: dat (terreno), gia_dinh (familia), nhu_cau (necesidades), ngan_sach (presupuesto), gu (estilo), uu_tien (prioridades). Valores del Certificado de Informaciones Previas (CIP) en dat.quy_hoach: khoang_lui_truoc = antejardín (mm), khoang_lui_sau = distanciamiento al fondo (mm), mat_do_max = coeficiente de ocupación del suelo en % (0,6 → 60), tang_max = pisos máximos, chieu_cao_max = altura máxima (mm). Distanciamientos por deslinde: site.edges[i].setback. Sin estos datos, las reglas CL-CIP-* quedan indeterminadas"),
       },
     },
     (args) => {
