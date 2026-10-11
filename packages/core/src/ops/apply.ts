@@ -48,11 +48,11 @@ export function applyOps(project: Project, baseRevision: number, ops: Op[], opti
       ok: false,
       currentRevision: project.meta.revision,
       errors: [issue("REV-01", "block", [],
-        `baseRevision ${baseRevision} đã cũ — revision hiện tại là ${project.meta.revision}. Gọi get_changes_since(${baseRevision}) để xem thay đổi rồi gửi lại.`)],
+        `baseRevision ${baseRevision} está desactualizada: la revisión actual es ${project.meta.revision}. Llama a get_changes_since(${baseRevision}) para ver los cambios y reenvía.`)],
     };
   }
   if (ops.length === 0) {
-    return { ok: false, currentRevision: project.meta.revision, errors: [issue("OPS-00", "block", [], "Batch rỗng — không có op nào để áp.")] };
+    return { ok: false, currentRevision: project.meta.revision, errors: [issue("OPS-00", "block", [], "Lote vacío: no hay ops que aplicar.")] };
   }
 
   const draft = structuredClone(project);
@@ -113,18 +113,18 @@ function allIds(draft: Project): Set<string> {
 function applyArray(draft: Project, op: Op): Issue | null {
   const kind = op.entity as ArrayKind;
   const key = ARRAY_KEY[kind];
-  if (!key) return issue("OPS-01", "block", [], `Loại thực thể không hợp lệ: ${String(op.entity)}.`);
+  if (!key) return issue("OPS-01", "block", [], `Tipo de entidad no válido: ${String(op.entity)}.`);
   if (key === "roofs") draft.roofs ??= []; // file cũ thiếu mảng roofs
   const list = draft[key] as Array<Record<string, unknown> & { id: string }>;
 
   if (op.op === "add") {
     const id = op.data.id;
     if (typeof id !== "string" || id.length === 0) {
-      return issue("OPS-02", "block", [], `Op add ${kind} thiếu data.id (client phải tự tạo ID).`);
+      return issue("OPS-02", "block", [], `Op add ${kind} sin data.id (el cliente debe asignar el ID).`);
     }
     if (!isValidId(id)) return invalidId(id);
     if (allIds(draft).has(id)) {
-      return issue("OPS-02", "block", [id], `ID ${id} đã tồn tại — chọn ID khác (vd. dùng nextId).`);
+      return issue("OPS-02", "block", [id], `El ID ${id} ya existe: elige otro (p. ej. con nextId).`);
     }
     const ref = checkRefs(draft, kind, op.data, id);
     if (ref) return ref;
@@ -133,11 +133,11 @@ function applyArray(draft: Project, op: Op): Issue | null {
   }
 
   const idx = list.findIndex((e) => e.id === op.id);
-  if (idx < 0) return issue("OPS-03", "block", [op.id], `Không tìm thấy ${kind} ${op.id}.`);
+  if (idx < 0) return issue("OPS-03", "block", [op.id], `No se encuentra ${kind} ${op.id}.`);
 
   if (op.op === "update") {
     if ("id" in op.data && op.data.id !== op.id) {
-      return issue("OPS-03", "block", [op.id], `Không được đổi id qua update (${op.id} → ${String(op.data.id)}).`);
+      return issue("OPS-03", "block", [op.id], `No se puede cambiar el id con update (${op.id} → ${String(op.data.id)}).`);
     }
     const merged = { ...list[idx]!, ...structuredClone(op.data), id: op.id };
     const ref = checkRefs(draft, kind, merged, op.id);
@@ -150,7 +150,7 @@ function applyArray(draft: Project, op: Op): Issue | null {
   if (kind === "level") {
     const used = [...draft.walls, ...draft.rooms, ...draft.slabs, ...(draft.roofs ?? []), ...draft.stairs, ...draft.furniture]
       .some((e) => (e as { level?: string }).level === op.id);
-    if (used) return issue("OPS-04", "block", [op.id], `Level ${op.id} còn thực thể — xóa/di dời chúng trước.`);
+    if (used) return issue("OPS-04", "block", [op.id], `El piso ${op.id} aún tiene entidades: elimínalas o muévelas antes.`);
   }
   if (kind === "wall") {
     // cascade: xóa openings neo trên tường (server lo — doc 05)
@@ -166,23 +166,23 @@ function checkRefs(draft: Project, kind: ArrayKind, data: Record<string, unknown
   if (kind !== "level" && kind !== "opening") {
     const lv = data.level;
     if (typeof lv !== "string" || !levelIds.has(lv)) {
-      return issue("OPS-05", "block", [id], `${kind} ${id} trỏ level không tồn tại: ${String(lv)}.`);
+      return issue("OPS-05", "block", [id], `${kind} ${id} apunta a un piso inexistente: ${String(lv)}.`);
     }
   }
   if (kind === "opening") {
     const wallId = data.wall;
     if (typeof wallId !== "string" || !draft.walls.some((w) => w.id === wallId)) {
-      return issue("OPS-06", "block", [id], `Opening ${id} neo vào tường không tồn tại: ${String(wallId)}.`);
+      return issue("OPS-06", "block", [id], `El vano ${id} está anclado a un muro inexistente: ${String(wallId)}.`);
     }
     const style = data.style;
     if (typeof style !== "string" || !(style in draft.styles.openings)) {
-      return issue("OPS-06", "block", [id], `Opening ${id} dùng style không tồn tại: ${String(style)}.`);
+      return issue("OPS-06", "block", [id], `El vano ${id} usa un tipo inexistente: ${String(style)}.`);
     }
   }
   if (kind === "furniture") {
     const asset = data.asset;
     if (typeof asset !== "string" || !getAsset(asset)) {
-      return issue("OPS-07", "block", [id], `Furniture ${id} dùng asset không có trong catalog: ${String(asset)}.`);
+      return issue("OPS-07", "block", [id], `El mueble ${id} usa una pieza que no está en el catálogo: ${String(asset)}.`);
     }
   }
   return null;
@@ -193,13 +193,13 @@ function applyRecord(draft: Project, op: Op, kind: "style" | "finish"): Issue | 
 
   if (op.op === "add") {
     const { id, ...rest } = op.data;
-    if (typeof id !== "string" || id.length === 0) return issue("OPS-02", "block", [], `Op add ${kind} thiếu data.id.`);
+    if (typeof id !== "string" || id.length === 0) return issue("OPS-02", "block", [], `Op add ${kind} sin data.id.`);
     if (!isValidId(id)) return invalidId(id);
-    if (allIds(draft).has(id)) return issue("OPS-02", "block", [id], `ID ${id} đã tồn tại.`);
+    if (allIds(draft).has(id)) return issue("OPS-02", "block", [id], `El ID ${id} ya existe.`);
     record[id] = structuredClone(rest);
     return null;
   }
-  if (!(op.id in record)) return issue("OPS-03", "block", [op.id], `Không tìm thấy ${kind} ${op.id}.`);
+  if (!(op.id in record)) return issue("OPS-03", "block", [op.id], `No se encuentra ${kind} ${op.id}.`);
   if (op.op === "update") {
     const { id: _ignored, ...rest } = op.data;
     record[op.id] = { ...record[op.id]!, ...structuredClone(rest) };
@@ -207,10 +207,10 @@ function applyRecord(draft: Project, op: Op, kind: "style" | "finish"): Issue | 
   }
   // delete — chặn nếu còn nơi tham chiếu
   if (kind === "style" && draft.openings.some((o) => o.style === op.id)) {
-    return issue("OPS-05", "block", [op.id], `Style ${op.id} đang được opening sử dụng.`);
+    return issue("OPS-05", "block", [op.id], `El tipo ${op.id} está en uso por un vano.`);
   }
   if (kind === "finish" && draft.rooms.some((r) => Object.values(r.finish ?? {}).includes(op.id))) {
-    return issue("OPS-05", "block", [op.id], `Finish ${op.id} đang được phòng sử dụng.`);
+    return issue("OPS-05", "block", [op.id], `La terminación ${op.id} está en uso por un recinto.`);
   }
   delete record[op.id];
   return null;
@@ -226,38 +226,38 @@ function applyUnderlay(draft: Project, op: Op): Issue | null {
   if (op.op === "add") {
     if (draft.underlay) {
       return issue("OPS-02", "block", [draft.underlay.id],
-        "Đã có underlay — dùng update để đổi phép đặt/file, hoặc delete rồi add.");
+        "Ya hay un calco: usa update para cambiar ubicación/archivo, o delete y luego add.");
     }
     const d = op.data as { id?: unknown; kind?: unknown; source?: unknown; scale?: unknown; level?: unknown };
-    if (d.id !== "U1") return issue("OPS-02", "block", [], `Underlay là singleton — data.id phải là "U1".`);
+    if (d.id !== "U1") return issue("OPS-02", "block", [], `El calco es único: data.id debe ser "U1".`);
     if (d.kind !== "dxf" && d.kind !== "image") {
-      return issue("OPS-08", "block", ["U1"], `Underlay cần data.kind = "dxf" | "image".`);
+      return issue("OPS-08", "block", ["U1"], `El calco requiere data.kind = "dxf" | "image".`);
     }
     if (!isPlainFileName(d.source)) {
       return issue("OPS-08", "block", ["U1"], "Underlay: data.source debe ser solo un nombre de archivo dentro de .arquitecto/underlay/.");
     }
     if (typeof d.scale !== "number" || !(d.scale > 0)) {
-      return issue("OPS-08", "block", ["U1"], "Underlay cần data.scale > 0 (mm model trên một đơn vị nguồn).");
+      return issue("OPS-08", "block", ["U1"], "El calco requiere data.scale > 0 (mm del modelo por unidad de origen).");
     }
     if (d.level !== undefined && !draft.levels.some((l) => l.id === d.level)) {
-      return issue("OPS-05", "block", ["U1"], `Underlay trỏ level không tồn tại: ${String(d.level)}.`);
+      return issue("OPS-05", "block", ["U1"], `El calco apunta a un piso inexistente: ${String(d.level)}.`);
     }
     draft.underlay = structuredClone(op.data) as unknown as NonNullable<Project["underlay"]>;
     return null;
   }
   if (!draft.underlay || draft.underlay.id !== op.id) {
-    return issue("OPS-03", "block", [op.id], `Không tìm thấy underlay ${op.id}.`);
+    return issue("OPS-03", "block", [op.id], `No se encuentra el calco ${op.id}.`);
   }
   if (op.op === "update") {
     if ("id" in op.data && op.data.id !== op.id) {
-      return issue("OPS-03", "block", [op.id], `Không được đổi id qua update (${op.id} → ${String(op.data.id)}).`);
+      return issue("OPS-03", "block", [op.id], `No se puede cambiar el id con update (${op.id} → ${String(op.data.id)}).`);
     }
     const merged = { ...draft.underlay, ...structuredClone(op.data), id: op.id } as typeof draft.underlay;
     if (!isPlainFileName(merged.source)) {
       return issue("OPS-08", "block", [op.id], "Underlay: data.source debe ser solo un nombre de archivo dentro de .arquitecto/underlay/.");
     }
     if (merged.level !== undefined && !draft.levels.some((l) => l.id === merged.level)) {
-      return issue("OPS-05", "block", [op.id], `Underlay trỏ level không tồn tại: ${String(merged.level)}.`);
+      return issue("OPS-05", "block", [op.id], `El calco apunta a un piso inexistente: ${String(merged.level)}.`);
     }
     draft.underlay = merged;
     return null;
@@ -269,10 +269,10 @@ function applyUnderlay(draft: Project, op: Op): Issue | null {
 function applyAxis(draft: Project, op: Op): Issue | null {
   if (op.op === "add") {
     const { id, dir } = op.data as { id?: string; dir?: string };
-    if (typeof id !== "string" || id.length === 0) return issue("OPS-02", "block", [], "Op add axis thiếu data.id.");
+    if (typeof id !== "string" || id.length === 0) return issue("OPS-02", "block", [], "Op add axis sin data.id.");
     if (!isValidId(id)) return invalidId(id);
-    if (dir !== "x" && dir !== "y") return issue("OPS-08", "block", [id], `Axis ${id} cần data.dir = "x" | "y".`);
-    if (allIds(draft).has(id)) return issue("OPS-02", "block", [id], `ID ${id} đã tồn tại.`);
+    if (dir !== "x" && dir !== "y") return issue("OPS-08", "block", [id], `El eje ${id} requiere data.dir = "x" | "y".`);
+    if (allIds(draft).has(id)) return issue("OPS-02", "block", [id], `El ID ${id} ya existe.`);
     draft.axes[dir].push(structuredClone(op.data) as unknown as Axis);
     return null;
   }
@@ -287,5 +287,5 @@ function applyAxis(draft: Project, op: Op): Issue | null {
       return null;
     }
   }
-  return issue("OPS-03", "block", [op.id], `Không tìm thấy axis ${op.id}.`);
+  return issue("OPS-03", "block", [op.id], `No se encuentra el eje ${op.id}.`);
 }

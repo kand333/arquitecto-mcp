@@ -384,7 +384,7 @@ export class LiveServer {
         return c.text("Fuera del ámbito permitido.", 403);
       }
       if (!existsSync(file) || !statSync(file).isFile()) {
-        if (path.extname(rel) !== "") return c.text("Không có file này.", 404);
+        if (path.extname(rel) !== "") return c.text("No existe ese archivo.", 404);
         file = path.join(dist, "index.html"); // đường dẫn không đuôi → SPA
       }
       const mime = MIME[path.extname(file).toLowerCase()] ?? "application/octet-stream";

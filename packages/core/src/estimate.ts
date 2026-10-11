@@ -104,7 +104,7 @@ export function computeQuantities(p: Project): QuantityReport {
     sanThuc += gross - holeAll;
     // tính phí: ô trống nhỏ vẫn tính đủ (quy ước); ô lớn — phần vượt ngưỡng tính nửa
     const tinhPhi = gross - holeLonVuot * (1 - (hs.o_trong_lon?.he_so ?? 0.5));
-    lines.push({ label: `Sàn ${lv.name}`, dien_tich_m2: r1(tinhPhi), he_so: hs.san?.he_so ?? 1, quy_doi_m2: r1(tinhPhi * (hs.san?.he_so ?? 1)) });
+    lines.push({ label: `Losa ${lv.name}`, dien_tich_m2: r1(tinhPhi), he_so: hs.san?.he_so ?? 1, quy_doi_m2: r1(tinhPhi * (hs.san?.he_so ?? 1)) });
   }
 
   // ── móng: theo tầng thấp nhất ───────────────────────────────
@@ -125,7 +125,7 @@ export function computeQuantities(p: Project): QuantityReport {
     const heSo = hs[key]?.he_so ?? 0.7;
     maiDocArea += g.areaM2;
     lines.push({
-      label: `${hs[key]?.label ?? "Mái dốc"} (${rf.id})`, dien_tich_m2: r1(g.areaM2),
+      label: `${hs[key]?.label ?? "Techo inclinado"} (${rf.id})`, dien_tich_m2: r1(g.areaM2),
       he_so: heSo, quy_doi_m2: r1(g.areaM2 * heSo),
     });
   }
@@ -139,7 +139,7 @@ export function computeQuantities(p: Project): QuantityReport {
     const topFloor = top ? p.slabs.filter((s) => s.level === top.id && s.kind === "floor") : [];
     maiArea = topFloor.reduce((s, x) => s + areaM2(x.outline), 0);
     maiUocLe = maiArea > 0;
-    if (maiUocLe) ghiChu.push("Model chưa vẽ mái — tạm ước diện tích mái bằng sàn tầng trên cùng.");
+    if (maiUocLe) ghiChu.push("El modelo aún no tiene techo: se estima su superficie igual a la losa del último piso.");
   }
   if (maiArea > 0) {
     lines.push({
@@ -232,8 +232,8 @@ export function estimateCost(p: Project, muc?: FinishLevel): Estimate {
       tong_vnd: 0,
       ghi_chu: [
         ...q.ghi_chu,
-        `Chưa có bảng đơn giá cho region "${p.config?.region}" — dự toán chỉ gồm khối lượng. Đóng góp bảng giá theo docs/13 (rules/don-gia.json + currency).`,
-        "Hệ số quy đổi đang dùng bảng mặc định (nếp tính thầu VN) — chỉ để tham khảo khối lượng.",
+        `No hay tabla de precios para la región "${p.config?.region}": el presupuesto solo incluye cantidades. La tabla chilena (CLP/UF) llega en E4.`,
+        "Los coeficientes de equivalencia son los por defecto (práctica de contratistas en Vietnam): sirven solo como referencia de cantidades.",
       ],
     };
   }
@@ -242,13 +242,13 @@ export function estimateCost(p: Project, muc?: FinishLevel): Estimate {
   const hoanThien = DON_GIA.don_gia_m2.hoan_thien[level] ?? DON_GIA.don_gia_m2.hoan_thien["trung-binh-kha"]!;
   const items: EstimateItem[] = [
     {
-      label: `${DON_GIA.don_gia_m2.xay_tho.label} (${q.tong_quy_doi_m2}m² quy đổi)`,
+      label: `${DON_GIA.don_gia_m2.xay_tho.label} (${q.tong_quy_doi_m2}m² equivalentes)`,
       khoi_luong_m2: q.tong_quy_doi_m2,
       don_gia_vnd: DON_GIA.don_gia_m2.xay_tho.vnd,
       thanh_tien_vnd: Math.round(q.tong_quy_doi_m2 * DON_GIA.don_gia_m2.xay_tho.vnd),
     },
     {
-      label: `${hoanThien.label} (${q.san_thuc_m2}m² sàn thực)`,
+      label: `${hoanThien.label} (${q.san_thuc_m2}m² útiles)`,
       khoi_luong_m2: q.san_thuc_m2,
       don_gia_vnd: hoanThien.vnd,
       thanh_tien_vnd: Math.round(q.san_thuc_m2 * hoanThien.vnd),
@@ -260,7 +260,7 @@ export function estimateCost(p: Project, muc?: FinishLevel): Estimate {
   const budgetVnd = parseBudgetVnd(budgetText);
   const ghiChu = [...q.ghi_chu];
   if (DON_GIA.tham_khao) {
-    ghiChu.push(`Đơn giá ${DON_GIA.version} mức THAM KHẢO (±15–20%) — sửa rules/don-gia.json theo địa phương.`);
+    ghiChu.push(`Precios ${DON_GIA.version} de REFERENCIA (±15–20 %): ajusta rules/don-gia.json a tu localidad.`);
   }
 
   return {

@@ -2,18 +2,18 @@ import type { EntityKind, Project } from "../types.js";
 import type { Op } from "./ops.js";
 
 const LABEL: Record<EntityKind, string> = {
-  level: "tầng",
-  wall: "tường",
-  opening: "cửa",
-  slab: "sàn",
-  roof: "mái",
-  stair: "thang",
-  room: "phòng",
-  furniture: "nội thất",
-  axis: "trục",
-  style: "kiểu cửa",
-  finish: "vật liệu",
-  underlay: "underlay đồ lại",
+  level: "piso",
+  wall: "muro",
+  opening: "vano",
+  slab: "losa",
+  roof: "techo",
+  stair: "escalera",
+  room: "recinto",
+  furniture: "mueble",
+  axis: "eje",
+  style: "tipo de vano",
+  finish: "terminación",
+  underlay: "calco",
 };
 
 const LIST_KEY: Partial<Record<EntityKind, keyof Project>> = {
@@ -53,8 +53,8 @@ function opText(op: Op, before?: Project): string {
   const label = LABEL[op.entity] ?? op.entity;
   if (op.op === "add") {
     const id = String(op.data.id ?? "?");
-    const extra = op.entity === "opening" && op.data.kind === "window" ? "cửa sổ" : label;
-    return `thêm ${extra} ${id}`;
+    const extra = op.entity === "opening" ? (op.data.kind === "window" ? "ventana" : "puerta") : label;
+    return `agrega ${extra} ${id}`;
   }
   if (op.op === "update") {
     const fields = Object.keys(op.data).filter((k) => k !== "id");
@@ -66,12 +66,12 @@ function opText(op: Op, before?: Project): string {
         const next = short((op.data as Record<string, unknown>)[k]);
         if (!prev || !(k in prev)) return `${k}: ${next}`;
         const old = short(prev[k]);
-        return old === next ? `${k}: ${next} (không đổi)` : `${k}: ${old} → ${next}`;
+        return old === next ? `${k}: ${next} (sin cambio)` : `${k}: ${old} → ${next}`;
       })
       .join(", ");
-    return `sửa ${label} ${op.id} (${detail})`;
+    return `modifica ${label} ${op.id} (${detail})`;
   }
-  return `xóa ${label} ${op.id}`;
+  return `elimina ${label} ${op.id}`;
 }
 
 /**

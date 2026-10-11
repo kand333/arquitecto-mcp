@@ -84,7 +84,7 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
     expect(msg).toContain("don-gia.json");
 
     const sang = await client.callTool({ name: "estimate_cost", arguments: { muc: "cao-cap" } });
-    expect(textOf(sang)).toContain("cao cấp");
+    expect(textOf(sang)).toContain("alto estándar");
   });
 
   it("assets_search: lọc theo maxFootprint, catalog ≥100, không cần mở dự án", async () => {

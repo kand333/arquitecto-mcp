@@ -1,63 +1,63 @@
 {
-  "pack": { "id": "geo", "title": "Hình học & topology (lõi)", "kind": "core" },
+  "pack": { "id": "geo", "title": "Geometría y topología (núcleo)", "kind": "core" },
   "rules": [
     {
       "id": "GEO-01",
-      "title": "Opening nằm trọn trong chiều dài tường",
+      "title": "El vano queda completo dentro del largo del muro",
       "severity": "block",
-      "source": { "vanBan": "hình học nội tại", "verified": true },
-      "message": "Cửa {opening} (rộng {width}, offset {offset}) vượt ra ngoài tường {wall} (dài {len})."
+      "source": { "vanBan": "geometría intrínseca", "verified": true },
+      "message": "El vano {opening} (ancho {width}, offset {offset}) se sale del muro {wall} (largo {len})."
     },
     {
       "id": "GEO-02",
-      "title": "Hai opening cùng tường không chồng nhau",
+      "title": "Dos vanos del mismo muro no se superponen",
       "severity": "block",
-      "source": { "vanBan": "hình học nội tại", "verified": true },
-      "message": "{a} và {b} chồng nhau {overlap}mm trên tường {wall}."
+      "source": { "vanBan": "geometría intrínseca", "verified": true },
+      "message": "{a} y {b} se superponen {overlap}mm en el muro {wall}."
     },
     {
       "id": "GEO-03",
-      "title": "Hai tường song song không đè lên nhau",
+      "title": "Dos muros paralelos no se montan",
       "severity": "error",
-      "source": { "vanBan": "hình học nội tại", "verified": true },
-      "message": "Tường {a} và {b} song song đè nhau: tim cách {dist}mm < {minDist}mm (tổng nửa dày)."
+      "source": { "vanBan": "geometría intrínseca", "verified": true },
+      "message": "Los muros {a} y {b} son paralelos y se montan: ejes a {dist}mm < {minDist}mm (suma de medios espesores)."
     },
     {
       "id": "GEO-04",
-      "title": "Nội thất không đè nhau / đè tường",
+      "title": "Los muebles no se montan entre sí ni sobre muros",
       "severity": "error",
       "params": { "tolerance": 10 },
-      "source": { "vanBan": "hình học nội tại", "verified": true },
-      "message": "{a} đè lên {b} ({depth}mm)."
+      "source": { "vanBan": "geometría intrínseca", "verified": true },
+      "message": "{a} se monta sobre {b} ({depth}mm)."
     },
     {
       "id": "GEO-05",
-      "title": "Polygon khép kín, không tự cắt",
+      "title": "Polígono cerrado y sin autointersecciones",
       "severity": "block",
-      "source": { "vanBan": "hình học nội tại", "verified": true },
-      "message": "Polygon của {entity} tự cắt hoặc suy biến — sửa lại thứ tự đỉnh."
+      "source": { "vanBan": "geometría intrínseca", "verified": true },
+      "message": "El polígono de {entity} se autointersecta o está degenerado: corrige el orden de los vértices."
     },
     {
       "id": "GEO-06",
-      "title": "Cung mở cửa không vướng tường/nội thất",
+      "title": "El barrido de la puerta no choca con muros ni muebles",
       "severity": "warn",
       "params": { "tolerance": 10 },
-      "source": { "vanBan": "thực hành thiết kế", "verified": true },
-      "message": "Cung mở cửa {opening} vướng {obstacle}."
+      "source": { "vanBan": "práctica de diseño", "verified": true },
+      "message": "El barrido de la puerta {opening} choca con {obstacle}."
     },
     {
       "id": "GEO-07",
-      "title": "Vế trên + chiếu nghỉ thang nằm trong lỗ sàn tầng trên",
+      "title": "El tramo superior y el descanso de la escalera quedan dentro del vano de la losa superior",
       "severity": "warn",
-      "source": { "vanBan": "TCVN 13967:2024 (thông thủy cầu thang ≥ 2000)", "dieu": "5.11", "verified": true },
-      "message": "Thang {stair}: phần lộ thiên (vế trên/chiếu nghỉ) không nằm trong lỗ sàn {slab} — người đi sẽ đụng đầu (thông thủy phải ≥ 2000mm). v2 sẽ kiểm headroom chính xác."
+      "source": { "vanBan": "TCVN 13967:2024 (altura libre de escalera ≥ 2000)", "dieu": "5.11", "verified": true },
+      "message": "Escalera {stair}: la parte expuesta (tramo superior/descanso) no queda dentro del vano de la losa {slab}; quien suba chocará con la cabeza (altura libre ≥ 2000mm). La v2 revisará la altura libre exacta."
     },
     {
       "id": "GEO-08",
-      "title": "Tường nằm trong ranh đất (khoảng lùi → PLN-01/02)",
+      "title": "Los muros quedan dentro del deslinde (distanciamientos → PLN-01/02)",
       "severity": "error",
-      "source": { "vanBan": "hình học nội tại", "verified": true },
-      "message": "Tường {wall} {detail}."
+      "source": { "vanBan": "geometría intrínseca", "verified": true },
+      "message": "El muro {wall} {detail}."
     }
   ]
 }

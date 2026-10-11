@@ -39,6 +39,29 @@ export const TEMPLATES: Record<string, { label: string; load: () => Project; hid
 /** Plantillas que se ofrecen al usuario (sin el legado oculto). */
 export const VISIBLE_TEMPLATES = Object.keys(TEMPLATES).filter((k) => !TEMPLATES[k]!.hidden);
 
+/** E3: las plantillas visibles cargan fixtures VN (intactas para los tests); al ofrecerlas se traducen sus nombres. */
+const TEMPLATE_ES: Record<string, string> = {
+  "Khách": "Living", "Khách + bếp": "Living + cocina", "Bếp + ăn": "Cocina + comedor",
+  "Ngủ 1": "Dormitorio 1", "Ngủ 2": "Dormitorio 2", "Hành lang": "Pasillo", "Cầu thang": "Escalera",
+  "WC": "Baño", "WC 1": "Baño 1", "Kho": "Bodega",
+  "Tầng 1": "Piso 1", "Tầng 2": "Piso 2", "Căn hộ": "Departamento",
+  "Cửa chính": "Puerta principal", "Cửa vào căn hộ": "Puerta de acceso", "Cửa phòng": "Puerta interior",
+  "Cửa WC": "Puerta de baño", "Cửa sổ trượt": "Ventana corredera",
+  "nhôm kính": "aluminio y vidrio", "gỗ công nghiệp": "madera aglomerada",
+  "nhựa lõi thép": "PVC con refuerzo de acero", "thép chống cháy": "acero cortafuego",
+};
+
+function localizeTemplate(p: Project): void {
+  const es = (s: string): string => TEMPLATE_ES[s] ?? s;
+  for (const l of p.levels) l.name = es(l.name);
+  for (const r of p.rooms) r.name = es(r.name);
+  for (const s of Object.values(p.styles.openings)) {
+    s.label = es(s.label);
+    if (s.material) s.material = es(s.material);
+  }
+  p.brief = {}; // el brief de la plantilla es vietnamita (presupuesto en VND, vecinos…); el real sale de la fase A
+}
+
 /**
  * Model store: một dự án tại một thư mục (doc 03).
  * - arquitecto.project.json — NGUỒN SỰ THẬT, ghi atomic (tmp + rename)
@@ -112,6 +135,7 @@ export class ProjectStore {
         throw new Error(`No existe la plantilla "${template}". Disponibles: ${VISIBLE_TEMPLATES.join(", ")}.`);
       }
       p = t.load();
+      if (!t.hidden) localizeTemplate(p);
     } else {
       p = blankProject(brief);
     }

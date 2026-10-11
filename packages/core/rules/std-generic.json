@@ -1,23 +1,23 @@
 {
   "pack": {
     "id": "std-generic",
-    "title": "Generic metric starter (PACK MẪU)",
+    "title": "Pack métrico genérico (PACK DE MUESTRA)",
     "kind": "standard",
     "region": "generic",
-    "standard": "Arquitecto sample pack — ngưỡng đặt tạm, CHƯA phải chuẩn thật. Thay bằng UK Approved Documents / IRC… khi làm region thật (xem docs/13)."
+    "standard": "Pack de muestra de Arquitecto: umbrales provisorios, NO es una norma real. Se reemplaza por la OGUC al crear la región \"cl\" (E4)."
   },
   "rules": [
     {
       "id": "GEN-CEIL-01",
-      "title": "Minimum clear ceiling height (generic)",
+      "title": "Altura libre mínima de piso a cielo (genérica)",
       "severity": "warn",
       "evaluator": "STD-03",
       "params": { "phong_o": 2400, "bep_an": 2400, "wc": 2100, "kho": 2000 },
       "source": {
-        "vanBan": "PACK MẪU — placeholder, chưa đối chiếu văn bản. Region thật phải trích nguồn từng rule như std-vn.",
+        "vanBan": "PACK DE MUESTRA: valores provisorios, sin cotejar con ninguna norma. Una región real debe citar la fuente de cada regla.",
         "verified": false
       },
-      "message": "Room {ten} ({room}) on {level}: clear height {clear}mm below minimum {min}mm."
+      "message": "Recinto {ten} ({room}) en {level}: altura libre {clear}mm, menor que el mínimo {min}mm."
     }
   ]
 }

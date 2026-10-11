@@ -10,22 +10,22 @@ describe("dự toán sơ bộ — khối lượng từ fixture 4×16m", () => {
 
   it("diện tích quy đổi: móng 40% + 2 sàn + mái ước lệ 50%", () => {
     const labels = q.dien_tich.map((l) => l.label);
-    expect(labels[0]).toContain("Móng");
-    expect(labels).toContain("Sàn Tầng 1");
-    expect(labels).toContain("Sàn Tầng 2");
-    expect(labels.some((l) => l.includes("Mái"))).toBe(true);
+    expect(labels[0]).toContain("Fundaciones");
+    expect(labels).toContain("Losa Tầng 1");
+    expect(labels).toContain("Losa Tầng 2");
+    expect(labels.some((l) => /techo/i.test(l))).toBe(true);
 
     // lô 4×16 = 64m²/sàn; móng 64×0.4 = 25.6; mái ước 64×0.5 = 32
     const mong = q.dien_tich[0]!;
     expect(mong.dien_tich_m2).toBeCloseTo(64, 0);
     expect(mong.quy_doi_m2).toBeCloseTo(25.6, 1);
-    const mai = q.dien_tich.find((l) => l.label.includes("Mái"))!;
+    const mai = q.dien_tich.find((l) => /techo/i.test(l.label))!;
     expect(mai.quy_doi_m2).toBeCloseTo(32, 0);
     expect(mai.uoc_le).toBe(true); // fixture chưa vẽ mái
-    expect(q.ghi_chu.some((g) => g.includes("chưa vẽ mái"))).toBe(true);
+    expect(q.ghi_chu.some((g) => g.includes("aún no tiene techo"))).toBe(true);
 
     // ô trống L2 (thang ~4.5m², giếng trời ~2.4m²) đều < ngưỡng 8m² → sàn tính đủ
-    const sanL2 = q.dien_tich.find((l) => l.label === "Sàn Tầng 2")!;
+    const sanL2 = q.dien_tich.find((l) => l.label === "Losa Tầng 2")!;
     expect(sanL2.quy_doi_m2).toBeCloseTo(64, 0);
     expect(q.tong_quy_doi_m2).toBeCloseTo(25.6 + 64 + 64 + 32, 0);
 

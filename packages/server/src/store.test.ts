@@ -44,7 +44,7 @@ describe("ProjectStore", () => {
     const { entries, currentRevision } = store.changesSince(0);
     expect(currentRevision).toBe(1);
     expect(entries).toHaveLength(1);
-    expect(entries[0]!.summary).toContain("thêm tường W99");
+    expect(entries[0]!.summary).toContain("agrega muro W99");
     expect(entries[0]!.note).toBe("tường thử");
   });
 
@@ -158,5 +158,15 @@ describe("E3 — plantillas ofrecidas y región", () => {
     expect(freshStore().newProject("En blanco").config?.region).toBe("generic");
     expect(freshStore().newProject("Legado", "nha-ong-4x16-2t").config?.region).toBeUndefined();
     expect(() => freshStore().newProject("X", "no-existe")).toThrowError(/casa-1-piso, casa-2-pisos, depto-2d/);
+  });
+
+  it("las plantillas visibles no traen texto vietnamita (nombres traducidos, brief vacío)", () => {
+    const VN = /[àèìòùãõâêôýạảấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹđăơưĩũ]/i;
+    for (const t of VISIBLE_TEMPLATES) {
+      const p = freshStore().newProject("Casa Pérez", t);
+      const hit = JSON.stringify(p).match(new RegExp(`.{0,30}${VN.source}.{0,30}`, "i"));
+      expect(hit?.[0] ?? null, t).toBeNull();
+      expect(p.brief).toEqual({});
+    }
   });
 });

@@ -34,7 +34,7 @@ describe("applyOps — transaction + revision", () => {
     if (r.ok) {
       expect(r.revision).toBe(before.meta.revision + 1);
       expect(r.project.walls.some((w) => w.id === "W99")).toBe(true);
-      expect(r.summary).toContain("thêm tường W99");
+      expect(r.summary).toContain("agrega muro W99");
     }
     expect(p).toEqual(before); // bất biến đầu vào
   });
@@ -132,7 +132,7 @@ describe("applyOps — underlay (singleton U1)", () => {
     expect(r1.ok).toBe(true);
     if (!r1.ok) return;
     expect(r1.project.underlay?.source).toBe("nha-cu.dxf");
-    expect(r1.summary).toContain("underlay");
+    expect(r1.summary).toContain("calco");
 
     const r2 = applyOps(r1.project, r1.revision, [
       { op: "update", entity: "underlay", id: "U1", data: { opacity: 0.5, level: "L1" } },

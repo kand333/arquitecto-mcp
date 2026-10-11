@@ -495,7 +495,7 @@ describe("P9 — lớp region (doc 12): UK Approved Documents, DoD không TCVN/L
     expect(est.items).toEqual([]);
     expect(est.tong_vnd).toBe(0);
     expect(est.quantities.san_thuc_m2).toBeGreaterThan(100); // khối lượng thật vẫn có
-    expect(est.ghi_chu.join(" ")).toContain("Chưa có bảng đơn giá");
+    expect(est.ghi_chu.join(" ")).toContain("No hay tabla de precios");
   });
 
   it("pack UK chưa đối chiếu văn bản → unverifiedRules(p) > 0 (bản vẽ in cờ ⚠); VN vẫn 0", () => {

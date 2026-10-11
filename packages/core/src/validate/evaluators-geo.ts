@@ -96,7 +96,7 @@ export function geo04(p: Project, def: RuleDef): Finding[] {
       if (w.level !== f.level) continue;
       const depth = convexOverlapDepth(corners, wallBand(w));
       if (depth > tol) {
-        out.push({ entities: [f.id, w.id], values: { a: f.id, b: `tường ${w.id}`, depth: Math.round(depth) } });
+        out.push({ entities: [f.id, w.id], values: { a: f.id, b: `muro ${w.id}`, depth: Math.round(depth) } });
       }
     }
   }
@@ -157,7 +157,7 @@ export function geo06(p: Project, def: RuleDef): Finding[] {
     const obstacles: Array<{ id: string; label: string; poly: Polygon }> = [];
     for (const other of p.walls) {
       if (other.level !== w.level || other.id === w.id) continue;
-      obstacles.push({ id: other.id, label: `tường ${other.id}`, poly: wallBand(other) });
+      obstacles.push({ id: other.id, label: `muro ${other.id}`, poly: wallBand(other) });
     }
     for (const f of p.furniture) {
       if (f.level !== w.level || (f.elevation ?? 0) >= 1000) continue;
@@ -207,7 +207,7 @@ export function geo08(p: Project): Finding[] {
     const band = wallBand(w);
     const inside = band.every((pt) => pointInPolygon(pt, boundary)) && polygonInsidePolygon(band, boundary);
     if (!inside) {
-      out.push({ entities: [w.id], values: { wall: w.id, detail: "vượt ra ngoài ranh đất" } });
+      out.push({ entities: [w.id], values: { wall: w.id, detail: "se sale del deslinde del terreno" } });
     }
   }
   return out;
