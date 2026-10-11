@@ -12,8 +12,8 @@
       "title": "Antejardín declarado en el CIP",
       "severity": "error",
       "evaluator": "CL-CIP-ANT",
-      "source": { "vanBan": "OGUC — D.S. N°47/1992 MINVU (texto al D.O. 22-05-2026); valor del CIP declarado por el usuario", "dieu": "1.4.4", "verified": false },
-      "message": "Muro {wall} a {dist}mm del deslinde frontal: invade el antejardín de {lui}mm declarado del CIP (OGUC 1.4.4, sin validar).",
+      "source": { "vanBan": "OGUC — D.S. N°47/1992 MINVU (texto al D.O. 22-05-2026); valor del CIP declarado por el usuario", "dieu": "1.4.4", "verified": true },
+      "message": "Muro {wall} a {dist}mm del deslinde frontal: invade el antejardín de {lui}mm declarado del CIP (OGUC 1.4.4).",
       "note": "Dato: brief.dat.quy_hoach.khoang_lui_truoc (mm) o site.setbacks.front."
     },
     {
@@ -21,8 +21,8 @@
       "title": "Distanciamiento al deslinde de fondo declarado en el CIP",
       "severity": "error",
       "evaluator": "CL-CIP-FON",
-      "source": { "vanBan": "OGUC — D.S. N°47/1992 MINVU (texto al D.O. 22-05-2026); valor del CIP declarado por el usuario", "dieu": "1.4.4", "verified": false },
-      "message": "Muro {wall} a {dist}mm del deslinde de fondo: menor que el distanciamiento de {lui}mm declarado del CIP (OGUC 1.4.4, sin validar).",
+      "source": { "vanBan": "OGUC — D.S. N°47/1992 MINVU (texto al D.O. 22-05-2026); valor del CIP declarado por el usuario", "dieu": "1.4.4", "verified": true },
+      "message": "Muro {wall} a {dist}mm del deslinde de fondo: menor que el distanciamiento de {lui}mm declarado del CIP (OGUC 1.4.4).",
       "note": "Dato: brief.dat.quy_hoach.khoang_lui_sau (mm) o site.setbacks.back. No calcula distanciamientos por altura ni rasantes (OGUC 2.6.3)."
     },
     {
@@ -30,8 +30,8 @@
       "title": "Coeficiente de ocupación del suelo declarado en el CIP",
       "severity": "error",
       "evaluator": "CL-CIP-COS",
-      "source": { "vanBan": "OGUC — D.S. N°47/1992 MINVU (texto al D.O. 22-05-2026); valor del CIP declarado por el usuario", "dieu": "1.4.4", "verified": false },
-      "message": "Ocupación del primer piso {pct}%: supera el coeficiente de ocupación del suelo de {max}% declarado del CIP (OGUC 1.4.4, sin validar).",
+      "source": { "vanBan": "OGUC — D.S. N°47/1992 MINVU (texto al D.O. 22-05-2026); valor del CIP declarado por el usuario", "dieu": "1.4.4", "verified": true },
+      "message": "Ocupación del primer piso {pct}%: supera el coeficiente de ocupación del suelo de {max}% declarado del CIP (OGUC 1.4.4).",
       "note": "Dato: brief.dat.quy_hoach.mat_do_max en % (un coeficiente 0,6 del CIP se declara como 60). Ocupación = losa del primer piso / superficie del sitio."
     },
     {
@@ -39,8 +39,8 @@
       "title": "Altura máxima en número de pisos declarada en el CIP",
       "severity": "error",
       "evaluator": "CL-CIP-PIS",
-      "source": { "vanBan": "OGUC — D.S. N°47/1992 MINVU (texto al D.O. 22-05-2026); valor del CIP declarado por el usuario", "dieu": "1.4.4", "verified": false },
-      "message": "{n} pisos: supera el máximo de {max} pisos declarado del CIP (OGUC 1.4.4, sin validar).",
+      "source": { "vanBan": "OGUC — D.S. N°47/1992 MINVU (texto al D.O. 22-05-2026); valor del CIP declarado por el usuario", "dieu": "1.4.4", "verified": true },
+      "message": "{n} pisos: supera el máximo de {max} pisos declarado del CIP (OGUC 1.4.4).",
       "note": "Dato: brief.dat.quy_hoach.tang_max."
     },
     {
@@ -48,8 +48,8 @@
       "title": "Altura máxima de edificación declarada en el CIP",
       "severity": "error",
       "evaluator": "CL-CIP-ALT",
-      "source": { "vanBan": "OGUC — D.S. N°47/1992 MINVU (texto al D.O. 22-05-2026); valor del CIP declarado por el usuario", "dieu": "1.4.4", "verified": false },
-      "message": "Altura de la edificación +{top}mm: supera la altura máxima de {max}mm declarada del CIP (OGUC 1.4.4, sin validar).",
+      "source": { "vanBan": "OGUC — D.S. N°47/1992 MINVU (texto al D.O. 22-05-2026); valor del CIP declarado por el usuario", "dieu": "1.4.4", "verified": true },
+      "message": "Altura de la edificación +{top}mm: supera la altura máxima de {max}mm declarada del CIP (OGUC 1.4.4).",
       "note": "Dato: brief.dat.quy_hoach.chieu_cao_max (mm)."
     },
     {
@@ -57,8 +57,8 @@
       "title": "Distanciamientos por deslinde declarados en el CIP",
       "severity": "error",
       "evaluator": "CL-CIP-DIS",
-      "source": { "vanBan": "OGUC — D.S. N°47/1992 MINVU (texto al D.O. 22-05-2026); valor del CIP declarado por el usuario", "dieu": "1.4.4", "verified": false },
-      "message": "Muro {wall} a {dist}mm del deslinde #{edge}: menor que el distanciamiento de {lui}mm declarado para ese deslinde (OGUC 1.4.4, sin validar).",
+      "source": { "vanBan": "OGUC — D.S. N°47/1992 MINVU (texto al D.O. 22-05-2026); valor del CIP declarado por el usuario", "dieu": "1.4.4", "verified": true },
+      "message": "Muro {wall} a {dist}mm del deslinde #{edge}: menor que el distanciamiento de {lui}mm declarado para ese deslinde (OGUC 1.4.4).",
       "note": "Dato: site.edges[i].setback (mm). No calcula rasantes ni adosamientos."
     }
   ]

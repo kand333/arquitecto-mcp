@@ -38,10 +38,10 @@ describe("renderer 2D — mặt bằng", () => {
     expect(svg).toContain(">16000<");
     // thang: mũi tên LÊN + số bậc
     expect(svg).toContain("LÊN 21 BẬC");
-    // cajetín + escala; las reglas OGUC aún no están validadas → el plano DEBE llevar la nota ⚠
+    // cajetín + escala; reglas OGUC validadas por el usuario → sin la nota ⚠ de reglas sin validar
     expect(svg).toContain("TỶ LỆ 1:50");
     expect(svg).toContain("MẶT BẰNG PISO 1");
-    expect(svg).toContain("⚠");
+    expect(svg).not.toContain("⚠");
     expect(svg).toContain("Bản vẽ concept");
   });
 

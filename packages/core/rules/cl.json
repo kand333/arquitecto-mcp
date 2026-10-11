@@ -13,8 +13,8 @@
       "severity": "error",
       "evaluator": "CL-ALT-01",
       "params": { "min": 2300 },
-      "source": { "vanBan": "OGUC — D.S. N°47/1992 MINVU (texto al D.O. 22-05-2026)", "dieu": "4.1.1", "verified": false },
-      "message": "Local habitable {ten} ({room}) en {level}: altura libre {clear}mm, menor que {min}mm (OGUC 4.1.1, sin validar).",
+      "source": { "vanBan": "OGUC — D.S. N°47/1992 MINVU (texto al D.O. 22-05-2026)", "dieu": "4.1.1", "verified": true },
+      "message": "Local habitable {ten} ({room}) en {level}: altura libre {clear}mm, menor que {min}mm (OGUC 4.1.1).",
       "note": "Altura aproximada desde el modelo (altura de piso − espesor de la losa superior); no modela «obra terminada» ni las excepciones bajo vigas o techumbre inclinada."
     },
     {
@@ -22,8 +22,8 @@
       "title": "Al menos una ventana al exterior en locales habitables",
       "severity": "error",
       "evaluator": "CL-VEN-01",
-      "source": { "vanBan": "OGUC — D.S. N°47/1992 MINVU (texto al D.O. 22-05-2026)", "dieu": "4.1.2", "verified": false },
-      "message": "Local habitable {ten} ({room}) sin ventana que dé aire y luz del exterior (OGUC 4.1.2, sin validar).",
+      "source": { "vanBan": "OGUC — D.S. N°47/1992 MINVU (texto al D.O. 22-05-2026)", "dieu": "4.1.2", "verified": true },
+      "message": "Local habitable {ten} ({room}) sin ventana que dé aire y luz del exterior (OGUC 4.1.2).",
       "note": "Cuenta ventanas hacia el exterior del deslinde, un patio dentro del sitio o un patio de luz. El modelo no distingue ventanas fijas selladas (excepción del mismo artículo, no aplicable a dormitorios)."
     },
     {

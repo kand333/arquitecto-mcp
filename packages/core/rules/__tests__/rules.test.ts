@@ -408,9 +408,9 @@ describe("P9 — capa de regiones: Chile por defecto, UK como segunda región de
     expect(est.ghi_chu.join(" ")).toContain("No hay tabla de precios");
   });
 
-  it("packs sin validar → unverifiedRules(p) > 0 (los planos llevan ⚠) en uk y en cl", () => {
+  it("uk sin validar → unverifiedRules(p) > 0 (planos con ⚠); cl, validada por el usuario, no", () => {
     expect(unverifiedRules(loadDetachedUk()).length).toBeGreaterThan(0);
-    expect(unverifiedRules(loadCasaPrueba2p()).length).toBeGreaterThan(0);
+    expect(unverifiedRules(loadCasaPrueba2p())).toEqual([]);
   });
 
   it("UK-STAIR-01 (Part K): contrahuella sobre 220 infringe", () => {

@@ -68,8 +68,8 @@ describe("E4 — región cl: solo GEO + OGUC; lo pendiente no se presenta como v
     expect(validateProject(chile()).some((i) => i.rule === "CL-VEN-02")).toBe(false);
   });
 
-  it("las reglas activas sin validar se reportan como tales (unverifiedRules) y su mensaje lo dice", () => {
-    expect(unverifiedRules(chile()).map((r) => r.id).sort()).toEqual(["CL-ALT-01", ...CIP_IDS, "CL-VEN-01"].sort());
+  it("validadas por el usuario (2026-10-11): ninguna regla activa queda sin validar; las pendientes lo dicen en su mensaje", () => {
+    expect(unverifiedRules(chile())).toEqual([]);
     for (const r of pack.rules.filter((x) => x.source?.verified === false)) expect(r.message, r.id).toMatch(/sin validar/);
   });
 });

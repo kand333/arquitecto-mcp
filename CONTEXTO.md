@@ -4,7 +4,7 @@
 
 ## Estado actual
 
-- **Etapa:** E5 (app local compilada) completada (2026-10-11). Siguiente: E6 (registro en Claude Code y prueba final), a la espera de confirmación. Sigue pendiente que el usuario valide las reglas (`docs/oguc-sources.md`, filas `CL-*` y `CL-CIP-*`). Volver a modo de permisos manual.
+- **Etapa:** E5 (app local compilada) completada (2026-10-11). Siguiente: E6 (registro en Claude Code y prueba final), a la espera de confirmación. El usuario validó contra el PDF oficial `CL-ALT-01`, `CL-VEN-01` y `CL-CIP-*` (2026-10-11, `verified: true`); `CL-VEN-02` (planned) sigue pendiente. Con eso desaparecen la nota ⚠ de los planos y el aviso de reglas sin validar en `validate`. Volver a modo de permisos manual.
 - Al terminar cada etapa, actualiza esta sección. Registra la etapa completada, los commits y lo que quedó pendiente o falló.
 
 | Etapa | Estado | Commits / notas |
