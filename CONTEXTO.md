@@ -4,7 +4,7 @@
 
 ## Estado actual
 
-- **Etapa:** E5 (app local compilada) completada (2026-10-11). Siguiente: E6 (registro en Claude Code y prueba final), a la espera de confirmación. El usuario validó contra el PDF oficial `CL-ALT-01`, `CL-VEN-01` y `CL-CIP-*` (2026-10-11, `verified: true`); `CL-VEN-02` (planned) sigue pendiente. Con eso desaparecen la nota ⚠ de los planos y el aviso de reglas sin validar en `validate`. Volver a modo de permisos manual.
+- **Etapa:** E6 (registro en Claude Code y prueba final) completada (2026-10-11). Plan E0–E6 terminado. Siguiente: los pendientes post-E6 (abajo), a decisión del usuario. El usuario validó contra el PDF oficial `CL-ALT-01`, `CL-VEN-01` y `CL-CIP-*` (2026-10-11, `verified: true`); `CL-VEN-02` (planned) sigue pendiente. Con eso desaparecen la nota ⚠ de los planos y el aviso de reglas sin validar en `validate`. Volver a modo de permisos manual.
 - Al terminar cada etapa, actualiza esta sección. Registra la etapa completada, los commits y lo que quedó pendiente o falló.
 
 | Etapa | Estado | Commits / notas |
@@ -16,7 +16,7 @@
 | E4 Rule pack OGUC | completada (MVP) | `ac5ebba` pack + evaluadores + docs + tests, `ca1246d` región cl por defecto + aviso en validate; cierre en commit `docs: record E4…` |
 | E4b Limpieza VN + presupuesto | completada | `f090b76` cl-cip, `9b124b6` presupuesto UF, `77f1ba0` renombre de fixtures, `5442444` borrado del legado + cierre |
 | E5 App completa | completada | bundle web regenerado + smoke adaptado + cierre en commit «build: … (E5)» |
-| E6 Registro y prueba final | pendiente | — |
+| E6 Registro y prueba final | completada | validación de reglas `b47c372`, descargo fijo `555b0f8`; bundle web + cierre en commit «… (E6)» |
 
 ### Resultado E0
 
@@ -140,7 +140,19 @@
 - **Electron:** no hace falta. El servidor local + el navegador ya funcionan como app, y Claude Code arranca el servidor por stdio.
 - **Validación de reglas (post-E5, 2026-10-11):** el usuario verificó `CL-ALT-01`, `CL-VEN-01` y `CL-CIP-*` contra el PDF oficial (`b47c372`). Como el aviso de reglas sin validar desaparece, `validate` agrega en la región `cl` un descargo fijo: resultado orientativo, no certifica cumplimiento legal.
 
+### Resultado E6
+
+- **Registro:** `claude mcp add arquitecto --scope user -e ARQUITECTO_DIR=D:\0Claude\arquitecto-mcp\sandbox\casa-1-piso -- node D:\0Claude\arquitecto-mcp\packages\cli\bin\arquitecto-mcp.mjs`, con ruta local y sin npx. `claude mcp get arquitecto` → `✔ Connected`. Modifica `C:\Users\cavbs\.claude.json`; se revierte con `claude mcp remove arquitecto -s user`.
+- **Casa:** `sandbox/casa-1-piso` (git la ignora; elección del usuario). Para casas reales: `remove` + `add` con otra carpeta.
+- **Flujo real** (mismo binario y carpeta que el registro, por MCP stdio): 18 herramientas → `validate` (solo `CL-INDET/info`) → `apply_ops` (revisión 1) → `validate` → `render_plan` (PNG) → `editor_open` (URL con token) → `export` pdf (3 láminas), dxf (2), ifc y gltf en `sandbox/casa-1-piso/.arquitecto/exports/ho-so/`.
+- **Omitidas con motivo:** el corte A-A (la casa de 1 piso no tiene escalera) y el presupuesto (precios por completar).
+- **Bundle web** regenerado: el editor incluye `@arquitecto/core` y por eso cambia con los mensajes de las reglas validadas.
+- **Verificación del usuario pendiente:** `/mcp` en una sesión nueva de Claude Code muestra `arquitecto` y abrir el PDF.
+- **Hallazgo:** el motivo de la lámina de corte omitida sale en vietnamita en la respuesta MCP («Model chưa có thang…»). Además de los rótulos de las láminas, ya conocidos.
+
 ### Pendientes para después de E6 (decisión del usuario: no ejecutar todavía)
+
+- **Mensajes de render en vietnamita visibles por MCP:** motivos de láminas omitidas (`Model chưa có thang…`) y títulos de láminas («MẶT BẰNG», «MẶT ĐỨNG CHÍNH», «THỐNG KÊ PHÒNG & CỬA»), más las capas DXF TCVN.
 
 - **Deuda técnica:** `smoke.mts` crea `%TEMP%\arquitecto-smoke-*` y no las borra. TODO: borrar las carpetas con más de 12 h al arrancar el smoke.
 - **Limpieza manual fuera del proyecto:** borrar las carpetas `%TEMP%\arquitecto-smoke-*` existentes con más de 12 h. La hace el usuario: queda fuera de `D:\0Claude\arquitecto-mcp`.
