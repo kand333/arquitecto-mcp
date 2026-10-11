@@ -299,3 +299,17 @@ describe("LOW — assets_search no deja carpetas temporales", () => {
     expect(count()).toBe(before);
   });
 });
+
+// ── E4: validate distingue resultado del proyecto de validación documental ──
+
+describe("E4 — validate en un proyecto chileno", () => {
+  it("casa-1-piso valida con el pack OGUC, reporta indeterminados y avisa reglas sin validar", async () => {
+    const { client } = await connect();
+    await client.callTool({ name: "project_new", arguments: { name: "Casa Pérez", template: "casa-1-piso" } });
+    const msg = textOf(await client.callTool({ name: "validate", arguments: {} }));
+    expect(msg).toContain("CL-INDET"); // cocina + comedor: no clasificable → indeterminado, no "limpio"
+    expect(msg).toContain("No se declara cumplimiento");
+    expect(msg).toMatch(/Reglas sin validación documental .*CL-ALT-01, CL-VEN-01/);
+    expect(msg).not.toMatch(/STD-|LBB-|PLN-|UK-|GEN-/);
+  });
+});

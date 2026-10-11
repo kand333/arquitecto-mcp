@@ -5,7 +5,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import {
   areaM2, ASSET_CATEGORIES, DON_GIA, estimateCost, formatVnd, getLevel, searchAssets,
-  stairLayout, validateProject,
+  stairLayout, unverifiedRules, validateProject,
   type AssetCategory, type CaptureCamera, type FinishLevel, type Issue, type Op, type Project,
 } from "@arquitecto/core";
 import { buildAssetsSheetSvg, SHEET_CAPACITY } from "./render/assets-sheet.js";
@@ -221,7 +221,12 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
           const onLevel = entityIdsOfLevel(p, scope.level);
           issues = issues.filter((i) => i.entities.some((e) => onLevel.has(e)));
         }
-        return text(`Validador (revisión ${p.meta.revision}): ${issueLines(issues)}`);
+        // E4: el resultado del proyecto no equivale a obligaciones verificadas — se avisan las reglas sin validar
+        const sinValidar = unverifiedRules(p).map((r) => r.id);
+        const nota = sinValidar.length
+          ? `\n⚠ Reglas sin validación documental (resultado orientativo, no certifica cumplimiento): ${sinValidar.join(", ")}.`
+          : "";
+        return text(`Validador (revisión ${p.meta.revision}): ${issueLines(issues)}${nota}`);
       } catch (e) {
         return fail(e);
       }

@@ -139,8 +139,8 @@ export class ProjectStore {
     } else {
       p = blankProject(brief);
     }
-    // E3: fuera del legado oculto no se valida con normas vietnamitas — pack de muestra "generic" hasta la región "cl" (E4)
-    if (!template || !TEMPLATES[template]!.hidden) p.config = { ...p.config, region: p.config?.region ?? "generic" };
+    // E4: fuera del legado oculto se valida con la región Chile (pack cl-oguc); el legado VN conserva su comportamiento
+    if (!template || !TEMPLATES[template]!.hidden) p.config = { ...p.config, region: p.config?.region ?? "cl" };
     // A2: meta.id es un ID (≤32); se recorta aquí y no en slugify, que también nombra variantes
     p.meta = { ...p.meta, id: slugify(name).slice(0, 32).replace(/-+$/, "") || "du-an", name, revision: 0 };
     if (brief) p.brief = structuredClone(brief); // brief từ pha A phỏng vấn — nguồn đối chiếu mọi pha sau

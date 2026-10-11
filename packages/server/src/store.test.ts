@@ -152,10 +152,10 @@ describe("M3 — openProject solo dentro de la carpeta del proyecto y sin filtra
 // ── E3: plantillas visibles y región por defecto ────────────────────
 
 describe("E3 — plantillas ofrecidas y región", () => {
-  it("solo se ofrecen las plantillas chilenas; usan región generic; el legado oculto sigue cargando sin región", () => {
+  it("solo se ofrecen las plantillas chilenas; usan región cl; el legado oculto sigue cargando sin región", () => {
     expect(VISIBLE_TEMPLATES).toEqual(["casa-1-piso", "casa-2-pisos", "depto-2d"]);
-    expect(freshStore().newProject("Casa Pérez", "casa-1-piso").config?.region).toBe("generic");
-    expect(freshStore().newProject("En blanco").config?.region).toBe("generic");
+    expect(freshStore().newProject("Casa Pérez", "casa-1-piso").config?.region).toBe("cl");
+    expect(freshStore().newProject("En blanco").config?.region).toBe("cl");
     expect(freshStore().newProject("Legado", "nha-ong-4x16-2t").config?.region).toBeUndefined();
     expect(() => freshStore().newProject("X", "no-existe")).toThrowError(/casa-1-piso, casa-2-pisos, depto-2d/);
   });
