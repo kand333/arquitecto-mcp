@@ -30,7 +30,7 @@ describe.skipIf(!hasDist)("E2E editor thật (chromium headless)", () => {
       locale: "vi-VN",
       timezoneId: "Asia/Ho_Chi_Minh",
     });
-    await page.goto(baseUrl);
+    await page.goto(live.editorUrl()!);
     // chờ snapshot dựng xong — test chạy đơn lẻ (-t) cũng phải có model sẵn
     await page.waitForSelector("#paper svg", { timeout: 15_000 });
   }, 90_000);
@@ -365,7 +365,7 @@ describe.skipIf(!hasDist)("E2E editor thật (chromium headless)", () => {
   }, 30_000);
 
   it("link chia sẻ chỉ-xem: khách thấy live, kéo chỉ pan, không sửa được gì", async () => {
-    const share = (await (await fetch(`${baseUrl}/share`)).json()) as { url: string };
+    const share = (await (await fetch(`${baseUrl}/share?token=${live.ownerToken}`)).json()) as { url: string };
     // khách cũng "ở Việt Nam" — badge phải ra tiếng Việt
     const viewer = await browser.newPage({
       viewport: { width: 1200, height: 800 },
@@ -436,7 +436,7 @@ describe.skipIf(!hasDist)("E2E editor thật (chromium headless)", () => {
       timezoneId: "Europe/Paris",
     });
     try {
-      await abroad.goto(baseUrl);
+      await abroad.goto(live.editorUrl()!);
       await abroad.waitForSelector("#paper svg", { timeout: 15_000 });
       expect(await abroad.textContent("#share-btn")).toBe("share");
       expect(await abroad.textContent("#conn-text")).toBe("live");
@@ -453,7 +453,7 @@ describe.skipIf(!hasDist)("E2E editor thật (chromium headless)", () => {
       timezoneId: "Asia/Ho_Chi_Minh", // ở VN nhưng chủ động chọn EN — tay thắng auto
     });
     try {
-      await en.goto(`${baseUrl}/?lang=en`);
+      await en.goto(`${live.editorUrl()!}&lang=en`);
       await en.waitForSelector("#paper svg", { timeout: 15_000 });
       expect(await en.textContent("#share-btn")).toBe("share");
       expect(await en.textContent('[data-view-btn="plan"]')).toBe("Plan");
@@ -464,7 +464,7 @@ describe.skipIf(!hasDist)("E2E editor thật (chromium headless)", () => {
       await en.fill("#catalog-panel .cat-search", "scooter");
       expect(await en.textContent("#catalog-panel .cat-item .cat-name")).toContain("Scooter");
       // viewer EN: badge dịch (lang lưu localStorage nên trang /xem cùng context giữ EN)
-      const share = (await (await fetch(`${baseUrl}/share`)).json()) as { url: string };
+      const share = (await (await fetch(`${baseUrl}/share?token=${live.ownerToken}`)).json()) as { url: string };
       await en.goto(share.url);
       await en.waitForSelector(".view-badge", { timeout: 15_000 });
       expect(await en.textContent(".view-badge")).toBe("VIEW ONLY");
@@ -476,7 +476,7 @@ describe.skipIf(!hasDist)("E2E editor thật (chromium headless)", () => {
   }, 40_000);
 
   it("nút chia sẻ trên tab chủ nhà lấy được link /xem/<token>", async () => {
-    const r = (await (await fetch(`${baseUrl}/share`)).json()) as { url: string; token: string };
+    const r = (await (await fetch(`${baseUrl}/share?token=${live.ownerToken}`)).json()) as { url: string; token: string };
     expect(r.url).toContain(`/xem/${r.token}`);
     expect(await page.$eval("#share-btn", (el) => (el as HTMLElement).hidden)).toBe(false);
   }, 15_000);

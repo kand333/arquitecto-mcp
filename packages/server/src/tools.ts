@@ -264,7 +264,8 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
     async (args) => {
       try {
         void store.current; // bắt lỗi "chưa mở dự án" sớm, thông điệp chỉ đường sẵn có
-        const url = await live.start();
+        await live.start();
+        const url = live.editorUrl()!; // A1: lleva el token del propietario
         if (args.openBrowser !== false) openInBrowser(url);
         const distNote = existsSync(DEFAULT_WEB_DIST)
           ? ""
@@ -273,7 +274,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
         return text(
           `✅ Editor: ${url}${args.openBrowser !== false ? " (đã mở trình duyệt)" : ""} — browser đang nối: ${live.browserCount}.${distNote}` +
             (share
-              ? `\n👁 Link chia sẻ CHỈ-XEM (gửi cho người thân cùng ngắm, không sửa được): ${share}\n   (mặc định server chỉ nghe 127.0.0.1 — muốn máy khác trong mạng LAN mở được, đặt ARQUITECTO_HOST=0.0.0.0 rồi mở lại; thu hồi link: POST /share/rotate)`
+              ? `\n👁 Link chia sẻ CHỈ-XEM (gửi cho người thân cùng ngắm, không sửa được): ${share}\n   (el servidor solo escucha en 127.0.0.1: el link funciona únicamente en este equipo)`
               : ""),
         );
       } catch (e) {
@@ -505,7 +506,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
           `So sánh (${level}): A = ${report.a.label} · B = ${report.b.label}`,
           ...report.highlights.map((h) => `• ${h}`),
           `Tổng DT phòng: A ${report.a.tongPhong_m2}m² · B ${report.b.tongPhong_m2}m²; dự toán: A ~${formatVnd(report.a.duToan_vnd)} · B ~${formatVnd(report.b.duToan_vnd)}.`,
-          ...(live.url ? [`Bản tương tác: ${live.url}/so-sanh${args.a ? `?a=${args.a}` : ""}`] : []),
+          ...(live.url ? [`Bản tương tác: ${live.url}/so-sanh?token=${live.ownerToken}${args.a ? `&a=${encodeURIComponent(args.a)}` : ""}`] : []),
         ];
         try {
           const html = compareHtml(a, b, level, store.current.meta.name);

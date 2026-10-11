@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
-import { randomBytes, randomUUID } from "node:crypto";
+import { randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import type { Server as HttpServer } from "node:http";
+import type { IncomingMessage, Server as HttpServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -43,7 +43,6 @@ const NO_DIST_PAGE = `<!doctype html><meta charset="utf-8"><title>Arquitecto</ti
 export type LiveOptions = {
   /** Cổng ưa thích (mặc định env ARQUITECTO_PORT hoặc 4823); bận thì tự thử +1…+9. 0 = hệ điều hành tự cấp. */
   port?: number;
-  host?: string;
   webDist?: string;
   /** Timeout chờ browser trả ảnh capture (ms). */
   captureTimeoutMs?: number;
@@ -89,6 +88,8 @@ export class LiveServer {
   private session = randomUUID();
   /** Token link chia sẻ chỉ-xem — nạp/lưu .arquitecto/share.json (sống qua restart). */
   private share: string | null = null;
+  /** Token del propietario (A1): nuevo en cada arranque, solo en memoria. Da escritura por WS y acceso HTTP. */
+  private readonly owner = randomBytes(24).toString("base64url");
   url: string | null = null;
 
   constructor(
@@ -105,6 +106,15 @@ export class LiveServer {
     return addr && typeof addr === "object" ? (addr as AddressInfo).port : null;
   }
 
+  get ownerToken(): string {
+    return this.owner;
+  }
+
+  /** URL del editor con el token del propietario — la que abre editor_open. */
+  editorUrl(): string | null {
+    return this.url ? `${this.url}/?token=${this.owner}` : null;
+  }
+
   get browserCount(): number {
     return [...this.peers].filter((p) => p.kind === "browser" && p.sock.readyState === p.sock.OPEN).length;
   }
@@ -112,8 +122,8 @@ export class LiveServer {
   /** Khởi động (idempotent) — trả URL editor. */
   async start(): Promise<string> {
     if (this.url) return this.url;
-    // ARQUITECTO_HOST=0.0.0.0 → máy khác trong LAN mở được editor + link chia sẻ (mặc định chỉ loopback)
-    const host = this.opts.host ?? process.env.ARQUITECTO_HOST ?? "127.0.0.1";
+    // A1: solo loopback — el editor no se expone a la red
+    const host = "127.0.0.1";
     const prefer = this.opts.port ?? Number(process.env.ARQUITECTO_PORT ?? 4823);
     let lastErr: unknown = null;
     for (let i = 0; i < 10; i++) {
@@ -131,7 +141,13 @@ export class LiveServer {
     }
     this.url = `http://localhost:${this.port}`;
 
-    this.wss = new WebSocketServer({ server: this.http, path: "/ws" });
+    this.wss = new WebSocketServer({
+      server: this.http,
+      path: "/ws",
+      // A1: Host local (anti DNS-rebinding) y Origin del propio editor (anti CSWSH); sin Origin = cliente no-browser
+      verifyClient: (info: { origin?: string; req: IncomingMessage }, cb: (ok: boolean, code?: number) => void) =>
+        cb(this.isLocalHost(info.req.headers.host) && (info.origin == null || this.isLocalOrigin(info.origin)), 403),
+    });
     this.wss.on("connection", (sock, req) => this.onConnection(sock, req?.url ?? ""));
 
     this.heartbeat = setInterval(() => this.pingPeers(), 15_000);
@@ -218,6 +234,28 @@ export class LiveServer {
     });
   }
 
+  // ── Auth (A1) ──────────────────────────────────────────────────
+
+  private localAuthorities(): string[] {
+    return [`localhost:${this.port}`, `127.0.0.1:${this.port}`];
+  }
+
+  private isLocalHost(host: string | undefined): boolean {
+    return host != null && this.localAuthorities().includes(host.toLowerCase());
+  }
+
+  private isLocalOrigin(origin: string): boolean {
+    return this.localAuthorities().some((a) => origin.toLowerCase() === `http://${a}`);
+  }
+
+  /** "owner" escribe; "viewer" (link compartido) solo lee; null = sin acceso. */
+  private tokenRole(token: string | null | undefined): "owner" | "viewer" | null {
+    if (!token) return null;
+    if (safeEqual(token, this.owner)) return "owner";
+    if (safeEqual(token, this.shareToken())) return "viewer";
+    return null;
+  }
+
   // ── HTTP ───────────────────────────────────────────────────────
 
   private listen(host: string, port: number): Promise<HttpServer> {
@@ -235,6 +273,11 @@ export class LiveServer {
   private buildApp(): Hono {
     const app = new Hono();
 
+    app.use("*", async (c, next) => {
+      if (!this.isLocalHost(c.req.header("host"))) return c.text("Host no permitido.", 403);
+      await next();
+    });
+
     app.get("/healthz", (c) =>
       c.json({
         ok: true,
@@ -245,10 +288,12 @@ export class LiveServer {
 
     // ── link chia sẻ chỉ-xem (backlog v2 → 13/07/2026) ──────────
     app.get("/share", (c) => {
+      if (this.tokenRole(c.req.query("token")) !== "owner") return c.text("Token requerido.", 401);
       const url = this.shareUrl();
       return url ? c.json({ url, token: this.shareToken() }) : c.text("Server chưa sẵn sàng.", 503);
     });
     app.post("/share/rotate", (c) => {
+      if (this.tokenRole(c.req.query("token")) !== "owner") return c.text("Token requerido.", 401);
       this.rotateShareToken();
       const url = this.shareUrl();
       return url ? c.json({ url, token: this.shareToken() }) : c.text("Server chưa sẵn sàng.", 503);
@@ -271,6 +316,7 @@ export class LiveServer {
     });
 
     app.get("/plan/:file", (c) => {
+      if (!this.tokenRole(c.req.query("token"))) return c.text("Token requerido.", 401);
       if (!this.store.isOpen) return c.text("Chưa mở dự án — project_open trước.", 409);
       const level = c.req.param("file").replace(/\.svg$/i, "");
       // ?variant=<slug> → vẽ từ phương án đã lưu thay vì model đang làm
@@ -291,6 +337,7 @@ export class LiveServer {
 
     // ── so sánh phương án A/B cạnh nhau (backlog v2 → 13/07/2026) ──
     app.get("/so-sanh", (c) => {
+      if (!this.tokenRole(c.req.query("token"))) return c.text("Token requerido.", 401);
       if (!this.store.isOpen) return c.text("Chưa mở dự án — project_open trước.", 409);
       this.store.refreshDonGia(); // dự toán trong trang so sánh ăn bảng đơn giá địa phương
       try {
@@ -339,15 +386,15 @@ export class LiveServer {
   // ── WebSocket ──────────────────────────────────────────────────
 
   private onConnection(sock: WsSocket, reqUrl: string): void {
-    // link chia sẻ: WS mang ?token — đúng token thì vào với vai CHỈ-XEM, sai thì đóng
-    const token = new URL(reqUrl, "http://x").searchParams.get("token");
-    if (token != null && token !== this.shareToken()) {
-      sock.close(4001, "share token không còn hiệu lực");
+    // A1: token del propietario → escritura; token del link compartido → solo lectura; otro → se cierra
+    const role = this.tokenRole(new URL(reqUrl, "http://x").searchParams.get("token"));
+    if (!role) {
+      sock.close(4001, "token invalido o ausente");
       return;
     }
     const peer: Peer = {
       id: randomUUID(), sock, kind: "browser", alive: true, session: null,
-      lastActive: Date.now(), readonly: token != null,
+      lastActive: Date.now(), readonly: role === "viewer",
     };
     this.peers.add(peer);
     sock.on("pong", () => {
@@ -535,4 +582,11 @@ export function openInBrowser(url: string): void {
         ? ["open", [url]]
         : ["xdg-open", [url]];
   spawn(cmd, args as string[], { detached: true, stdio: "ignore" }).unref();
+}
+
+/** Comparación en tiempo constante (A1). */
+function safeEqual(a: string, b: string): boolean {
+  const x = Buffer.from(a);
+  const y = Buffer.from(b);
+  return x.length === y.length && timingSafeEqual(x, y);
 }

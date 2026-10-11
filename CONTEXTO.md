@@ -4,14 +4,14 @@
 
 ## Estado actual
 
-- **Etapa:** E1 completada (2026-10-11). Siguiente: E2, a la espera de la confirmación del usuario.
+- **Etapa:** E2 en curso (auto mode con reglas del usuario: diff --stat antes de cada commit; pausa si un fix toca >3 archivos o `core/ops/apply.ts`, rompe un test o hay dudas de diseño).
 - Al terminar cada etapa, actualiza esta sección. Registra la etapa completada, los commits y lo que quedó pendiente o falló.
 
 | Etapa | Estado | Commits / notas |
 |---|---|---|
 | E0 Línea base | completada | `6ec6023` import (tag `upstream-import`), `8a6e7a0` audit baseline; luego commit de `CONTEXTO.md` + `PROMPT-INICIAL.md` |
 | E1 Limpieza e identidad | completada | `2af29c8` limpieza, `3b41efb` renombre, `e41e7c1` docs, `836cdb3` identidad |
-| E2 Seguridad | pendiente | — |
+| E2 Seguridad | en curso | A1 hecho (commit `fix(security): A1 …`); A2, M1, M2, M3, LOW, DEPS pendientes |
 | E3 Español y región Chile | pendiente | — |
 | E4 Rule pack OGUC | pendiente | — |
 | E5 App completa | pendiente | — |
@@ -43,6 +43,10 @@
 - `pnpm typecheck`: verde. `pnpm test`: 226 passed, 1 failed (PDF/Chromium), 17 skipped. Bajan de 229 a 226 por los 3 tests de `setup` eliminados.
 - **Propuesto para E5:** des-versionar `packages/cli/web/` y agregarlo a `.gitignore`, porque `build.mjs` lo regenera. Hoy es un bundle precompilado con marca «Atelier».
 - `docs/images/` y `docs/media/` se conservan; el README nuevo ya no los enlaza.
+
+### Resultado E2
+
+- **A1** (2026-10-11): ver `docs/security-tests/A1.md`. Decisiones del usuario: token del propietario en la query `?token=`, verificación de Host en todo HTTP y en el WS, un solo commit. Escucha fija en `127.0.0.1`; se eliminó `ARQUITECTO_HOST`, así que el link compartido solo funciona en el mismo equipo. Tests: 231 passed, 1 failed (Chromium), 17 skipped. `live-e2e` y `smoke.mts` se actualizaron sin poder ejecutarlos (E5).
 
 ## Origen y objetivo
 

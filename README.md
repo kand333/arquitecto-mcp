@@ -9,7 +9,7 @@ Deriva de [Atelier](https://github.com/lebac-svg/Atelier) (MIT, © 2026 Bắc L�
 
 > **Estado: en desarrollo.** Hoy el código es el de Atelier renombrado. La UI y las reglas siguen en vietnamita/inglés con normas TCVN/UK. El español y las reglas de Chile (OGUC) llegan en etapas posteriores.
 
-> **Seguridad:** hasta completar la etapa de seguridad (E2), el editor web **no tiene autenticación**. No cambies `ARQUITECTO_HOST` a `0.0.0.0` ni expongas el puerto fuera de tu equipo.
+> **Seguridad:** el editor web escucha solo en `127.0.0.1` y exige un token que se genera en cada arranque (`editor_open` abre la URL con él). El resto de la etapa de seguridad (E2: validación de IDs y rutas) sigue en curso; no expongas el puerto fuera de tu equipo.
 
 ## Qué incluye
 
@@ -50,7 +50,6 @@ pnpm build:cli     # editor + bundle en packages/cli/dist/main.mjs
 |---|---|---|
 | `ARQUITECTO_DIR` | carpeta actual | Carpeta de la casa: contiene `arquitecto.project.json` y `.arquitecto/` |
 | `ARQUITECTO_PORT` | `4823` | Puerto del editor; si está ocupado prueba los 9 siguientes |
-| `ARQUITECTO_HOST` | `127.0.0.1` | Interfaz del editor. Ver la advertencia de seguridad |
 
 ## Documentación
 

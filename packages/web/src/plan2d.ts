@@ -16,6 +16,8 @@ export type Plan2DDeps = {
   onPlace(assetId: string, pt: Point): void;
   /** Link chia sẻ chỉ-xem: chọn/pan/zoom vẫn chạy, kéo-thả thì không. */
   readonly?: boolean;
+  /** A1: token (propietario o link compartido) que exige GET /plan. */
+  token?: string | null;
 };
 
 /** Ngưỡng hít tính theo px màn hình — quy về mm model theo zoom lúc kéo. */
@@ -58,7 +60,8 @@ export class Plan2D {
 
   async show(level: string, revision: number): Promise<void> {
     const mySeq = ++this.seq;
-    const res = await fetch(`/plan/${encodeURIComponent(level)}.svg?rev=${revision}`);
+    const token = this.deps.token ? `&token=${encodeURIComponent(this.deps.token)}` : "";
+    const res = await fetch(`/plan/${encodeURIComponent(level)}.svg?rev=${revision}${token}`);
     if (!res.ok || mySeq !== this.seq) return; // có bản mới hơn đang về — bỏ bản này
     const svg = await res.text();
     if (mySeq !== this.seq) return;

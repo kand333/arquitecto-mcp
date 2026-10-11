@@ -23,5 +23,6 @@
 - Snapshots SVG dorados en `packages/server/src/render/__snapshots__/`. Si cambian, revisa el diff antes de aceptar `vitest -u`.
 
 ## Seguridad
-- Hasta cerrar E2, el editor web (`live.ts`) no tiene autenticación y los IDs llegan a rutas de archivo sin validar. No expongas el servidor fuera de loopback.
+- Editor (`live.ts`, A1): escucha solo en `127.0.0.1`; WS y `/share`, `/share/rotate`, `/plan`, `/so-sanh` exigen `?token=` (propietario = escritura, link compartido = solo lectura); Host y Origin deben ser `localhost`/`127.0.0.1:<port>`. Toda ruta o cliente nuevo debe respetarlo.
+- Hasta cerrar E2, los IDs llegan a rutas de archivo sin validar (A2, M1–M3).
 - En E2, cada fix lleva un test que primero falla; el output rojo y el verde se guardan en `docs/security-tests/<id>.md`.

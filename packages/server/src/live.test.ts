@@ -1,4 +1,5 @@
 import { mkdtempSync } from "node:fs";
+import { get as httpGet } from "node:http";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -14,13 +15,13 @@ afterEach(async () => {
   while (cleanups.length) await cleanups.pop()!();
 });
 
-async function boot(opts: LiveOptions = {}): Promise<{ store: ProjectStore; live: LiveServer; url: string }> {
+async function boot(opts: LiveOptions = {}): Promise<{ store: ProjectStore; live: LiveServer; url: string; t: string }> {
   const store = new ProjectStore(mkdtempSync(path.join(tmpdir(), "arquitecto-live-")));
   store.newProject("Nhà anh Ba", "nha-ong-4x16-2t");
   const live = new LiveServer(store, { port: 0, ...opts });
   const url = await live.start();
   cleanups.push(() => live.stop());
-  return { store, live, url };
+  return { store, live, url, t: `?token=${live.ownerToken}` };
 }
 
 /** WS client thử nghiệm: giữ history + chờ message theo type. */
@@ -92,8 +93,8 @@ class TestClient {
 
 describe("LiveServer", () => {
   it("hello → snapshot + validation; /plan và /healthz sống", async () => {
-    const { url } = await boot();
-    const c = await TestClient.connect(url);
+    const { url, t } = await boot();
+    const c = await TestClient.connect(url, t);
     c.hello();
 
     const snap = await c.next<SnapshotMsg>("snapshot");
@@ -103,11 +104,11 @@ describe("LiveServer", () => {
     const val = await c.next<ValidationMsg>("validation");
     expect(val.revision).toBe(0);
 
-    const plan = await fetch(`${url}/plan/L1.svg`);
+    const plan = await fetch(`${url}/plan/L1.svg${t}`);
     expect(plan.status).toBe(200);
     expect(plan.headers.get("content-type")).toContain("svg");
     expect(await plan.text()).toContain("data-id=");
-    expect((await fetch(`${url}/plan/L9.svg`)).status).toBe(404);
+    expect((await fetch(`${url}/plan/L9.svg${t}`)).status).toBe(404);
 
     const health = (await (await fetch(`${url}/healthz`)).json()) as { ok: boolean; browsers: number };
     expect(health.ok).toBe(true);
@@ -115,9 +116,9 @@ describe("LiveServer", () => {
   });
 
   it("apply → patch + validation broadcast tới mọi browser; mở lại dự án → snapshot mới", async () => {
-    const { store, url } = await boot();
-    const a = await TestClient.connect(url);
-    const b = await TestClient.connect(url);
+    const { store, url, t } = await boot();
+    const a = await TestClient.connect(url, t);
+    const b = await TestClient.connect(url, t);
     a.hello();
     b.hello();
     await a.next<SnapshotMsg>("snapshot");
@@ -146,8 +147,8 @@ describe("LiveServer", () => {
   });
 
   it("ops từ browser áp origin user; stale-write bị reject riêng người gửi", async () => {
-    const { store, url } = await boot();
-    const a = await TestClient.connect(url);
+    const { store, url, t } = await boot();
+    const a = await TestClient.connect(url, t);
     a.hello();
     await a.next<SnapshotMsg>("snapshot");
 
@@ -165,9 +166,9 @@ describe("LiveServer", () => {
   });
 
   it("hello lastRevision + ĐÚNG session → replay patch, KHÔNG gửi snapshot", async () => {
-    const { store, url } = await boot();
+    const { store, url, t } = await boot();
     // lấy session token từ lần nối đầu
-    const first = await TestClient.connect(url);
+    const first = await TestClient.connect(url, t);
     first.hello();
     const snap0 = await first.next<SnapshotMsg>("snapshot");
     expect(snap0.session).toBeTruthy();
@@ -175,7 +176,7 @@ describe("LiveServer", () => {
     store.apply(0, [{ op: "update", entity: "level", id: "L2", data: { height: 3500 } }]);
     store.apply(1, [{ op: "update", entity: "level", id: "L2", data: { height: 3400 } }], "chỉnh lại");
 
-    const c = await TestClient.connect(url);
+    const c = await TestClient.connect(url, t);
     c.hello(0, snap0.session);
     const p1 = await c.next<PatchMsg>("patch");
     const p2 = await c.next<PatchMsg>("patch");
@@ -185,25 +186,25 @@ describe("LiveServer", () => {
   });
 
   it("hello lastRevision nhưng LỆCH/THIẾU session → ép snapshot (tab dự án cũ không mù)", async () => {
-    const { store, url } = await boot();
+    const { store, url, t } = await boot();
     store.apply(0, [{ op: "update", entity: "level", id: "L2", data: { height: 3500 } }]);
 
     // thiếu session (client cũ / mirror từ process trước)
-    const a = await TestClient.connect(url);
+    const a = await TestClient.connect(url, t);
     a.hello(0);
     const snapA = await a.next<SnapshotMsg>("snapshot");
     expect(snapA.revision).toBe(1);
 
     // lệch session (server đã đổi dự án — số revision có thể TRÙNG)
-    const b = await TestClient.connect(url);
+    const b = await TestClient.connect(url, t);
     b.hello(1, "phien-cu-khong-con");
     const snapB = await b.next<SnapshotMsg>("snapshot");
     expect(snapB.revision).toBe(1);
   });
 
   it("soft-lock: presence.draggingIds chặn op origin claude, op user vẫn qua, nhả theo thời gian", async () => {
-    const { store, url } = await boot({ lockReleaseMs: 150 });
-    const c = await TestClient.connect(url);
+    const { store, url, t } = await boot({ lockReleaseMs: 150 });
+    const c = await TestClient.connect(url, t);
     c.hello();
     await c.next<SnapshotMsg>("snapshot");
 
@@ -234,9 +235,9 @@ describe("LiveServer", () => {
   });
 
   it("link chia sẻ chỉ-xem: token persist, viewer bị VIEW-01, không soft-lock được, rotate đá viewer", async () => {
-    const { store, live, url } = await boot();
+    const { store, live, url, t } = await boot();
     // token qua HTTP + persist qua restart LiveServer (đọc lại .arquitecto/share.json)
-    const share = (await (await fetch(`${url}/share`)).json()) as { url: string; token: string };
+    const share = (await (await fetch(`${url}/share${t}`)).json()) as { url: string; token: string };
     expect(share.url).toContain(`/xem/${share.token}`);
     const live2 = new LiveServer(store, { port: 0 });
     expect(live2.shareToken()).toBe(share.token);
@@ -272,36 +273,36 @@ describe("LiveServer", () => {
 
     // thu hồi: token mới, viewer cũ bị ngắt, link cũ thành 404
     const viewerClosed = new Promise<number>((res) => viewer.sock.on("close", (code) => res(code)));
-    const rotated = (await (await fetch(`${url}/share/rotate`, { method: "POST" })).json()) as { token: string };
+    const rotated = (await (await fetch(`${url}/share/rotate${t}`, { method: "POST" })).json()) as { token: string };
     expect(rotated.token).not.toBe(share.token);
     expect(await viewerClosed).toBe(4001);
     expect((await fetch(`${url}/xem/${share.token}`)).status).toBe(404);
   });
 
   it("trang /so-sanh + /plan?variant: phương án cạnh nhau qua HTTP", async () => {
-    const { store, url } = await boot();
+    const { store, url, t } = await boot();
     store.saveVariant("Phương án A");
     store.apply(0, [{ op: "delete", entity: "furniture", id: "F1" }], "bớt đồ");
 
-    const plan = await fetch(`${url}/plan/L1.svg?variant=phuong-an-a`);
+    const plan = await fetch(`${url}/plan/L1.svg${t}&variant=phuong-an-a`);
     expect(plan.status).toBe(200);
     expect(await plan.text()).toContain('data-id="F1"'); // phương án A vẫn còn F1
-    expect((await fetch(`${url}/plan/L1.svg?variant=khong-co`)).status).toBe(404);
+    expect((await fetch(`${url}/plan/L1.svg${t}&variant=khong-co`)).status).toBe(404);
 
-    const page = await fetch(`${url}/so-sanh`);
+    const page = await fetch(`${url}/so-sanh${t}`);
     expect(page.status).toBe(200);
     const html = await page.text();
     expect(html).toContain("SO SÁNH PHƯƠNG ÁN");
     expect(html).toContain("Phương án A");
     expect(html).toContain("HIỆN TẠI (r1)");
-    expect((await fetch(`${url}/so-sanh?a=khong-co`)).status).toBe(404);
+    expect((await fetch(`${url}/so-sanh${t}&a=khong-co`)).status).toBe(404);
   });
 
   it("capture: browser trả PNG; timeout khi browser im; lỗi khi không có browser", async () => {
-    const { live, url } = await boot({ captureTimeoutMs: 300 });
+    const { live, url, t } = await boot({ captureTimeoutMs: 300 });
     await expect(live.capture("3d")).rejects.toThrow(/Chưa có browser/);
 
-    const c = await TestClient.connect(url);
+    const c = await TestClient.connect(url, t);
     c.hello();
     await c.next<SnapshotMsg>("snapshot");
 
@@ -315,5 +316,100 @@ describe("LiveServer", () => {
 
     // target "plan" không được client này trả → timeout
     await expect(live.capture("plan")).rejects.toThrow(/không trả ảnh/);
+  });
+});
+
+// ── A1: auth del editor (docs/security-tests/A1.md) ─────────────────
+
+type WsOutcome = "open" | `close:${number}` | `rejected:${number}` | "error";
+
+/** Nối WS và cho biết kết quả: mở được, bị đóng ngay (code), hay bị từ chối ở handshake (HTTP status). */
+function wsOutcome(wsUrl: string, headers: Record<string, string> = {}): Promise<WsOutcome> {
+  return new Promise((resolve) => {
+    const sock = new WebSocket(wsUrl, { headers });
+    let opened = false;
+    sock.on("unexpected-response", (_req, res) => resolve(`rejected:${res.statusCode ?? 0}`));
+    sock.on("error", () => resolve("error"));
+    sock.on("close", (code) => resolve(`close:${code}`));
+    sock.on("open", () => {
+      opened = true;
+      setTimeout(() => {
+        if (opened) resolve("open");
+        sock.close();
+      }, 300);
+    });
+  });
+}
+
+/** GET thô qua node:http — fetch không cho đặt header Host. */
+function rawGet(url: string, headers: Record<string, string>): Promise<number> {
+  return new Promise((resolve, reject) => {
+    httpGet(url, { headers }, (res) => {
+      res.resume();
+      resolve(res.statusCode ?? 0);
+    }).on("error", reject);
+  });
+}
+
+describe("A1 — editor exige token, Origin y Host locales", () => {
+  it("WS sin token se cierra; con token de propietario se puede escribir", async () => {
+    const { live, url } = await boot();
+    const ws = url.replace(/^http/, "ws") + "/ws";
+    expect(await wsOutcome(ws)).toBe("close:4001");
+    expect(await wsOutcome(`${ws}?token=sai`)).toBe("close:4001");
+
+    const owner = await TestClient.connect(url, `?token=${live.ownerToken}`);
+    owner.hello();
+    const snap = await owner.next<SnapshotMsg>("snapshot");
+    owner.send({ type: "ops", baseRevision: snap.revision, ops: [{ op: "update", entity: "level", id: "L2", data: { height: 3500 } }], note: "a1" });
+    const patch = await owner.next<PatchMsg>("patch");
+    expect(patch.revision).toBe(snap.revision + 1);
+  });
+
+  it("WS con Origin ajeno o Host ajeno se rechaza en el handshake", async () => {
+    const { live, url } = await boot();
+    const ws = `${url.replace(/^http/, "ws")}/ws?token=${live.ownerToken}`;
+    expect(await wsOutcome(ws, { Origin: "http://evil.example" })).toBe("rejected:403");
+    expect(await wsOutcome(ws, { Origin: `http://localhost:${live.port}`, Host: "evil.example" })).toBe("rejected:403");
+    expect(await wsOutcome(ws, { Origin: `http://127.0.0.1:${live.port}` })).toBe("open");
+  });
+
+  it("HTTP: /share, /share/rotate, /plan y /so-sanh exigen token; rotate solo propietario", async () => {
+    const { live, url } = await boot();
+    const t = live.ownerToken;
+    expect((await fetch(`${url}/share`)).status).toBe(401);
+    expect((await fetch(`${url}/share/rotate`, { method: "POST" })).status).toBe(401);
+    expect((await fetch(`${url}/plan/L1.svg`)).status).toBe(401);
+    expect((await fetch(`${url}/so-sanh`)).status).toBe(401);
+
+    expect((await fetch(`${url}/share?token=${t}`)).status).toBe(200);
+    expect((await fetch(`${url}/plan/L1.svg?token=${t}`)).status).toBe(200);
+    expect((await fetch(`${url}/so-sanh?token=${t}`)).status).toBe(200);
+
+    // el viewer del link compartido ve la planta, pero no administra el link
+    const share = live.shareToken();
+    expect((await fetch(`${url}/plan/L1.svg?token=${share}`)).status).toBe(200);
+    expect((await fetch(`${url}/share?token=${share}`)).status).toBe(401);
+    expect((await fetch(`${url}/share/rotate?token=${share}`, { method: "POST" })).status).toBe(401);
+  });
+
+  it("HTTP con Host ajeno se rechaza (anti DNS-rebinding)", async () => {
+    const { live, url } = await boot();
+    expect(await rawGet(`${url}/healthz`, { Host: "evil.example" })).toBe(403);
+    expect(await rawGet(`${url}/healthz`, { Host: `127.0.0.1:${live.port}` })).toBe(200);
+  });
+
+  it("escucha solo en loopback aunque ARQUITECTO_HOST pida 0.0.0.0; la URL del editor lleva el token", async () => {
+    const prev = process.env.ARQUITECTO_HOST;
+    process.env.ARQUITECTO_HOST = "0.0.0.0";
+    try {
+      const { live } = await boot();
+      const addr = (live as unknown as { http: { address(): { address: string } } }).http.address();
+      expect(addr.address).toBe("127.0.0.1");
+      expect(live.editorUrl()).toBe(`${live.url}/?token=${live.ownerToken}`);
+    } finally {
+      if (prev == null) delete process.env.ARQUITECTO_HOST;
+      else process.env.ARQUITECTO_HOST = prev;
+    }
   });
 });

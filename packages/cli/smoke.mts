@@ -56,12 +56,13 @@ const est2 = await client.callTool({ name: "estimate_cost", arguments: {} });
 ok(textOf(est2).includes("dia-phuong-test-2026"), "don-gia.json dự án đè bảng gói");
 
 const editor = await client.callTool({ name: "editor_open", arguments: { openBrowser: false } });
-const url = textOf(editor).match(/http:\/\/localhost:\d+/)?.[0];
+const m = textOf(editor).match(/(http:\/\/localhost:\d+)\/\?token=([\w-]+)/);
+const url = m?.[1];
 ok(!!url, `editor_open URL: ${url}`);
 if (url) {
   const html = await (await fetch(url)).text();
   ok(html.includes("<script") && !html.includes("chưa được build"), "web editor đóng gói được serve");
-  const svg = await (await fetch(`${url}/plan/L1.svg`)).text();
+  const svg = await (await fetch(`${url}/plan/L1.svg?token=${m?.[2]}`)).text();
   ok(svg.includes("Be Vietnam Pro") && svg.includes("data:font/ttf"), "font Việt nhúng từ assets trong gói");
 }
 

@@ -13,6 +13,9 @@ applyDom(); // áp từ điển lên chuỗi tĩnh trong index.html trước khi
 /** Link chia sẻ chỉ-xem: /xem/<token> — server cưỡng chế, UI chỉ khóa cho tử tế. */
 const VIEW_TOKEN = location.pathname.startsWith("/xem/") ? location.pathname.split("/")[2] ?? null : null;
 const READONLY = VIEW_TOKEN != null;
+/** A1: token del propietario (?token= que abre editor_open) o del link compartido. */
+const AUTH_TOKEN = VIEW_TOKEN ?? new URLSearchParams(location.search).get("token");
+const AUTH_QUERY = AUTH_TOKEN ? `?token=${encodeURIComponent(AUTH_TOKEN)}` : "";
 
 const state = new AppState();
 const undoStack = new UndoStack();
@@ -98,6 +101,7 @@ const plan = new Plan2D(document.getElementById("paper-viewport")!, document.get
   onDragIds: (ids) => ws.send({ type: "presence", draggingIds: ids, tool: "V" }),
   onCommit: (op, label) => sendOps([op], label, "edit"),
   readonly: READONLY,
+  token: AUTH_TOKEN,
   onPlace: (assetId, at) => {
     const m = state.model;
     if (!m || !state.activeLevel) return;
@@ -134,7 +138,7 @@ const ws = new WsClient({
     syncUndoButtons();
     if (m.currentRevision > state.revision) ws.resync(); // mirror tụt hậu — xin snapshot tươi
   },
-}, VIEW_TOKEN ? `?token=${encodeURIComponent(VIEW_TOKEN)}` : "");
+}, AUTH_QUERY);
 
 state.on("snapshot", ({ model }) => {
   pending.length = 0;
@@ -358,7 +362,7 @@ if (READONLY) {
 } else {
   shareBtn.addEventListener("click", async () => {
     try {
-      const r = (await (await fetch("/share")).json()) as { url: string };
+      const r = (await (await fetch(`/share${AUTH_QUERY}`)).json()) as { url: string };
       await navigator.clipboard.writeText(r.url);
       ui.toast("user", t("share.copied", { url: r.url }));
     } catch {
