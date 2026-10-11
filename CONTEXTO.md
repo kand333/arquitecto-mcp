@@ -4,13 +4,13 @@
 
 ## Estado actual
 
-- **Etapa:** E0 completada (2026-10-11). E1 en curso.
+- **Etapa:** E1 completada (2026-10-11). Siguiente: E2, a la espera de la confirmación del usuario.
 - Al terminar cada etapa, actualiza esta sección. Registra la etapa completada, los commits y lo que quedó pendiente o falló.
 
 | Etapa | Estado | Commits / notas |
 |---|---|---|
 | E0 Línea base | completada | `6ec6023` import (tag `upstream-import`), `8a6e7a0` audit baseline; luego commit de `CONTEXTO.md` + `PROMPT-INICIAL.md` |
-| E1 Limpieza e identidad | pendiente | — |
+| E1 Limpieza e identidad | completada | `2af29c8` limpieza, `3b41efb` renombre, `e41e7c1` docs, `836cdb3` identidad |
 | E2 Seguridad | pendiente | — |
 | E3 Español y región Chile | pendiente | — |
 | E4 Rule pack OGUC | pendiente | — |
@@ -30,6 +30,19 @@
   - Los saltados son `live-e2e.test.ts`: falta el dist del editor (`pnpm build:web`, E5).
 
 - El usuario verificó E0. Se borró el tag `backup/pre-amend`. Se aprobó el ítem `DEPS` en E2.
+
+### Resultado E1
+
+- **Eliminado:** `haido.toml`, `docs/memory-pack/`, `README.vi.md`, `docs/01..13` vietnamitas, `publish.yml`, `setup.ts` y su test, y la rama `setup` de `cli/src/main.ts`.
+- **Renombrado:** sed ordenado sobre 92 archivos, más `git mv` del bin. Se reinstaló con `--frozen-lockfile` para crear los enlaces `@arquitecto/*`. Los snapshots SVG se renombraron con el mismo sed y siguen pasando.
+- **Sin renombrar a propósito:** URLs `lebac-svg/Atelier`, `docs/reference-en/`, `license-manifest.json` (procedencia), `rules/std-vn.json` (se borra en E3) y el bundle `packages/cli/web/`.
+- **Además del plan:**
+  - `package.json` raíz y `cli`: se quitaron `repository`/`homepage`/`bugs` del upstream; `cli` quedó `private: true` (no se publica en npm).
+  - `CONTRIBUTING.md` del upstream se movió a `docs/reference-en/`.
+- **LICENSE:** `Copyright (c) 2026 Kand` + aviso original de Bắc Lê; el texto MIT sigue en inglés.
+- `pnpm typecheck`: verde. `pnpm test`: 226 passed, 1 failed (PDF/Chromium), 17 skipped. Bajan de 229 a 226 por los 3 tests de `setup` eliminados.
+- **Propuesto para E5:** des-versionar `packages/cli/web/` y agregarlo a `.gitignore`, porque `build.mjs` lo regenera. Hoy es un bundle precompilado con marca «Atelier».
+- `docs/images/` y `docs/media/` se conservan; el README nuevo ya no los enlaza.
 
 ## Origen y objetivo
 
