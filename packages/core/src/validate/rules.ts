@@ -6,6 +6,7 @@ import lobanJson from "../../rules/loban.json" with { type: "json" };
 import plnJson from "../../rules/pln.json" with { type: "json" };
 import genericJson from "../../rules/std-generic.json" with { type: "json" };
 import ukJson from "../../rules/uk-approved-docs.json" with { type: "json" };
+import clJson from "../../rules/cl.json" with { type: "json" };
 
 export type RuleSource = { vanBan?: string; dieu?: string; verified: boolean };
 
@@ -91,6 +92,8 @@ export function listPacks(): RulePack[] {
 registerPack(toPack(genericJson as PackJson));
 // UK Approved Documents (P9) — pack region thật đầu tiên ngoài VN.
 registerPack(toPack(ukJson as PackJson));
+// Chile — OGUC (E4 MVP): citas y estado de validación en docs/oguc-sources.md.
+registerPack(toPack(clJson as PackJson));
 
 /* ── Region (P9 — doc 12): đơn vị hiển thị + bộ pack mặc định + tiền tệ ── */
 
@@ -139,6 +142,14 @@ registerRegion({
   title: "United Kingdom (England)",
   units: "metric",
   packs: ["uk-approved-docs"],
+});
+
+// Chile — sin currency hasta la tabla CLP/UF (E4b): el presupuesto entrega solo cantidades.
+registerRegion({
+  id: "cl",
+  title: "Chile",
+  units: "metric",
+  packs: ["cl-oguc"],
 });
 
 export const ALL_RULES: RuleDef[] = BUILTIN_PACKS.flatMap((p) => p.rules);

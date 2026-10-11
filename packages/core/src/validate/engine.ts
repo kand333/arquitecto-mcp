@@ -7,6 +7,7 @@ import { geo01, geo02, geo03, geo04, geo05, geo06, geo07, geo08 } from "./evalua
 import { std01, std02, std03, std04, std05, std06, std08, std09, std10, std11 } from "./evaluators-std.js";
 import { pln01, pln02, pln03, pln04, pln05, pln06, pln07 } from "./evaluators-pln.js";
 import { lbb01, lbb02, lbb04 } from "./evaluators-lbb.js";
+import { clAlt01, clVen01 } from "./evaluators-cl.js";
 
 type Evaluator = (p: Project, def: RuleDef) => Finding[];
 
@@ -39,6 +40,8 @@ const EVALUATORS: Record<string, Evaluator> = {
   "LBB-01": lbb01,
   "LBB-02": lbb02,
   "LBB-04": lbb04,
+  "CL-ALT-01": clAlt01,
+  "CL-VEN-01": clVen01,
   // LBB-03 được phát từ bên trong LBB-01/02/04 (gợi ý số đẹp đi kèm phát hiện xấu)
 };
 

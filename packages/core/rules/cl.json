@@ -1,0 +1,46 @@
+{
+  "pack": {
+    "id": "cl-oguc",
+    "title": "Chile — OGUC (MVP vivienda)",
+    "kind": "standard",
+    "region": "cl",
+    "standard": "Ordenanza General de Urbanismo y Construcciones, D.S. N°47/1992 MINVU, texto actualizado por D.S. N°5 (D.O. 22-05-2026). Fuentes y citas: docs/oguc-sources.md"
+  },
+  "rules": [
+    {
+      "id": "CL-ALT-01",
+      "title": "Altura mínima de piso a cielo en locales habitables",
+      "severity": "error",
+      "evaluator": "CL-ALT-01",
+      "params": { "min": 2300 },
+      "source": { "vanBan": "OGUC — D.S. N°47/1992 MINVU (texto al D.O. 22-05-2026)", "dieu": "4.1.1", "verified": false },
+      "message": "Local habitable {ten} ({room}) en {level}: altura libre {clear}mm, menor que {min}mm (OGUC 4.1.1, sin validar).",
+      "note": "Altura aproximada desde el modelo (altura de piso − espesor de la losa superior); no modela «obra terminada» ni las excepciones bajo vigas o techumbre inclinada."
+    },
+    {
+      "id": "CL-VEN-01",
+      "title": "Al menos una ventana al exterior en locales habitables",
+      "severity": "error",
+      "evaluator": "CL-VEN-01",
+      "source": { "vanBan": "OGUC — D.S. N°47/1992 MINVU (texto al D.O. 22-05-2026)", "dieu": "4.1.2", "verified": false },
+      "message": "Local habitable {ten} ({room}) sin ventana que dé aire y luz del exterior (OGUC 4.1.2, sin validar).",
+      "note": "Cuenta ventanas hacia el exterior del deslinde, un patio dentro del sitio o un patio de luz. El modelo no distingue ventanas fijas selladas (excepción del mismo artículo, no aplicable a dormitorios)."
+    },
+    {
+      "id": "CL-VEN-02",
+      "title": "Distancia libre de 1,5 m frente a la ventana de dormitorios",
+      "severity": "error",
+      "status": "planned",
+      "params": { "min": 1500 },
+      "source": { "vanBan": "OGUC — D.S. N°47/1992 MINVU (texto al D.O. 22-05-2026)", "dieu": "4.1.2", "verified": false },
+      "message": "Dormitorio {ten} ({room}): distancia libre frente a la ventana {dist}mm, menor que {min}mm (OGUC 4.1.2, sin validar).",
+      "note": "PENDIENTE: no se ejecuta. El modelo no tiene datos de construcciones vecinas para medir la distancia libre."
+    },
+    {
+      "id": "CL-INDET",
+      "title": "Regla no evaluable con los datos del modelo",
+      "severity": "info",
+      "message": "Indeterminado — {regla} en {ten} ({room}): {motivo}. No se declara cumplimiento."
+    }
+  ]
+}

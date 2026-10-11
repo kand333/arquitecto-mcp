@@ -99,7 +99,7 @@ export function std04(p: Project, def: RuleDef): Finding[] {
  * không thuộc phòng nào và ngoài sàn (sân/vườn của nhà lùi ranh). Dùng chung
  * cho STD-05 (phân loại cửa chính) và STD-09 (lấy sáng).
  */
-function isOutdoorPoint(p: Project, levelId: string, pt: Point): boolean {
+export function isOutdoorPoint(p: Project, levelId: string, pt: Point): boolean {
   if (!pointInPolygon(pt, p.site.boundary)) return true;
   if (roomsAtPoint(p, levelId, pt).length > 0) return false;
   const slab = floorSlabOf(p, levelId);
