@@ -258,7 +258,7 @@ describe.skipIf(!hasDist)("E2E editor thật (chromium headless)", () => {
     const nBefore = store.current.furniture.length;
     await page.click("#tool-furniture");
     expect(await page.$eval("#catalog-panel", (el) => (el as HTMLElement).hidden)).toBe(false);
-    await page.fill("#catalog-panel .cat-search", "xe máy tay ga");
+    await page.fill("#catalog-panel .cat-search", "scooter");
     await page.click("#catalog-panel .cat-item");
 
     // hai điểm trống trong hành lang L1 (model ~[720, 8200] và [720, 9400])

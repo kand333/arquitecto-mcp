@@ -4,7 +4,7 @@ text{font-family:'Be Vietnam Pro','Segoe UI',Arial,sans-serif;fill:#000;stroke:n
 .b{font-weight:700}
 </style>
 <rect width="420" height="297" fill="#ffffff"/>
-<g id="layer-TRUC" data-layer="TRUC">
+<g id="layer-EJES" data-layer="EJES">
 <line data-id="1" x1="172.2" y1="76.5" x2="172.2" y2="72.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 1.5 1 1.5"/>
 <circle data-id="1" cx="172.2" cy="68.5" r="4" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
 <text data-id="1" x="172.2" y="68.5" font-size="3.2" text-anchor="middle" dominant-baseline="middle">1</text>
@@ -12,11 +12,11 @@ text{font-family:'Be Vietnam Pro','Segoe UI',Arial,sans-serif;fill:#000;stroke:n
 <circle data-id="2" cx="247.8" cy="68.5" r="4" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
 <text data-id="2" x="247.8" y="68.5" font-size="3.2" text-anchor="middle" dominant-baseline="middle">2</text>
 </g>
-<g id="layer-TUONG-CAT" data-layer="TUONG-CAT">
+<g id="layer-MUROS-CORTE" data-layer="MUROS-CORTE">
 <polygon points="170,218.5 250,218.5 250,78.5 170,78.5" fill="none" stroke="#000" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
 <line x1="162" y1="218.5" x2="258" y2="218.5" stroke="#000" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"/>
 </g>
-<g id="layer-TUONG-THAY" data-layer="TUONG-THAY">
+<g id="layer-MUROS-VISTA" data-layer="MUROS-VISTA">
 <line x1="162" y1="218.5" x2="160.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 <line x1="165" y1="218.5" x2="163.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 <line x1="168" y1="218.5" x2="166.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
@@ -51,7 +51,7 @@ text{font-family:'Be Vietnam Pro','Segoe UI',Arial,sans-serif;fill:#000;stroke:n
 <line x1="255" y1="218.5" x2="253.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 <line x1="258" y1="218.5" x2="256.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 </g>
-<g id="layer-CUA" data-layer="CUA">
+<g id="layer-VANOS" data-layer="VANOS">
 <polygon data-id="D1" points="210,218.5 242.4,218.5 242.4,171.3 210,171.3" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
 <polygon data-id="D1" points="211,217.5 241.4,217.5 241.4,172.3 211,172.3" fill="none" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 <line data-id="D1" x1="226.2" y1="217.5" x2="226.2" y2="172.3" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
@@ -65,7 +65,7 @@ text{font-family:'Be Vietnam Pro','Segoe UI',Arial,sans-serif;fill:#000;stroke:n
 <line data-id="S3" x1="210" y1="127.5" x2="210" y2="101.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 <text data-id="S3" x="210" y="114.5" font-size="2.2" text-anchor="middle" dominant-baseline="middle">S3</text>
 </g>
-<g id="layer-DIM" data-layer="DIM">
+<g id="layer-COTAS" data-layer="COTAS">
 <line x1="162" y1="218.5" x2="162" y2="78.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 <line x1="168.5" y1="218.5" x2="160.8" y2="218.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 <line x1="160.9" y1="219.6" x2="163.1" y2="217.4" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
@@ -82,7 +82,7 @@ text{font-family:'Be Vietnam Pro','Segoe UI',Arial,sans-serif;fill:#000;stroke:n
 <line x1="154.9" y1="79.6" x2="157.1" y2="77.4" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="155" y="148.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 155 148.5)">7000</text>
 </g>
-<g id="layer-TEXT" data-layer="TEXT">
+<g id="layer-TEXTOS" data-layer="TEXTOS">
 <polygon points="252.6,216.9 255.4,216.9 254,218.5" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="255.8" y="215.9" font-size="2.5" text-anchor="start" dominant-baseline="middle">±0.000</text>
 <polygon points="252.6,144.9 255.4,144.9 254,146.5" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
@@ -90,7 +90,7 @@ text{font-family:'Be Vietnam Pro','Segoe UI',Arial,sans-serif;fill:#000;stroke:n
 <polygon points="252.6,76.9 255.4,76.9 254,78.5" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="255.8" y="75.9" font-size="2.5" text-anchor="start" dominant-baseline="middle">+7.000</text>
 </g>
-<g id="layer-KHUNG" data-layer="KHUNG">
+<g id="layer-VINETA" data-layer="VINETA">
 <polygon points="7,7 413,7 413,290 7,290" fill="none" stroke="#000" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"/>
 <polygon points="263,248 413,248 413,290 263,290" fill="none" stroke="#000" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"/>
 <line x1="263" y1="260" x2="413" y2="260" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
@@ -98,13 +98,13 @@ text{font-family:'Be Vietnam Pro','Segoe UI',Arial,sans-serif;fill:#000;stroke:n
 <line x1="263" y1="280" x2="413" y2="280" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
 <line x1="367" y1="248" x2="367" y2="290" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="266" y="255.6" font-size="3.4" text-anchor="start" dominant-baseline="middle" class="b">CASA DE PRUEBA 4×16 M — 2 PISOS, 3 DORMITORIOS</text>
-<text x="370" y="255.6" font-size="3.4" text-anchor="start" dominant-baseline="middle" class="b">KT-03</text>
-<text x="266" y="266.6" font-size="3" text-anchor="start" dominant-baseline="middle" class="b">MẶT ĐỨNG CHÍNH</text>
-<text x="370" y="266.6" font-size="2.8" text-anchor="start" dominant-baseline="middle">TỶ LỆ 1:50</text>
-<text x="266" y="276.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">Thiết kế: Arquitecto AI</text>
-<text x="370" y="276.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">Ngày: 13/07/2026</text>
-<text x="266" y="286.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">Kiểm: ................</text>
-<text x="370" y="286.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">arquitecto/0.1</text>
-<text x="10" y="284.6" font-size="2" text-anchor="start" dominant-baseline="middle">Bản vẽ concept — không thay thế hồ sơ thiết kế có chữ ký KTS hành nghề.</text>
+<text x="370" y="255.6" font-size="3.4" text-anchor="start" dominant-baseline="middle" class="b">ARQ-03</text>
+<text x="266" y="266.6" font-size="3" text-anchor="start" dominant-baseline="middle" class="b">ELEVACIÓN PRINCIPAL</text>
+<text x="370" y="266.6" font-size="2.8" text-anchor="start" dominant-baseline="middle">ESCALA 1:50</text>
+<text x="266" y="276.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">Arquitecto (nombre y firma): ....................................</text>
+<text x="370" y="276.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">Fecha: 13/07/2026</text>
+<text x="266" y="286.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">Propietario (nombre y firma): ..................................</text>
+<text x="370" y="286.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">Dibujo: Arquitecto AI</text>
+<text x="10" y="284.6" font-size="2" text-anchor="start" dominant-baseline="middle">Anteproyecto de referencia: no reemplaza los planos firmados por el arquitecto y el propietario (OGUC art. 1.2.2).</text>
 </g>
 </svg>

@@ -6,7 +6,7 @@
     "region": "uk",
     "standard": "UK Approved Documents K (stairs), M (access) — Open Government Licence; Nationally Described Space Standard (bedroom areas)"
   },
-  "ghi_chu": "Pack region đầu tiên ngoài VN (P9 — chọn theo Phụ lục A doc 12: toàn bộ văn bản MỞ dưới OGL, tải được từ gov.uk/government/collections/approved-documents). MỌI con số đang verified:false — đặt theo trí nhớ chuẩn ngành, CHƯA đối chiếu bản PDF gốc; contributor UK xác nhận từng rule theo docs/13 rồi mới bật verified. Bản vẽ tự chú thích ⚠ cho tới lúc đó.",
+  "ghi_chu": "Pack de una segunda región, usado solo en tests (P9). Textos abiertos bajo OGL en gov.uk/government/collections/approved-documents. TODAS las cifras están en verified:false: no se han cotejado con los PDF oficiales. Los planos llevan la nota ⚠ mientras tanto.",
   "rules": [
     {
       "id": "UK-AREA-01",
@@ -15,7 +15,7 @@
       "evaluator": "STD-01",
       "params": { "ngu_don": 7.5, "ngu_doi": 11.5, "khach": 0, "bep_an": 0, "wc": 0, "kho": 0 },
       "source": {
-        "vanBan": "Nationally Described Space Standard (technical housing standards) — single bedroom 7.5m², double 11.5m². CHƯA đối chiếu bản gốc; NDSS chỉ bắt buộc nơi local plan áp dụng",
+        "vanBan": "Nationally Described Space Standard (technical housing standards) — single bedroom 7.5m², double 11.5m². SIN cotejar con el texto oficial; NDSS solo es obligatorio donde lo adopta el local plan",
         "verified": false
       },
       "message": "Bedroom {ten} ({room}) is {area}m² — below the NDSS minimum of {min}m² ({loai})."
@@ -27,7 +27,7 @@
       "evaluator": "STD-04",
       "params": { "min": 900 },
       "source": {
-        "vanBan": "Approved Document M vol.1 (access within dwellings) — corridor width. CHƯA đối chiếu bản gốc (M4 có ngoại lệ cục bộ 750/775)",
+        "vanBan": "Approved Document M vol.1 (access within dwellings) — corridor width. SIN cotejar con el texto oficial (M4 tiene excepciones locales 750/775)",
         "verified": false
       },
       "message": "Corridor {ten} ({room}) is {width}mm wide — below the {min}mm minimum."
@@ -39,7 +39,7 @@
       "evaluator": "STD-05",
       "params": { "chinh": 775, "chinh_khuyen": 838, "phong": 750, "wc": 700 },
       "source": {
-        "vanBan": "Approved Document M vol.1 — clear opening widths (M4(1) visitable dwellings). CHƯA đối chiếu; lưu ý model đo Ô CHỜ, clear width thật nhỏ hơn ~60-80mm tùy khuôn",
+        "vanBan": "Approved Document M vol.1 — clear opening widths (M4(1) visitable dwellings). SIN cotejar; ojo: el modelo mide el VANO, el ancho libre real es ~60-80 mm menor según el marco",
         "verified": false
       },
       "message": "Door {opening} ({loai}) is {width}mm — below the {min}mm minimum."
@@ -60,7 +60,7 @@
         "buoc_max": 700
       },
       "source": {
-        "vanBan": "Approved Document K — private stair: rise 150–220, going ≥220, 2R+G 550–700. CHƯA đối chiếu bản gốc; Part K không đặt min flight width cho private stair — 800 là khuyến nghị thực hành",
+        "vanBan": "Approved Document K — private stair: rise 150–220, going ≥220, 2R+G 550–700. SIN cotejar con el texto oficial; Part K no fija ancho mínimo de tramo en escaleras privadas: 800 es una recomendación de práctica",
         "verified": false
       },
       "message": "Stair {stair}: {detail}."
@@ -71,7 +71,7 @@
       "severity": "warn",
       "evaluator": "STD-09",
       "source": {
-        "vanBan": "Approved Document F/O (ventilation, overheating) — thực hành thiết kế; CHƯA đối chiếu điều khoản định lượng",
+        "vanBan": "Approved Document F/O (ventilation, overheating) — práctica de diseño; SIN cotejar las cláusulas cuantitativas",
         "verified": false
       },
       "message": "Room {ten} ({room}) has no window or skylight for natural light."

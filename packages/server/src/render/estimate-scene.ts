@@ -40,82 +40,82 @@ export function buildEstimateScene(p: Project, opts: EstimateOptions = {}): Esti
 
   // ── bảng 1: diện tích quy đổi ─────────────────────────────
   const areaCols: Col[] = [
-    { w: 64, label: "Hạng mục" },
-    { w: 28, label: "DT (m²)", anchor: "end" },
-    { w: 22, label: "Hệ số", anchor: "middle" },
-    { w: 32, label: "Quy đổi (m²)", anchor: "end" },
+    { w: 64, label: "Ítem" },
+    { w: 28, label: "Sup. (m²)", anchor: "end" },
+    { w: 22, label: "Coef.", anchor: "middle" },
+    { w: 32, label: "Equivalente (m²)", anchor: "end" },
   ];
   const areaRows = q.dien_tich.map((l) => ({
-    cells: [l.uoc_le ? `${l.label} (ước lệ)` : l.label, l.dien_tich_m2.toFixed(1), `× ${l.he_so}`, l.quy_doi_m2.toFixed(1)],
+    cells: [l.uoc_le ? `${l.label} (estimada)` : l.label, l.dien_tich_m2.toFixed(1), `× ${l.he_so}`, l.quy_doi_m2.toFixed(1)],
   }));
-  areaRows.push({ cells: ["TỔNG DIỆN TÍCH QUY ĐỔI", null as never, null as never, q.tong_quy_doi_m2.toFixed(1)], bold: true } as never);
-  const yArea = drawTable(push, 16, 16, "DIỆN TÍCH TÍNH PHÍ", areaCols, areaRows);
+  areaRows.push({ cells: ["SUPERFICIE EQUIVALENTE TOTAL", null as never, null as never, q.tong_quy_doi_m2.toFixed(1)], bold: true } as never);
+  const yArea = drawTable(push, 16, 16, "SUPERFICIE PARA PRESUPUESTO", areaCols, areaRows);
 
   // ── bảng 2: khối lượng tham khảo ──────────────────────────
   const qtyCols: Col[] = [
-    { w: 74, label: "Khối lượng tham khảo" },
-    { w: 36, label: "Giá trị", anchor: "end" },
-    { w: 36, label: "Đơn vị" },
+    { w: 74, label: "Cantidad de referencia" },
+    { w: 36, label: "Valor", anchor: "end" },
+    { w: 36, label: "Unidad" },
   ];
-  drawTable(push, 16, yArea + 10, "KHỐI LƯỢNG THAM KHẢO (đối chiếu báo giá thầu)", qtyCols, [
-    { cells: ["Tường xây (đã trừ ô chờ cửa)", q.tuong_xay_m2.toFixed(1), "m²"] },
-    { cells: ["Cửa đi + cửa sổ", `${q.cua_bo} bộ · ${q.cua_m2.toFixed(1)}`, "m²"] },
-    { cells: ["Bậc thang", String(q.bac_thang), "bậc"] },
-    { cells: ["Sàn sử dụng (trừ ô trống)", q.san_thuc_m2.toFixed(1), "m²"] },
+  drawTable(push, 16, yArea + 10, "CANTIDADES DE REFERENCIA (contrastar con cotizaciones)", qtyCols, [
+    { cells: ["Muros (descontados los vanos)", q.tuong_xay_m2.toFixed(1), "m²"] },
+    { cells: ["Puertas + ventanas", `${q.cua_bo} u · ${q.cua_m2.toFixed(1)}`, "m²"] },
+    { cells: ["Peldaños", String(q.bac_thang), "peldaños"] },
+    { cells: ["Losas útiles (descontados los vacíos)", q.san_thuc_m2.toFixed(1), "m²"] },
   ]);
 
   // ── bảng 3: chi phí ───────────────────────────────────────
   const costCols: Col[] = [
-    { w: 96, label: "Chi phí" },
-    { w: 40, label: `Đơn giá (${tabla.currency.symbol}/m²)`, anchor: "end" },
-    { w: 44, label: `Thành tiền (${tabla.currency.symbol})`, anchor: "end" },
+    { w: 96, label: "Partida" },
+    { w: 40, label: `Precio unitario (${tabla.currency.symbol}/m²)`, anchor: "end" },
+    { w: 44, label: `Monto (${tabla.currency.symbol})`, anchor: "end" },
   ];
   // total != null ⇒ todos los ítems tienen precio y monto
   const costRows = e.items.map((i) => ({
     cells: [i.label, num(i.precio_m2!), num(i.monto!)],
   }));
-  costRows.push({ cells: [`TỔNG DỰ TOÁN (${formatMonto(total, tabla)})`, null as never, num(total)], bold: true } as never);
+  costRows.push({ cells: [`TOTAL ESTIMADO (${formatMonto(total, tabla)})`, null as never, num(total)], bold: true } as never);
   if (e.ngan_sach) {
     const ns = e.ngan_sach;
     const so =
       ns.monto == null || ns.diferencia == null
-        ? `Ngân sách brief: "${ns.text}" — chưa quy được ra số`
+        ? `Presupuesto del brief: "${ns.text}" — no se pudo convertir a un monto`
         : ns.diferencia >= 0
-          ? `Ngân sách brief ${formatMonto(ns.monto, tabla)} — CÒN DƯ ~${formatMonto(ns.diferencia, tabla)}`
-          : `Ngân sách brief ${formatMonto(ns.monto, tabla)} — VƯỢT ~${formatMonto(-ns.diferencia, tabla)}`;
+          ? `Presupuesto del brief ${formatMonto(ns.monto, tabla)} — SOBRAN ~${formatMonto(ns.diferencia, tabla)}`
+          : `Presupuesto del brief ${formatMonto(ns.monto, tabla)} — SE EXCEDE ~${formatMonto(-ns.diferencia, tabla)}`;
     costRows.push({ cells: [so, null as never, null as never], bold: true } as never);
   }
-  const yCost = drawTable(push, 16 + 146 + 14, 16, `CHI PHÍ SƠ BỘ — ${tabla.don_gia_m2.hoan_thien[e.muc]?.label ?? e.muc}`, costCols, costRows);
+  const yCost = drawTable(push, 16 + 146 + 14, 16, `COSTO PRELIMINAR — ${tabla.don_gia_m2.hoan_thien[e.muc]?.label ?? e.muc}`, costCols, costRows);
 
   // ── ghi chú ───────────────────────────────────────────────
   let gy = yCost + 8;
-  push("KHUNG", { kind: "text", at: [16 + 146 + 14, gy], text: "Ghi chú:", size: 2.6, bold: true }, undefined, "paper");
+  push("VINETA", { kind: "text", at: [16 + 146 + 14, gy], text: "Notas:", size: 2.6, bold: true }, undefined, "paper");
   gy += 4.5;
   const notes = [
     ...e.ghi_chu,
-    "Dự toán sơ bộ mức concept — chốt chi phí bằng báo giá thầu có khối lượng chi tiết.",
-    `Bảng đơn giá phiên bản ${tabla.version} — đặt bảng địa phương tại rules/don-gia.json trong thư mục dự án.`,
+    "Presupuesto preliminar de anteproyecto: el costo se cierra con cotizaciones de contratistas con cubicación detallada.",
+    `Tabla de precios ${tabla.version}: la tabla local va en rules/don-gia.json dentro de la carpeta del proyecto.`,
   ];
   for (const n of notes) {
-    push("KHUNG", { kind: "text", at: [16 + 146 + 14, gy], text: `• ${n}`, size: 2.3 }, undefined, "paper");
+    push("VINETA", { kind: "text", at: [16 + 146 + 14, gy], text: `• ${n}`, size: 2.3 }, undefined, "paper");
     gy += 4;
   }
 
-  push("KHUNG", {
+  push("VINETA", {
     kind: "text", at: [16, PAPER.h - 60], size: 2.4,
-    text: "Diện tích quy đổi theo cách tính phổ thông nhà phố; ô trống nhỏ hơn ngưỡng vẫn tính đủ diện tích.",
+    text: "Superficie equivalente según los coeficientes de la tabla de precios; los vacíos menores que el umbral se cuentan como superficie completa.",
   }, undefined, "paper");
 
   drawSheetFrame(push, {
     unverified: unverifiedRules(p).length > 0,
     projectName: p.meta.name,
     app: p.meta.app,
-    title: "DỰ TOÁN SƠ BỘ",
-    sheetNo: opts.sheetNo ?? "KT-06",
+    title: "PRESUPUESTO PRELIMINAR",
+    sheetNo: opts.sheetNo ?? "ARQ-06",
     scaleLabel: "—",
     ...(opts.date ? { date: opts.date } : {}),
     ...(opts.designer ? { designer: opts.designer } : {}),
   });
 
-  return { items, tf, meta: { title: "DỰ TOÁN SƠ BỘ", scaleLabel: "—" } };
+  return { items, tf, meta: { title: "PRESUPUESTO PRELIMINAR", scaleLabel: "—" } };
 }

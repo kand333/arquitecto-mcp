@@ -19,19 +19,19 @@ export type ScheduleOptions = { date?: string; designer?: string; sheetNo?: stri
 type Push = (layer: LayerName, prim: Prim, dataId?: string, space?: "model" | "paper") => void;
 
 const USE_LABEL: Record<RoomUse, string> = {
-  khach: "Phòng khách",
-  "bep-an": "Bếp + ăn",
-  ngu: "Phòng ngủ",
-  wc: "Vệ sinh",
-  tho: "Phòng thờ",
-  "lam-viec": "Làm việc",
-  gara: "Gara",
-  "hanh-lang": "Hành lang",
-  "cau-thang": "Cầu thang",
-  san: "Sân",
-  "gieng-troi": "Giếng trời",
-  kho: "Kho",
-  "ban-cong": "Ban công",
+  khach: "Living",
+  "bep-an": "Cocina + comedor",
+  ngu: "Dormitorio",
+  wc: "Baño",
+  tho: "Oratorio",
+  "lam-viec": "Escritorio",
+  gara: "Estacionamiento",
+  "hanh-lang": "Pasillo",
+  "cau-thang": "Escalera",
+  san: "Patio",
+  "gieng-troi": "Patio de luz",
+  kho: "Bodega",
+  "ban-cong": "Balcón",
 };
 
 export type Col = { w: number; label: string; anchor?: "start" | "middle" | "end" };
@@ -49,15 +49,15 @@ export function drawTable(
   const rowH = 7;
   const headH = 8;
 
-  push("KHUNG", { kind: "text", at: [x, y + 4], text: title, size: 3.5, bold: true }, undefined, "paper");
+  push("VINETA", { kind: "text", at: [x, y + 4], text: title, size: 3.5, bold: true }, undefined, "paper");
   let top = y + 8;
 
   // header
-  push("KHUNG", { kind: "polygon", pts: [[x, top], [x + width, top], [x + width, top + headH], [x, top + headH]], fill: "#eceae4", weight: W.strong }, undefined, "paper");
+  push("VINETA", { kind: "polygon", pts: [[x, top], [x + width, top], [x + width, top + headH], [x, top + headH]], fill: "#eceae4", weight: W.strong }, undefined, "paper");
   let cx = x;
   for (const c of cols) {
     const tx = c.anchor === "middle" ? cx + c.w / 2 : c.anchor === "end" ? cx + c.w - 2 : cx + 2;
-    push("KHUNG", { kind: "text", at: [tx, top + headH / 2 + 0.9], text: c.label, size: 2.5, bold: true, anchor: c.anchor ?? "start" }, undefined, "paper");
+    push("VINETA", { kind: "text", at: [tx, top + headH / 2 + 0.9], text: c.label, size: 2.5, bold: true, anchor: c.anchor ?? "start" }, undefined, "paper");
     cx += c.w;
   }
 
@@ -70,7 +70,7 @@ export function drawTable(
       const c = cols[i]!;
       if (cell != null) {
         const tx = c.anchor === "middle" ? cxx + c.w / 2 : c.anchor === "end" ? cxx + c.w - 2 : cxx + 2;
-        push("KHUNG", {
+        push("VINETA", {
           kind: "text", at: [tx, ry + rowH / 2 + 0.9], text: cell, size: 2.5,
           ...(row.bold ? { bold: true } : {}), anchor: c.anchor ?? "start",
         }, undefined, "paper");
@@ -78,15 +78,15 @@ export function drawTable(
       cxx += c.w;
     }
     ry += rowH;
-    push("KHUNG", { kind: "line", a: [x, ry], b: [x + width, ry], weight: row.bold ? W.strong : W.hair }, undefined, "paper");
+    push("VINETA", { kind: "line", a: [x, ry], b: [x + width, ry], weight: row.bold ? W.strong : W.hair }, undefined, "paper");
   }
 
   // khung dọc
-  push("KHUNG", { kind: "polyline", pts: [[x, top], [x + width, top], [x + width, ry], [x, ry]], close: true, weight: W.strong }, undefined, "paper");
+  push("VINETA", { kind: "polyline", pts: [[x, top], [x + width, top], [x + width, ry], [x, ry]], close: true, weight: W.strong }, undefined, "paper");
   cx = x;
   for (const c of cols.slice(0, -1)) {
     cx += c.w;
-    push("KHUNG", { kind: "line", a: [cx, top], b: [cx, ry], weight: W.hair }, undefined, "paper");
+    push("VINETA", { kind: "line", a: [cx, top], b: [cx, ry], weight: W.hair }, undefined, "paper");
   }
   return ry;
 }
@@ -103,11 +103,11 @@ export function buildScheduleScene(p: Project, opts: ScheduleOptions = {}): Sche
 
   // ── bảng phòng ────────────────────────────────────────────
   const roomCols: Col[] = [
-    { w: 12, label: "TT", anchor: "middle" },
-    { w: 18, label: "Tầng", anchor: "middle" },
-    { w: 34, label: "Ký hiệu" },
-    { w: 52, label: "Phòng" },
-    { w: 30, label: "DT (m²)", anchor: "end" },
+    { w: 12, label: "N°", anchor: "middle" },
+    { w: 18, label: "Piso", anchor: "middle" },
+    { w: 34, label: "Código" },
+    { w: 52, label: "Recinto" },
+    { w: 30, label: "Sup. (m²)", anchor: "end" },
   ];
   const roomRows: Array<{ cells: Array<string | null>; bold?: boolean }> = [];
   let tt = 0;
@@ -121,11 +121,11 @@ export function buildScheduleScene(p: Project, opts: ScheduleOptions = {}): Sche
       roomRows.push({ cells: [String(tt), lv.id, r.id, r.name || USE_LABEL[r.use], a.toFixed(1)] });
     }
     total += sub;
-    roomRows.push({ cells: [null, null, null, `Cộng ${lv.name.toLowerCase()}`, sub.toFixed(1)], bold: true });
+    roomRows.push({ cells: [null, null, null, `Subtotal ${lv.name.toLowerCase()}`, sub.toFixed(1)], bold: true });
   }
-  roomRows.push({ cells: [null, null, null, "TỔNG DIỆN TÍCH PHÒNG", total.toFixed(1)], bold: true });
+  roomRows.push({ cells: [null, null, null, "SUPERFICIE TOTAL DE RECINTOS", total.toFixed(1)], bold: true });
 
-  const yRooms = drawTable(push, 16, 16, "THỐNG KÊ PHÒNG", roomCols, roomRows);
+  const yRooms = drawTable(push, 16, 16, "CUADRO DE RECINTOS", roomCols, roomRows);
 
   // ── bảng cửa: gộp theo loại + style + kích thước ──────────
   type Group = { ids: string[]; kind: string; style: string; width: number; height: number; levels: Set<string> };
@@ -140,19 +140,19 @@ export function buildScheduleScene(p: Project, opts: ScheduleOptions = {}): Sche
   }
 
   const doorCols: Col[] = [
-    { w: 30, label: "Ký hiệu" },
-    { w: 22, label: "Loại", anchor: "middle" },
-    { w: 42, label: "Kiểu" },
-    { w: 30, label: "R×C (mm)", anchor: "middle" },
-    { w: 12, label: "SL", anchor: "middle" },
-    { w: 20, label: "Tầng", anchor: "middle" },
+    { w: 30, label: "Código" },
+    { w: 22, label: "Tipo", anchor: "middle" },
+    { w: 42, label: "Modelo" },
+    { w: 30, label: "A×H (mm)", anchor: "middle" },
+    { w: 12, label: "Cant.", anchor: "middle" },
+    { w: 20, label: "Piso", anchor: "middle" },
   ];
   const doorRows = [...groups.values()]
     .sort((a, b) => a.ids[0]!.localeCompare(b.ids[0]!))
     .map((g) => ({
       cells: [
         g.ids.sort().join(", "),
-        g.kind === "door" ? "Cửa đi" : "Cửa sổ",
+        g.kind === "door" ? "Puerta" : "Ventana",
         p.styles.openings[g.style]?.label ?? g.style,
         `${g.width}×${g.height}`,
         String(g.ids.length),
@@ -160,28 +160,28 @@ export function buildScheduleScene(p: Project, opts: ScheduleOptions = {}): Sche
       ],
     }));
   doorRows.push({
-    cells: [null, null, null, "TỔNG", String(p.openings.length), null],
+    cells: [null, null, null, "TOTAL", String(p.openings.length), null],
     bold: true,
   } as never);
 
-  drawTable(push, 16 + 146 + 14, 16, "THỐNG KÊ CỬA", doorCols, doorRows);
+  drawTable(push, 16 + 146 + 14, 16, "CUADRO DE VANOS", doorCols, doorRows);
 
   // ghi chú
-  push("KHUNG", {
+  push("VINETA", {
     kind: "text", at: [16, PAPER.h - 60], size: 2.4,
-    text: "Diện tích tính theo lòng phòng (thông thủy); kích thước cửa là kích thước ô chờ.",
+    text: "Superficies medidas a cara interior de muros (superficie útil); las medidas de puertas y ventanas son las del vano.",
   }, undefined, "paper");
 
   drawSheetFrame(push, {
     unverified: unverifiedRules(p).length > 0,
     projectName: p.meta.name,
     app: p.meta.app,
-    title: "THỐNG KÊ PHÒNG & CỬA",
-    sheetNo: opts.sheetNo ?? "KT-05",
+    title: "CUADRO DE RECINTOS Y VANOS",
+    sheetNo: opts.sheetNo ?? "ARQ-05",
     scaleLabel: "—",
     ...(opts.date ? { date: opts.date } : {}),
     ...(opts.designer ? { designer: opts.designer } : {}),
   });
 
-  return { items, tf, meta: { title: "THỐNG KÊ PHÒNG & CỬA", scaleLabel: "—" } };
+  return { items, tf, meta: { title: "CUADRO DE RECINTOS Y VANOS", scaleLabel: "—" } };
 }

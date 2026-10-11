@@ -60,7 +60,7 @@ export function buildElevationScene(p: Project, opts: ElevationOptions = {}): El
 
   const facade = facadeWalls(p);
   if (facade.length === 0) {
-    throw new Error("Không tìm thấy tường mặt tiền (song song cạnh site.front, cách < 600mm) — kiểm tra site.front.");
+    throw new Error("No se encontró el muro de fachada (paralelo a site.front, a menos de 600 mm): revisa site.front.");
   }
 
   // phạm vi ngang theo tường mặt tiền, dọc theo cao các tầng có mặt tiền
@@ -104,13 +104,13 @@ export function buildElevationScene(p: Project, opts: ElevationOptions = {}): El
   };
 
   // ── khối nhà ──────────────────────────────────────────────
-  push("TUONG-CAT", { kind: "polyline", pts: [[u0, 0], [u1, 0], [u1, wallTop], [u0, wallTop]], close: true, weight: W.cut });
+  push("MUROS-CORTE", { kind: "polyline", pts: [[u0, 0], [u1, 0], [u1, wallTop], [u0, wallTop]], close: true, weight: W.cut });
 
   // ── mái dốc: chiếu các mặt mái lên (u, z) ─────────────────
   for (const { rf, g } of roofGeoms) {
     for (const face of g.faces) {
       const pts: Point[] = face.map((v) => [u([v[0], v[1]]), v[2]]);
-      push("MAI", { kind: "polyline", pts, close: true, weight: W.mid }, rf.id);
+      push("TECHUMBRE", { kind: "polyline", pts, close: true, weight: W.mid }, rf.id);
     }
   }
 
@@ -121,14 +121,14 @@ export function buildElevationScene(p: Project, opts: ElevationOptions = {}): El
     const pts: Point[] = [];
     for (let x = g0; x <= g1; x += mm(3)) pts.push([x, groundU(Math.max(u0, Math.min(u1, x)))]);
     pts.push([g1, groundU(u1)]);
-    push("TUONG-CAT", { kind: "polyline", pts, weight: W.frame });
+    push("MUROS-CORTE", { kind: "polyline", pts, weight: W.frame });
     for (const [x, z] of pts) {
-      push("TUONG-THAY", { kind: "line", a: [x, z], b: [x - mm(1.6), z - mm(1.6)], weight: W.hair });
+      push("MUROS-VISTA", { kind: "line", a: [x, z], b: [x - mm(1.6), z - mm(1.6)], weight: W.hair });
     }
   } else {
-    push("TUONG-CAT", { kind: "line", a: [g0, 0], b: [g1, 0], weight: W.frame });
+    push("MUROS-CORTE", { kind: "line", a: [g0, 0], b: [g1, 0], weight: W.frame });
     for (let x = g0; x <= g1; x += mm(3)) {
-      push("TUONG-THAY", { kind: "line", a: [x, 0], b: [x - mm(1.6), -mm(1.6)], weight: W.hair });
+      push("MUROS-VISTA", { kind: "line", a: [x, 0], b: [x - mm(1.6), -mm(1.6)], weight: W.hair });
     }
   }
 
@@ -153,14 +153,14 @@ export function buildElevationScene(p: Project, opts: ElevationOptions = {}): El
     unverified: unverifiedRules(p).length > 0,
     projectName: p.meta.name,
     app: p.meta.app,
-    title: "MẶT ĐỨNG CHÍNH",
-    sheetNo: opts.sheetNo ?? "KT-03",
+    title: "ELEVACIÓN PRINCIPAL",
+    sheetNo: opts.sheetNo ?? "ARQ-03",
     scaleLabel: `1:${S}`,
     ...(opts.date ? { date: opts.date } : {}),
     ...(opts.designer ? { designer: opts.designer } : {}),
   });
 
-  return { items, tf, meta: { title: "MẶT ĐỨNG CHÍNH", scaleLabel: `1:${S}` } };
+  return { items, tf, meta: { title: "ELEVACIÓN PRINCIPAL", scaleLabel: `1:${S}` } };
 }
 
 function drawOpeningFace(
@@ -175,27 +175,27 @@ function drawOpeningFace(
   const [x0, x1] = [Math.min(ua, ub), Math.max(ua, ub)];
   const z0 = level.elevation + o.sill;
   const z1 = z0 + o.height;
-  push("CUA", { kind: "polyline", pts: [[x0, z0], [x1, z0], [x1, z1], [x0, z1]], close: true, weight: W.mid }, o.id);
+  push("VANOS", { kind: "polyline", pts: [[x0, z0], [x1, z0], [x1, z1], [x0, z1]], close: true, weight: W.mid }, o.id);
   const inset = 50;
-  push("CUA", {
+  push("VANOS", {
     kind: "polyline",
     pts: [[x0 + inset, z0 + inset], [x1 - inset, z0 + inset], [x1 - inset, z1 - inset], [x0 + inset, z1 - inset]],
     close: true, weight: W.hair,
   }, o.id);
   const style = p.styles.openings[o.style];
   if (style?.leaf === "2-canh" || style?.leaf === "truot") {
-    push("CUA", { kind: "line", a: [(x0 + x1) / 2, z0 + inset], b: [(x0 + x1) / 2, z1 - inset], weight: W.hair }, o.id);
+    push("VANOS", { kind: "line", a: [(x0 + x1) / 2, z0 + inset], b: [(x0 + x1) / 2, z1 - inset], weight: W.hair }, o.id);
   }
-  push("CUA", { kind: "text", at: [(x0 + x1) / 2, (z0 + z1) / 2], text: o.id, size: 2.2, anchor: "middle" }, o.id);
+  push("VANOS", { kind: "text", at: [(x0 + x1) / 2, (z0 + z1) / 2], text: o.id, size: 2.2, anchor: "middle" }, o.id);
 }
 
 /** Ký hiệu cao độ ▽ + nhãn ±0.000 (đơn vị m, quy ước bản vẽ VN). */
 export function drawLevelMark(x: number, z: number, mm: (v: number) => number, push: Push): void {
   const s1: Point = [x - mm(1.4), z + mm(1.6)];
   const s2: Point = [x + mm(1.4), z + mm(1.6)];
-  push("TEXT", { kind: "polyline", pts: [s1, s2, [x, z]], close: true, weight: W.thin });
+  push("TEXTOS", { kind: "polyline", pts: [s1, s2, [x, z]], close: true, weight: W.thin });
   const label = z === 0 ? "±0.000" : `${z > 0 ? "+" : "−"}${(Math.abs(z) / 1000).toFixed(3)}`;
-  push("TEXT", { kind: "text", at: [x + mm(1.8), z + mm(2.6)], text: label, size: 2.5 });
+  push("TEXTOS", { kind: "text", at: [x + mm(1.8), z + mm(2.6)], text: label, size: 2.5 });
 }
 
 /** Chuỗi dim đứng (cao từng tầng) + chuỗi tổng — bên trái hình. */
@@ -207,16 +207,16 @@ export function drawVerticalDims(xEdge: number, zs: number[], mm: (v: number) =>
   for (const ch of chains) {
     if (ch.events.length < 2) continue;
     const x = xEdge - mm(ch.gap);
-    push("DIM", { kind: "line", a: [x, ch.events[0]!], b: [x, ch.events[ch.events.length - 1]!], weight: W.hair });
+    push("COTAS", { kind: "line", a: [x, ch.events[0]!], b: [x, ch.events[ch.events.length - 1]!], weight: W.hair });
     for (const z of ch.events) {
-      push("DIM", { kind: "line", a: [xEdge - mm(1.5), z], b: [x - mm(1.2), z], weight: W.hair });
-      dimTick(push, "DIM", [x, z], mm(1.1));
+      push("COTAS", { kind: "line", a: [xEdge - mm(1.5), z], b: [x - mm(1.2), z], weight: W.hair });
+      dimTick(push, "COTAS", [x, z], mm(1.1));
     }
     for (let i = 0; i + 1 < ch.events.length; i++) {
       const z0 = ch.events[i]!;
       const z1 = ch.events[i + 1]!;
       if (z1 - z0 < 1) continue;
-      push("DIM", {
+      push("COTAS", {
         kind: "text", at: [x - mm(1.0), (z0 + z1) / 2], text: String(Math.round(z1 - z0)), size: 2.5,
         anchor: "middle", along: { from: [x, z0], to: [x, z1] },
       });
@@ -245,8 +245,8 @@ function drawFacadeAxes(
     if (Math.abs(denom) < 1e-9) continue;
     const t = ((ax.offset - (ax.horizontal ? A[1] : A[0])) / denom);
     if (t < -1 || t > len + 1) continue;
-    push("TRUC", { kind: "line", a: [t, top + mm(2)], b: [t, zBub - r], weight: W.hair, dash: "6 1.5 1 1.5" }, ax.id);
-    push("TRUC", { kind: "circle", c: [t, zBub], r, weight: W.mid }, ax.id);
-    push("TRUC", { kind: "text", at: [t, zBub], text: ax.label ?? ax.id, size: 3.2, anchor: "middle" }, ax.id);
+    push("EJES", { kind: "line", a: [t, top + mm(2)], b: [t, zBub - r], weight: W.hair, dash: "6 1.5 1 1.5" }, ax.id);
+    push("EJES", { kind: "circle", c: [t, zBub], r, weight: W.mid }, ax.id);
+    push("EJES", { kind: "text", at: [t, zBub], text: ax.label ?? ax.id, size: 3.2, anchor: "middle" }, ax.id);
   }
 }

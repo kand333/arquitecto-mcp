@@ -52,6 +52,15 @@ La OGUC no fija estos números: los fija el **instrumento de planificación terr
 
 Por eso las reglas `CL-CIP-*` **comparan el modelo contra los valores que el usuario declara desde su CIP**: no traen números propios. Si un valor no se declaró, el resultado es **indeterminado** (`CL-INDET`), nunca «cumple». Reutilizan los evaluadores `PLN-*` del upstream y sus claves de datos (`brief.dat.quy_hoach.*`, `site.edges[].setback`).
 
+### Viñeta de las láminas (no es una regla)
+
+La OGUC **no fija un formato de viñeta**: el formato concreto (rol, dirección, comuna, etc.) lo pide cada DOM. Lo que sí dice, cotejado contra el PDF oficial:
+
+- Art. 1.2.2: «Los planos, especificaciones técnicas y demás documentos técnicos de los anteproyectos y proyectos deberán ser firmados por el o los profesionales competentes que los hubieren elaborado y por el propietario».
+- Art. 5.1.6 n°7: «Planos de arquitectura numerados».
+
+Por eso la viñeta de `export` lleva lámina numerada (`ARQ-NN`), contenido, escala, fecha, líneas de firma para el arquitecto y el propietario, y la nota «Anteproyecto de referencia: no reemplaza los planos firmados por el arquitecto y el propietario (OGUC art. 1.2.2)». No se evalúa como regla ni tiene `verified`.
+
 ## Temas pendientes sin fuente verificada (no codificados)
 
 No se encontró ni se cotejó un texto oficial aplicable a viviendas para estos temas, así que **no hay reglas** para ellos:

@@ -69,7 +69,7 @@ function subtractIntervals(a: Array<[number, number]>, b: Array<[number, number]
 export function buildSectionScene(p: Project, opts: SectionOptions = {}): SectionBuild {
   const cutX = sectionCutX(p);
   if (cutX == null) {
-    throw new Error("Model chưa có thang — mặt cắt A-A quy ước phải đi qua thang (doc 08).");
+    throw new Error("El modelo no tiene escalera: por convención el corte A-A pasa por la escalera.");
   }
 
   // ── gom hình học bị cắt / nhìn thấy ───────────────────────
@@ -150,7 +150,7 @@ export function buildSectionScene(p: Project, opts: SectionOptions = {}): Sectio
       top = Math.max(top, z);
     }
   }
-  if (!Number.isFinite(minU)) throw new Error("Mặt phẳng cắt không chạm tường/sàn nào — kiểm tra vị trí thang.");
+  if (!Number.isFinite(minU)) throw new Error("El plano de corte no intersecta muros ni losas: revisa la posición de la escalera.");
 
   // địa hình (P7): không khai terrain → đất phẳng z=0 y hệt cũ
   const hasTerrain = !!p.site.terrain?.elevations?.length;
@@ -173,17 +173,17 @@ export function buildSectionScene(p: Project, opts: SectionOptions = {}): Sectio
   // ── tường thấy phía sau (vẽ trước cho nằm dưới) ───────────
   for (const { wall, level, u0, u1 } of seenWalls) {
     const z1 = level.elevation + (wall.height ?? level.height);
-    push("TUONG-THAY", { kind: "polyline", pts: [[u0, level.elevation], [u1, level.elevation], [u1, z1], [u0, z1]], close: true, weight: W.thin }, wall.id);
+    push("MUROS-VISTA", { kind: "polyline", pts: [[u0, level.elevation], [u1, level.elevation], [u1, z1], [u0, z1]], close: true, weight: W.thin }, wall.id);
     for (const o of p.openings.filter((x) => x.wall === wall.id)) {
       const ua = pointOnWall(wall, o.offset)[1];
       const ub = pointOnWall(wall, o.offset + o.width)[1];
       const oz0 = level.elevation + o.sill;
-      push("CUA", {
+      push("VANOS", {
         kind: "polyline",
         pts: [[Math.min(ua, ub), oz0], [Math.max(ua, ub), oz0], [Math.max(ua, ub), oz0 + o.height], [Math.min(ua, ub), oz0 + o.height]],
         close: true, weight: W.hair,
       }, o.id);
-      push("CUA", { kind: "text", at: [(ua + ub) / 2, oz0 + o.height / 2], text: o.id, size: 2.2, anchor: "middle" }, o.id);
+      push("VANOS", { kind: "text", at: [(ua + ub) / 2, oz0 + o.height / 2], text: o.id, size: 2.2, anchor: "middle" }, o.id);
     }
   }
 
@@ -200,7 +200,7 @@ export function buildSectionScene(p: Project, opts: SectionOptions = {}): Sectio
       const a = zs[i]!;
       const b = zs[i + 1]!;
       if (b - a < 1) continue;
-      push("TUONG-CAT", {
+      push("MUROS-CORTE", {
         kind: "polygon",
         pts: [[u - half, a], [u + half, a], [u + half, b], [u - half, b]],
         fill: CUT_FILL[wall.kind],
@@ -211,7 +211,7 @@ export function buildSectionScene(p: Project, opts: SectionOptions = {}): Sectio
 
   // ── sàn/mái bị cắt ────────────────────────────────────────
   for (const b of slabBands) {
-    push("TUONG-CAT", {
+    push("MUROS-CORTE", {
       kind: "polygon",
       pts: [[b.u0, b.z0], [b.u1, b.z0], [b.u1, b.z1], [b.u0, b.z1]],
       fill: "#000000",
@@ -226,7 +226,7 @@ export function buildSectionScene(p: Project, opts: SectionOptions = {}): Sectio
       ...rc.pts,
       ...[...rc.pts].reverse().map(([uu, z]) => [uu, z - rc.drop] as Point),
     ];
-    push("TUONG-CAT", { kind: "polygon", pts: strip, fill: "#000000", weight: W.cut }, rc.id);
+    push("MUROS-CORTE", { kind: "polygon", pts: strip, fill: "#000000", weight: W.cut }, rc.id);
   }
 
   // ── đường đất + gạch chân (đất dốc theo terrain) ──────────
@@ -236,14 +236,14 @@ export function buildSectionScene(p: Project, opts: SectionOptions = {}): Sectio
     const pts: Point[] = [];
     for (let x = g0; x <= g1; x += mm(3)) pts.push([x, groundU(Math.max(minU, Math.min(maxU, x)))]);
     pts.push([g1, groundU(maxU)]);
-    push("TUONG-CAT", { kind: "polyline", pts, weight: W.frame });
+    push("MUROS-CORTE", { kind: "polyline", pts, weight: W.frame });
     for (const [x, z] of pts) {
-      push("TUONG-THAY", { kind: "line", a: [x, z], b: [x - mm(1.6), z - mm(1.6)], weight: W.hair });
+      push("MUROS-VISTA", { kind: "line", a: [x, z], b: [x - mm(1.6), z - mm(1.6)], weight: W.hair });
     }
   } else {
-    push("TUONG-CAT", { kind: "line", a: [g0, 0], b: [g1, 0], weight: W.frame });
+    push("MUROS-CORTE", { kind: "line", a: [g0, 0], b: [g1, 0], weight: W.frame });
     for (let x = g0; x <= g1; x += mm(3)) {
-      push("TUONG-THAY", { kind: "line", a: [x, 0], b: [x - mm(1.6), -mm(1.6)], weight: W.hair });
+      push("MUROS-VISTA", { kind: "line", a: [x, 0], b: [x - mm(1.6), -mm(1.6)], weight: W.hair });
     }
   }
 
@@ -256,23 +256,23 @@ export function buildSectionScene(p: Project, opts: SectionOptions = {}): Sectio
   const zBub = top + mm(10);
   for (const ax of p.axes.y) {
     if (ax.offset < minU - 1 || ax.offset > maxU + 1) continue;
-    push("TRUC", { kind: "line", a: [ax.offset, top + mm(2)], b: [ax.offset, zBub - r], weight: W.hair, dash: "6 1.5 1 1.5" }, ax.id);
-    push("TRUC", { kind: "circle", c: [ax.offset, zBub], r, weight: W.mid }, ax.id);
-    push("TRUC", { kind: "text", at: [ax.offset, zBub], text: ax.label ?? ax.id, size: 3.2, anchor: "middle" }, ax.id);
+    push("EJES", { kind: "line", a: [ax.offset, top + mm(2)], b: [ax.offset, zBub - r], weight: W.hair, dash: "6 1.5 1 1.5" }, ax.id);
+    push("EJES", { kind: "circle", c: [ax.offset, zBub], r, weight: W.mid }, ax.id);
+    push("EJES", { kind: "text", at: [ax.offset, zBub], text: ax.label ?? ax.id, size: 3.2, anchor: "middle" }, ax.id);
   }
 
   drawSheetFrame(push, {
     unverified: unverifiedRules(p).length > 0,
     projectName: p.meta.name,
     app: p.meta.app,
-    title: "MẶT CẮT A-A",
-    sheetNo: opts.sheetNo ?? "KT-04",
+    title: "CORTE A-A",
+    sheetNo: opts.sheetNo ?? "ARQ-04",
     scaleLabel: `1:${S}`,
     ...(opts.date ? { date: opts.date } : {}),
     ...(opts.designer ? { designer: opts.designer } : {}),
   });
 
-  return { items, tf, meta: { title: "MẶT CẮT A-A", scaleLabel: `1:${S}` } };
+  return { items, tf, meta: { title: "CORTE A-A", scaleLabel: `1:${S}` } };
 }
 
 /** Profile bậc thang: vế chứa mặt phẳng cắt vẽ nét cắt đậm, vế còn lại nét thấy mảnh. */
@@ -298,10 +298,10 @@ function drawStairProfile(p: Project, cutX: number, mm: (v: number) => number, p
         u += du;
         pts.push([u, z]);
       }
-      push("THANG", { kind: "polyline", pts, weight }, st.id);
+      push("ESCALERAS", { kind: "polyline", pts, weight }, st.id);
       // bản thang — nét xiên nối chân với đỉnh vế, hạ xuống ~2 cổ bậc
       const drop = lay.riser * 1.6;
-      push("THANG", {
+      push("ESCALERAS", {
         kind: "line",
         a: [f.start[1], level.elevation + (f.firstStep - 1) * lay.riser + lay.riser - drop],
         b: [u, z - drop],
@@ -318,7 +318,7 @@ function drawStairProfile(p: Project, cutX: number, mm: (v: number) => number, p
         const us = lay.landing.map((pt) => pt[1]);
         const u0 = Math.min(...us);
         const u1 = Math.max(...us);
-        push("TUONG-CAT", {
+        push("MUROS-CORTE", {
           kind: "polygon",
           pts: [[u0, zTop - 140], [u1, zTop - 140], [u1, zTop], [u0, zTop]],
           fill: "#000000",

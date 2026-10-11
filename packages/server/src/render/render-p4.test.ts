@@ -60,7 +60,7 @@ describe("P4 — mặt cắt A-A", () => {
     expect(cutX).toBeLessThan(3780);
 
     const b = buildSectionScene(p);
-    const stairItems = b.items.filter((i) => i.layer === "THANG");
+    const stairItems = b.items.filter((i) => i.layer === "ESCALERAS");
     expect(stairItems.length).toBeGreaterThan(2); // 2 vế + bản thang
 
     // sàn L2 bị lỗ thang: phải có >= 2 dải sàn tại z quanh 3600
@@ -78,7 +78,7 @@ describe("P4 — mặt cắt A-A", () => {
   it("model không thang → lỗi nêu quy ước", () => {
     const noStair = structuredClone(p);
     noStair.stairs = [];
-    expect(() => buildSectionScene(noStair)).toThrow(/thang/);
+    expect(() => buildSectionScene(noStair)).toThrow(/escalera/);
   });
 
   it("golden SVG mặt cắt", async () => {
@@ -92,7 +92,7 @@ describe("P4 — bảng thống kê", () => {
     const b = buildScheduleScene(p);
     const texts = b.items.filter((i) => i.prim.kind === "text").map((i) => (i.prim as { text: string }).text);
     expect(texts.filter((t) => /^R\d+$/.test(t)).length).toBe(p.rooms.length);
-    expect(texts).toContain("TỔNG DIỆN TÍCH PHÒNG");
+    expect(texts).toContain("SUPERFICIE TOTAL DE RECINTOS");
     expect(texts).toContain("D2, D5"); // hai cửa WC cùng kích thước gộp một nhóm
     expect(texts).toContain(String(p.openings.length)); // tổng SL cửa
     // mọi item đều paper-space
@@ -113,7 +113,7 @@ describe("P4 — DXF writer (ADR-08: TS thuần)", () => {
     expect(dxf.startsWith("0\nSECTION")).toBe(true);
     expect(dxf).toContain("$ACADVER");
     expect(dxf).toContain("AC1021");
-    expect(dxf).toContain("TUONG-CAT");
+    expect(dxf).toContain("MUROS-CORTE");
     expect(dxf.trimEnd().endsWith("EOF")).toBe(true);
   });
 
@@ -157,31 +157,31 @@ describe("P4 — bộ tờ hồ sơ", () => {
     expect(set.skipped.find((s) => s.id === "estimate")?.reason).toMatch(/por completar/);
   });
 
-  it("trọn bộ: KT-01..KT-06 đúng thứ tự pha E (kèm dự toán)", () => {
+  it("trọn bộ: ARQ-01..ARQ-06 đúng thứ tự pha E (kèm dự toán)", () => {
     const set = buildSheetSet(p, { date: "13/07/2026" });
     expect(set.sheets.map((s) => `${s.no} ${s.id}`)).toEqual([
-      "KT-01 plan-L1", "KT-02 plan-L2", "KT-03 elevation", "KT-04 section", "KT-05 schedule", "KT-06 estimate",
+      "ARQ-01 plan-L1", "ARQ-02 plan-L2", "ARQ-03 elevation", "ARQ-04 section", "ARQ-05 schedule", "ARQ-06 estimate",
     ]);
     expect(set.skipped).toEqual([]);
     for (const s of set.sheets) expect(sheetSvg(s, false)).toContain(s.no);
     // tờ dự toán nói được tổng tiền + đối chiếu ngân sách brief
     const duToan = sheetSvg(set.sheets.find((s) => s.id === "estimate")!, false);
-    expect(duToan).toContain("TỔNG DỰ TOÁN");
-    expect(duToan).toContain("CÒN DƯ");
+    expect(duToan).toContain("TOTAL ESTIMADO");
+    expect(duToan).toContain("SOBRAN");
   });
 
   it("lọc tờ vẫn giữ đúng số trong bộ; model không thang → section vào skipped", () => {
     const one = buildSheetSet(p, { sheets: ["section"] });
     expect(one.sheets).toHaveLength(1);
-    expect(one.sheets[0]!.no).toBe("KT-04");
+    expect(one.sheets[0]!.no).toBe("ARQ-04");
 
     const noStair = structuredClone(p);
     noStair.stairs = [];
     const set = buildSheetSet(noStair);
     expect(set.skipped.map((s) => s.id)).toContain("section");
     // thống kê + dự toán dồn số lên thay chỗ mặt cắt
-    expect(set.sheets.find((s) => s.id === "schedule")!.no).toBe("KT-04");
-    expect(set.sheets.find((s) => s.id === "estimate")!.no).toBe("KT-05");
+    expect(set.sheets.find((s) => s.id === "schedule")!.no).toBe("ARQ-04");
+    expect(set.sheets.find((s) => s.id === "estimate")!.no).toBe("ARQ-05");
   });
 
   it("sheetDxf chỉ dành cho tờ có hình học model", () => {

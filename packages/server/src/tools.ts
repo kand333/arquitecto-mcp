@@ -366,7 +366,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
       description:
         `Busca en el catálogo de ${"≥100"} piezas normalizadas (medidas REALES en mm y holguras recomendadas; los nombres aún están en vietnamita, traducción pendiente). Usa el id devuelto en apply_ops add furniture. Devuelve además UNA lámina de contacto para ver forma y tamaño. maxFootprint {w,d} filtra lo que cabe en un hueco (p. ej. 900 mm). Categorías: ${ASSET_CATEGORIES.join(", ")}. Lo que va colgado indica "treo <mm>" (altura): se fija con el campo elevation del mueble.`,
       inputSchema: {
-        query: z.string().optional().describe("Palabra clave (por ahora en vietnamita o por id/categoría), p. ej. 'sofa'"),
+        query: z.string().optional().describe("Palabra clave en español o inglés, o id/categoría; p. ej. 'sofá', 'cama'"),
         category: z.string().optional(),
         maxFootprint: z.object({ w: z.number().optional(), d: z.number().optional() }).optional(),
       },
@@ -429,7 +429,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
         };
         const r = args.kind === "elevation" ? renderElevationSvg(p, opts) : renderSectionSvg(p, opts);
         mkdirSync(store.exportDir, { recursive: true });
-        const base = args.kind === "elevation" ? "mat-dung" : "mat-cat-a-a";
+        const base = args.kind === "elevation" ? "elevacion" : "corte-a-a";
         const svgPath = path.join(store.exportDir, `${base}.svg`);
         writeFileSync(svgPath, r.svg, "utf8");
         const pngPath = path.join(store.exportDir, `${base}.png`);
@@ -614,7 +614,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
     {
       title: "Exportar la documentación",
       description:
-        "Exporta a .arquitecto/exports/ho-so/. format: 'pdf' = el JUEGO de láminas KT-01… en un solo A3 de varias páginas (para entregar); 'svg' = un archivo por lámina; 'dxf' = un archivo por lámina con geometría, en mm reales (se mide en CAD; las láminas de tablas no tienen DXF); 'gltf' = UN .glb de toda la casa (en metros, un nodo por entidad según su id; se abre en un visor o en Blender, con scripts/render-photoreal.py para render fotorrealista); 'ifc' = IFC4 de anteproyecto (muros + vanos con relaciones voids/fills, losas con perforaciones, escalera, IfcSpace por recinto: para pasar a un arquitecto/BIM, NO es un proyecto de construcción). sheets solo aplica a pdf/svg/dxf: plan-<levelId> | elevation | section | schedule | estimate. SIEMPRE validate y revisión del render antes de entregar (checkpoint 5).",
+        "Exporta a .arquitecto/exports/expediente/. format: 'pdf' = el JUEGO de láminas ARQ-01… en un solo A3 de varias páginas (para entregar); 'svg' = un archivo por lámina; 'dxf' = un archivo por lámina con geometría, en mm reales (se mide en CAD; las láminas de tablas no tienen DXF); 'gltf' = UN .glb de toda la casa (en metros, un nodo por entidad según su id; se abre en un visor o en Blender, con scripts/render-photoreal.py para render fotorrealista); 'ifc' = IFC4 de anteproyecto (muros + vanos con relaciones voids/fills, losas con perforaciones, escalera, IfcSpace por recinto: para pasar a un arquitecto/BIM, NO es un proyecto de construcción). sheets solo aplica a pdf/svg/dxf: plan-<levelId> | elevation | section | schedule | estimate. SIEMPRE validate y revisión del render antes de entregar (checkpoint 5).",
       inputSchema: {
         format: z.enum(["pdf", "svg", "dxf", "gltf", "ifc"]),
         sheets: z.array(z.string()).optional(),
@@ -624,7 +624,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
       try {
         const p = store.current;
         if (args.format === "gltf" || args.format === "ifc") {
-          const dir0 = path.join(store.exportDir, "ho-so");
+          const dir0 = path.join(store.exportDir, "expediente");
           mkdirSync(dir0, { recursive: true });
           const issues0 = validateProject(p);
           const vNote = `Validador: ${issues0.length === 0 ? "limpio." : `${issues0.length} observaciones — ejecuta validate antes de entregar.`}`;
@@ -652,11 +652,11 @@ ${vNote}`);
           const known = ["plan-<levelId>", "elevation", "section", "schedule", "estimate"].join(" | ");
           return fail(new Error(`Ninguna lámina coincide con el filtro. IDs válidos: ${known}.`));
         }
-        const dir = path.join(store.exportDir, "ho-so");
+        const dir = path.join(store.exportDir, "expediente");
         mkdirSync(dir, { recursive: true });
         const lines: string[] = [];
         if (args.format === "pdf") {
-          const file = safeJoin(dir, `${p.meta.id}-ho-so.pdf`);
+          const file = safeJoin(dir, `${p.meta.id}-expediente.pdf`);
           const { svgsToPdf } = await import("./render/pdf.js");
           await svgsToPdf(set.sheets.map((s) => sheetSvg(s)), file);
           lines.push(`✅ PDF de ${set.sheets.length} páginas → ${file}`);
@@ -674,7 +674,7 @@ ${vNote}`);
             writeFileSync(fp, sheetDxf(s), "utf8");
             lines.push(`  ${s.no} ${s.title} → ${fp}`);
           }
-          lines.unshift(`✅ Láminas DXF (${withModel.length}; mm reales, capas del upstream TCVN):`);
+          lines.unshift(`✅ Láminas DXF (${withModel.length}; mm reales, capas en español):`);
         }
         lines.push(`Juego de láminas: ${set.sheets.map((s) => `${s.no} ${s.title}`).join("; ")}.`);
         for (const sk of set.skipped) lines.push(`⚠ Lámina omitida ${sk.id}: ${sk.reason}`);

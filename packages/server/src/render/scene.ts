@@ -11,18 +11,18 @@ import type { Point } from "@arquitecto/core";
  */
 
 export const LAYERS = [
-  "UNDERLAY", // bản vẽ cũ/ảnh đồ lại — LUÔN dưới cùng, chỉ có ở plan live (không vào bộ tờ)
-  "TRUC",
-  "TUONG-CAT",
-  "TUONG-THAY",
-  "CUA",
-  "THANG",
-  "MAI", // mái dốc (P7): nét mái mặt bằng, hình mái mặt đứng/mặt cắt
-  "NOI-THAT",
-  "DIM",
-  "TEXT",
-  "HATCH",
-  "KHUNG",
+  "CALCO", // bản vẽ cũ/ảnh đồ lại — LUÔN dưới cùng, chỉ có ở plan live (không vào bộ tờ)
+  "EJES",
+  "MUROS-CORTE",
+  "MUROS-VISTA",
+  "VANOS",
+  "ESCALERAS",
+  "TECHUMBRE", // mái dốc (P7): nét mái mặt bằng, hình mái mặt đứng/mặt cắt
+  "MOBILIARIO",
+  "COTAS",
+  "TEXTOS",
+  "ACHURADOS",
+  "VINETA",
 ] as const;
 
 export type LayerName = (typeof LAYERS)[number];

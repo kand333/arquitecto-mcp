@@ -51,7 +51,7 @@ export function buildSheetSet(p: Project, opts: SheetSetOptions = {}): SheetSet 
   };
   // đánh số trên TRỌN bộ trước, lọc sau — xuất lẻ một tờ vẫn giữ đúng số KT của nó
   let n = 0;
-  const nextNo = (): string => `KT-${String(++n).padStart(2, "0")}`;
+  const nextNo = (): string => `ARQ-${String(++n).padStart(2, "0")}`;
   const tryBuild = (id: string, fileSuffix: string, build: (no: string) => { items: Scene2D; tf: PlanTransform; title: string; scaleLabel: string }, hasModel = true): void => {
     const no = nextNo();
     try {
@@ -64,24 +64,24 @@ export function buildSheetSet(p: Project, opts: SheetSetOptions = {}): SheetSet 
   };
 
   for (const level of [...p.levels].sort((a, b) => a.elevation - b.elevation)) {
-    tryBuild(`plan-${level.id}`, `mat-bang-${level.id.toLowerCase()}`, (no) => {
+    tryBuild(`plan-${level.id}`, `planta-${level.id.toLowerCase()}`, (no) => {
       const b = buildPlanScene(p, level.id, { ...common, sheetNo: no });
-      return { items: b.items, tf: b.tf, title: `MẶT BẰNG ${b.meta.levelName.toUpperCase()}`, scaleLabel: b.meta.scaleLabel };
+      return { items: b.items, tf: b.tf, title: `PLANTA ${b.meta.levelName.toUpperCase()}`, scaleLabel: b.meta.scaleLabel };
     });
   }
-  tryBuild("elevation", "mat-dung", (no) => {
+  tryBuild("elevation", "elevacion", (no) => {
     const b = buildElevationScene(p, { ...common, sheetNo: no });
     return { items: b.items, tf: b.tf, ...b.meta };
   });
-  tryBuild("section", "mat-cat-a-a", (no) => {
+  tryBuild("section", "corte-a-a", (no) => {
     const b = buildSectionScene(p, { ...common, sheetNo: no });
     return { items: b.items, tf: b.tf, ...b.meta };
   });
-  tryBuild("schedule", "thong-ke", (no) => {
+  tryBuild("schedule", "cuadro-recintos-vanos", (no) => {
     const b = buildScheduleScene(p, { ...common, sheetNo: no });
     return { items: b.items, tf: b.tf, ...b.meta };
   }, false);
-  tryBuild("estimate", "du-toan", (no) => {
+  tryBuild("estimate", "presupuesto", (no) => {
     const b = buildEstimateScene(p, { ...common, sheetNo: no });
     return { items: b.items, tf: b.tf, ...b.meta };
   }, false);

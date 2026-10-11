@@ -53,7 +53,7 @@ show("export pdf (bàn giao)", await call("export", { format: "pdf" }));
 show("export dxf (mở CAD đo được)", await call("export", { format: "dxf" }));
 show("export svg", await call("export", { format: "svg" }));
 
-const pdf = path.join(store.exportDir, "ho-so", `${store.current.meta.id}-ho-so.pdf`);
+const pdf = path.join(store.exportDir, "expediente", `${store.current.meta.id}-expediente.pdf`);
 console.log(`\n✔ DoD P4: bộ PDF hoàn chỉnh ${Math.round(statSync(pdf).size / 1024)}KB → ${pdf}`);
 
 await closePngRenderer();

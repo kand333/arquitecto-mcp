@@ -98,7 +98,7 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
 
   it("assets_search: lọc theo maxFootprint, catalog ≥100, không cần mở dự án", async () => {
     const { client } = await connect();
-    const r = await client.callTool({ name: "assets_search", arguments: { query: "giường", maxFootprint: { w: 1200 } } });
+    const r = await client.callTool({ name: "assets_search", arguments: { query: "cama", maxFootprint: { w: 1200 } } });
     const msg = textOf(r);
     expect(msg).toContain("giuong-1m2");
     expect(msg).not.toContain("giuong-1m8");
@@ -113,19 +113,19 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
     const dxf = await client.callTool({ name: "export", arguments: { format: "dxf" } });
     const msg = textOf(dxf);
     expect(msg).toContain("Láminas DXF (4;");
-    expect(msg).toContain("KT-01 MẶT BẰNG PISO 1");
-    expect(msg).toContain("KT-04 MẶT CẮT A-A");
-    expect(msg).not.toContain("THỐNG KÊ →"); // tờ bảng không có DXF
+    expect(msg).toContain("ARQ-01 PLANTA PISO 1");
+    expect(msg).toContain("ARQ-04 CORTE A-A");
+    expect(msg).not.toContain("CUADRO DE RECINTOS Y VANOS →"); // las láminas de cuadros no tienen DXF
     const { existsSync } = await import("node:fs");
     const path = await import("node:path");
-    expect(existsSync(path.join(store.exportDir, "ho-so", "kt-01-mat-bang-l1.dxf"))).toBe(true);
+    expect(existsSync(path.join(store.exportDir, "expediente", "arq-01-planta-l1.dxf"))).toBe(true);
 
     const gltf = await client.callTool({ name: "export", arguments: { format: "gltf" } });
     expect(gltf.isError).not.toBe(true);
     expect(textOf(gltf)).toContain("glTF (GLB)");
     expect(textOf(gltf)).toContain("render-photoreal.py");
     const { readdirSync, readFileSync } = await import("node:fs");
-    const hoSo = path.join(store.exportDir, "ho-so");
+    const hoSo = path.join(store.exportDir, "expediente");
     const glbFile = readdirSync(hoSo).find((f) => f.endsWith(".glb"))!;
     expect(glbFile).toBeDefined();
     expect(readFileSync(path.join(hoSo, glbFile)).toString("ascii", 0, 4)).toBe("glTF");
@@ -194,8 +194,24 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
     const r = await client.callTool({ name: "export", arguments: { format: "svg", sheets: ["elevation"] } });
     const msg = textOf(r);
     expect(msg).toContain("Láminas SVG (1)");
-    expect(msg).toContain("KT-03 MẶT ĐỨNG CHÍNH");
+    expect(msg).toContain("ARQ-03 ELEVACIÓN PRINCIPAL");
   });
+
+  it("rutas de salida en español: render_plan, render_view y export pdf", async () => {
+    const { client, store } = await connect();
+    await client.callTool({ name: "project_new", arguments: { name: "Rutas", template: "casa-prueba-2p" } });
+    const { existsSync } = await import("node:fs");
+    const plan = textOf(await client.callTool({ name: "render_plan", arguments: { level: "L1" } }));
+    expect(plan).toContain(path.join(store.exportDir, "planta-l1.svg"));
+    expect(existsSync(path.join(store.exportDir, "planta-l1.svg"))).toBe(true);
+    await client.callTool({ name: "render_view", arguments: { kind: "elevation" } });
+    expect(existsSync(path.join(store.exportDir, "elevacion.svg"))).toBe(true);
+    await client.callTool({ name: "render_view", arguments: { kind: "section" } });
+    expect(existsSync(path.join(store.exportDir, "corte-a-a.svg"))).toBe(true);
+    const pdfPath = path.join(store.exportDir, "expediente", `${store.current.meta.id}-expediente.pdf`);
+    expect(textOf(await client.callTool({ name: "export", arguments: { format: "pdf" } }))).toContain(pdfPath);
+    expect(existsSync(pdfPath)).toBe(true);
+  }, 60_000);
 
   it("editor_open trả URL live server; capture_view 3d không browser → chỉ đường", async () => {
     const { client, live } = await connect();

@@ -10,17 +10,17 @@ import { LAYERS, type Prim, type Scene2D } from "./scene.js";
  */
 
 const LAYER_COLOR: Record<string, number> = {
-  TRUC: 8, // xám
-  "TUONG-CAT": 7,
-  "TUONG-THAY": 7,
-  CUA: 7,
-  THANG: 7,
-  MAI: 7,
-  "NOI-THAT": 8,
-  DIM: 8,
-  TEXT: 7,
-  HATCH: 8,
-  KHUNG: 7,
+  EJES: 8, // xám
+  "MUROS-CORTE": 7,
+  "MUROS-VISTA": 7,
+  VANOS: 7,
+  ESCALERAS: 7,
+  TECHUMBRE: 7,
+  MOBILIARIO: 8,
+  COTAS: 8,
+  TEXTOS: 7,
+  ACHURADOS: 8,
+  VINETA: 7,
 };
 
 export type DxfOptions = {

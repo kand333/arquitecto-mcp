@@ -72,7 +72,7 @@ describe("parseDxf — đọc nét + đơn vị", () => {
 describe("imageSize — header PNG/JPEG thuần", () => {
   it("PNG 1×1 đọc đúng; rác thì báo lỗi rõ", () => {
     expect(imageSize(PNG_1PX)).toEqual({ width: 1, height: 1, mime: "image/png" });
-    expect(() => imageSize(Buffer.from("not an image at all, really"))).toThrow(/PNG\/JPEG/);
+    expect(() => imageSize(Buffer.from("not an image at all, really"))).toThrow(/PNG y JPEG/);
   });
 
   it("JPEG đọc kích thước từ SOF0", () => {
@@ -130,12 +130,12 @@ describe("loadUnderlay + render — nền mờ dưới mặt bằng", () => {
     expect(u!.polylines).toHaveLength(5);
 
     const withU = renderPlanSvg(p, "L1", { underlay: u!, embedFont: false }).svg;
-    expect(withU).toContain('data-layer="UNDERLAY"');
+    expect(withU).toContain('data-layer="CALCO"');
     expect(withU).toContain("#3a6ea5");
     expect(withU).toContain('opacity="0.4"');
     // không truyền underlay (đường đi của bộ tờ hồ sơ) → không có lớp nền
     const without = renderPlanSvg(p, "L1", { embedFont: false }).svg;
-    expect(without).not.toContain('data-layer="UNDERLAY"');
+    expect(without).not.toContain('data-layer="CALCO"');
   });
 
   it("underlay khóa theo tầng chỉ hiện ở tầng đó", () => {
@@ -144,8 +144,8 @@ describe("loadUnderlay + render — nền mờ dưới mặt bằng", () => {
     const p = loadCasaPrueba2p();
     p.underlay = { id: "U1", kind: "dxf", source: "cu.dxf", origin: [0, 0], scale: 1, level: "L1" };
     const u = loadUnderlay(p, dir)!;
-    expect(renderPlanSvg(p, "L1", { underlay: u, embedFont: false }).svg).toContain('data-layer="UNDERLAY"');
-    expect(renderPlanSvg(p, "L2", { underlay: u, embedFont: false }).svg).not.toContain('data-layer="UNDERLAY"');
+    expect(renderPlanSvg(p, "L1", { underlay: u, embedFont: false }).svg).toContain('data-layer="CALCO"');
+    expect(renderPlanSvg(p, "L2", { underlay: u, embedFont: false }).svg).not.toContain('data-layer="CALCO"');
   });
 
   it("ảnh PNG: nhúng data URI + đặt theo mm/pixel; file mất → null (render không gãy)", () => {

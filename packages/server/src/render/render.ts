@@ -83,7 +83,7 @@ export async function renderPlanFiles(
   opts: RenderPlanOptions = {},
 ): Promise<RenderedFiles> {
   const plan = renderPlanSvg(p, levelId, opts);
-  const base = `mat-bang-${levelId.toLowerCase()}`;
+  const base = `planta-${levelId.toLowerCase()}`;
   const svgPath = safeJoin(dir, `${base}.svg`); // A2: antes de crear nada en disco
   let pngPath: string | null = safeJoin(dir, `${base}.png`);
   mkdirSync(dir, { recursive: true });

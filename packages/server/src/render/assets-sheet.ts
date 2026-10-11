@@ -40,14 +40,14 @@ function scalePrim(prim: Prim, k: number): Prim {
   }
 }
 
-export function buildAssetsSheetSvg(assets: Asset[], title = "CATALOG NỘI THẤT — ARQUITECTO"): string {
+export function buildAssetsSheetSvg(assets: Asset[], title = "CATÁLOGO DE MOBILIARIO — ARQUITECTO"): string {
   const items: Scene2D = [];
   const push = (prim: Prim): void => {
-    items.push({ layer: "KHUNG", prim, space: "paper" });
+    items.push({ layer: "VINETA", prim, space: "paper" });
   };
 
   push({ kind: "text", at: [10, 8], text: title, size: 4, bold: true });
-  push({ kind: "text", at: [PAPER.w - 10, 8], text: `${assets.length} asset — kích thước mm thật`, size: 2.4, anchor: "end" });
+  push({ kind: "text", at: [PAPER.w - 10, 8], text: `${assets.length} piezas — medidas reales en mm`, size: 2.4, anchor: "end" });
 
   assets.slice(0, SHEET_CAPACITY).forEach((a, i) => {
     const col = i % COLS;
@@ -76,7 +76,7 @@ export function buildAssetsSheetSvg(assets: Asset[], title = "CATALOG NỘI TH�
     push({ kind: "text", at: [x0 + CELL_W / 2, y0 + CELL_H - 8.2], text: a.label, size, anchor: "middle", bold: true });
     push({
       kind: "text", at: [x0 + CELL_W / 2, y0 + CELL_H - 5.2],
-      text: `${a.footprint.w}×${a.footprint.d} · cao ${a.footprint.h}${a.mountHeight != null ? ` · treo ${a.mountHeight}` : ""}`,
+      text: `${a.footprint.w}×${a.footprint.d} · alto ${a.footprint.h}${a.mountHeight != null ? ` · colgado a ${a.mountHeight}` : ""}`,
       size: 1.9, anchor: "middle",
     });
     push({ kind: "text", at: [x0 + CELL_W / 2, y0 + CELL_H - 2.4], text: a.id, size: 1.7, anchor: "middle" });

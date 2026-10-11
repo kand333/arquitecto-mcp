@@ -21,7 +21,7 @@ describe("renderer 2D — mặt bằng", () => {
   it("cấu trúc bản vẽ tầng 1: layer, ký hiệu, dim, khung tên", () => {
     const svg = render("L1");
     // đủ layer chính
-    for (const layer of ["TRUC", "TUONG-CAT", "TUONG-THAY", "CUA", "THANG", "NOI-THAT", "DIM", "TEXT", "KHUNG"]) {
+    for (const layer of ["EJES", "MUROS-CORTE", "MUROS-VISTA", "VANOS", "ESCALERAS", "MOBILIARIO", "COTAS", "TEXTOS", "VINETA"]) {
       expect(svg, `thiếu layer ${layer}`).toContain(`id="layer-${layer}"`);
     }
     // entity click được qua data-id
@@ -37,17 +37,17 @@ describe("renderer 2D — mặt bằng", () => {
     expect(svg).toContain(">3780<");
     expect(svg).toContain(">16000<");
     // thang: mũi tên LÊN + số bậc
-    expect(svg).toContain("LÊN 21 BẬC");
+    expect(svg).toContain("SUBE 21 PELD.");
     // cajetín + escala; reglas OGUC validadas por el usuario → sin la nota ⚠ de reglas sin validar
-    expect(svg).toContain("TỶ LỆ 1:50");
-    expect(svg).toContain("MẶT BẰNG PISO 1");
+    expect(svg).toContain("ESCALA 1:50");
+    expect(svg).toContain("PLANTA PISO 1");
     expect(svg).not.toContain("⚠");
-    expect(svg).toContain("Bản vẽ concept");
+    expect(svg).toContain("OGUC art. 1.2.2");
   });
 
   it("tầng 2 vẽ thang từ dưới lên (không zigzag) + giếng trời là lỗ sàn", () => {
     const svg = render("L2");
-    expect(svg).toContain("MẶT BẰNG PISO 2");
+    expect(svg).toContain("PLANTA PISO 2");
     expect(svg).toContain(`data-id="ST1"`); // thang hiện ở mặt bằng tầng trên
     expect(svg).toContain(`data-id="SL2"`); // nét đứt lỗ sàn
     expect(svg).toContain("DORMITORIO PRINCIPAL");
@@ -61,6 +61,6 @@ describe("renderer 2D — mặt bằng", () => {
   });
 
   it("level không tồn tại → lỗi tiếng Việt chỉ đường", () => {
-    expect(() => buildPlanScene(loadCasaPrueba2p(), "L9")).toThrowError(/các level hiện có: L1, L2/);
+    expect(() => buildPlanScene(loadCasaPrueba2p(), "L9")).toThrowError(/pisos disponibles: L1, L2/);
   });
 });

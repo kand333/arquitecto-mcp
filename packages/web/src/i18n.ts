@@ -153,7 +153,7 @@ const ES: Dict = {
   "hud.typable": "escribe un número para la medida exacta",
   "hud.gap": "holgura",
   "catalog.title": "Mobiliario",
-  "catalog.search": "buscar: bed, sofa, table… (nombres en inglés por ahora)",
+  "catalog.search": "buscar: cama, sofá, mesa…",
   "catalog.empty": "Ninguna pieza coincide.",
   "catalog.mounted": "colgado",
   "kind.wall": "Muro",

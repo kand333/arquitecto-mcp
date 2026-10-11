@@ -8,7 +8,7 @@ let browser: Browser | null = null;
  * ở đây chỉ dàn trang, không đụng nội dung.
  */
 export async function svgsToPdf(svgs: string[], outPath: string): Promise<void> {
-  if (svgs.length === 0) throw new Error("Không có tờ nào để in.");
+  if (svgs.length === 0) throw new Error("No hay láminas para imprimir.");
   if (!browser) browser = await chromium.launch();
   const page = await browser.newPage();
   try {

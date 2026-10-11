@@ -29,5 +29,5 @@ export function imageSize(buf: Buffer): ImageInfo {
       off += 2 + buf.readUInt16BE(off + 2);
     }
   }
-  throw new Error("Không đọc được kích thước ảnh — chỉ hỗ trợ PNG/JPEG.");
+  throw new Error("No se pudo leer el tamaño de la imagen: solo se admiten PNG y JPEG.");
 }

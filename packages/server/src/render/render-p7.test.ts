@@ -18,17 +18,17 @@ describe("P7 — biệt thự mái dốc trên lô góc đất dốc", () => {
 
   it("mặt bằng L2: mép mái + 4 hông + nóc trên layer MAI (hip = 6 nét)", () => {
     const plan = buildPlanScene(villa, "L2");
-    const mai = plan.items.filter((i) => i.layer === "MAI");
+    const mai = plan.items.filter((i) => i.layer === "TECHUMBRE");
     expect(mai).toHaveLength(6); // 1 outline + 4 hông + 1 nóc
     expect(mai.every((i) => i.dataId === "RF1")).toBe(true);
   });
 
   it("mặt đứng: biệt thự LÙI 3m vẫn có tường mặt tiền (cụm gần nhất); 4 mặt mái; đất dốc", () => {
     const elev = buildElevationScene(villa);
-    const mai = elev.items.filter((i) => i.layer === "MAI");
+    const mai = elev.items.filter((i) => i.layer === "TECHUMBRE");
     expect(mai).toHaveLength(4); // hip chiếu cạnh: 4 outline mặt
     // đất dốc = polyline (không phải line ngang z=0)
-    const ground = elev.items.find((i) => i.layer === "TUONG-CAT" && i.prim.kind === "polyline" && !("close" in i.prim && i.prim.close));
+    const ground = elev.items.find((i) => i.layer === "MUROS-CORTE" && i.prim.kind === "polyline" && !("close" in i.prim && i.prim.close));
     expect(ground).toBeDefined();
     const zs = (ground!.prim as { pts: Array<[number, number]> }).pts.map(([, z]) => z);
     expect(Math.min(...zs)).toBeLessThan(-50); // có đoạn đất thấp hơn cốt nền
@@ -48,7 +48,7 @@ describe("P7 — biệt thự mái dốc trên lô góc đất dốc", () => {
     expect(ifc).toContain(".HIP_ROOF.");
     const plan = buildPlanScene(villa, "L2");
     const dxf = sceneToDxf(plan.items, { scale: 100 });
-    expect(dxf).toContain("MAI");
+    expect(dxf).toContain("TECHUMBRE");
   });
 
   it("estimate: mái dốc tính m² MẶT NGHIÊNG (chiếu / cos pitch), hệ số mái ngói; không còn dòng ước lệ", () => {
@@ -71,8 +71,8 @@ describe("P7 — biệt thự mái dốc trên lô góc đất dốc", () => {
   it("nhà ống không mái/terrain: KHÔNG item MAI, đất vẫn line ngang z=0 (no-op)", () => {
     const p = loadCasaPrueba2p();
     const elev = buildElevationScene(p);
-    expect(elev.items.filter((i) => i.layer === "MAI")).toHaveLength(0);
+    expect(elev.items.filter((i) => i.layer === "TECHUMBRE")).toHaveLength(0);
     const sect = buildSectionScene(p);
-    expect(sect.items.filter((i) => i.layer === "MAI")).toHaveLength(0);
+    expect(sect.items.filter((i) => i.layer === "TECHUMBRE")).toHaveLength(0);
   });
 });

@@ -40,12 +40,12 @@ export function buildPlanScene(p: Project, levelId: string, opts: PlanOptions = 
   const level = getLevel(p, levelId);
   if (!level) {
     const known = p.levels.map((l) => l.id).join(", ");
-    throw new Error(`Không có level "${levelId}" — các level hiện có: ${known}.`);
+    throw new Error(`No existe el piso "${levelId}"; pisos disponibles: ${known}.`);
   }
 
   const items: Scene2D = [];
   const keep = opts.layers?.length
-    ? new Set([...opts.layers.map((l) => l.toUpperCase()), "KHUNG"]) // khung tên luôn giữ
+    ? new Set([...opts.layers.map((l) => l.toUpperCase()), "VINETA"]) // khung tên luôn giữ
     : null;
   const push = (layer: LayerName, prim: Prim, dataId?: string, space?: "model" | "paper") => {
     if (keep && !keep.has(layer)) return;
@@ -81,8 +81,8 @@ export function buildPlanScene(p: Project, levelId: string, opts: PlanOptions = 
     unverified: unverifiedRules(p).length > 0,
     projectName: p.meta.name,
     app: p.meta.app,
-    title: `MẶT BẰNG ${level.name}`,
-    sheetNo: opts.sheetNo ?? "KT-01",
+    title: `PLANTA ${level.name}`,
+    sheetNo: opts.sheetNo ?? "ARQ-01",
     scaleLabel: `1:${S}`,
     ...(opts.date ? { date: opts.date } : {}),
     ...(opts.designer ? { designer: opts.designer } : {}),
@@ -125,12 +125,12 @@ function underlayCorners(u: PlanUnderlay): Point[] {
 function drawUnderlay(u: PlanUnderlay, items: Scene2D): void {
   // đẩy thẳng vào items (không qua push/keep) — lọc layers không được giấu giàn giáo đồ lại
   if (u.image) {
-    items.push({ layer: "UNDERLAY", prim: { kind: "image", ...u.image }, opacity: u.opacity });
+    items.push({ layer: "CALCO", prim: { kind: "image", ...u.image }, opacity: u.opacity });
   }
   for (const pts of u.polylines) {
     if (pts.length < 2) continue;
     items.push({
-      layer: "UNDERLAY",
+      layer: "CALCO",
       prim: { kind: "polyline", pts, weight: W.thin, color: "#3a6ea5" },
       opacity: u.opacity,
     });
@@ -140,7 +140,7 @@ function drawUnderlay(u: PlanUnderlay, items: Scene2D): void {
 /* ---------------- ranh đất ---------------- */
 
 function drawSite(p: Project, push: Push): void {
-  push("TUONG-THAY", { kind: "polyline", pts: p.site.boundary, close: true, weight: W.hair, dash: "3 1.2 0.6 1.2" }, "site");
+  push("MUROS-VISTA", { kind: "polyline", pts: p.site.boundary, close: true, weight: W.hair, dash: "3 1.2 0.6 1.2" }, "site");
 }
 
 /* ---------------- mái dốc (P7) ---------------- */
@@ -151,9 +151,9 @@ function drawRoofs(p: Project, levelId: string, push: Push): void {
     const level = getLevel(p, levelId);
     if (!level) continue;
     const g = roofGeometry(rf, level);
-    push("MAI", { kind: "polyline", pts: rf.outline, close: true, weight: W.mid, dash: "4 2" }, rf.id);
+    push("TECHUMBRE", { kind: "polyline", pts: rf.outline, close: true, weight: W.mid, dash: "4 2" }, rf.id);
     for (const [a, b] of g.creases) {
-      push("MAI", { kind: "line", a, b, weight: W.thin, dash: "4 2" }, rf.id);
+      push("TECHUMBRE", { kind: "line", a, b, weight: W.thin, dash: "4 2" }, rf.id);
     }
   }
 }
@@ -167,18 +167,18 @@ function drawAxes(p: Project, b: Bounds, mm: (v: number) => number, push: Push):
   const rBub = mm(4); // ⌀8mm giấy
   for (const a of p.axes.x) {
     const y0 = b.minY - ext, y1 = b.maxY + ext;
-    push("TRUC", { kind: "line", a: [a.offset, y0 + rBub], b: [a.offset, y1 - rBub], weight: W.hair, dash: "6 1.5 1 1.5" }, a.id);
+    push("EJES", { kind: "line", a: [a.offset, y0 + rBub], b: [a.offset, y1 - rBub], weight: W.hair, dash: "6 1.5 1 1.5" }, a.id);
     for (const y of [y0, y1]) {
-      push("TRUC", { kind: "circle", c: [a.offset, y], r: rBub, weight: W.mid }, a.id);
-      push("TRUC", { kind: "text", at: [a.offset, y], text: a.label ?? a.id, size: 3.2, anchor: "middle" }, a.id);
+      push("EJES", { kind: "circle", c: [a.offset, y], r: rBub, weight: W.mid }, a.id);
+      push("EJES", { kind: "text", at: [a.offset, y], text: a.label ?? a.id, size: 3.2, anchor: "middle" }, a.id);
     }
   }
   for (const a of p.axes.y) {
     const x0 = b.minX - ext, x1 = b.maxX + ext;
-    push("TRUC", { kind: "line", a: [x0 + rBub, a.offset], b: [x1 - rBub, a.offset], weight: W.hair, dash: "6 1.5 1 1.5" }, a.id);
+    push("EJES", { kind: "line", a: [x0 + rBub, a.offset], b: [x1 - rBub, a.offset], weight: W.hair, dash: "6 1.5 1 1.5" }, a.id);
     for (const x of [x0, x1]) {
-      push("TRUC", { kind: "circle", c: [x, a.offset], r: rBub, weight: W.mid }, a.id);
-      push("TRUC", { kind: "text", at: [x, a.offset], text: a.label ?? a.id, size: 3.2, anchor: "middle" }, a.id);
+      push("EJES", { kind: "circle", c: [x, a.offset], r: rBub, weight: W.mid }, a.id);
+      push("EJES", { kind: "text", at: [x, a.offset], text: a.label ?? a.id, size: 3.2, anchor: "middle" }, a.id);
     }
   }
 }
@@ -216,10 +216,10 @@ function drawWallsAndOpenings(p: Project, walls: Wall[], mm: (v: number) => numb
       const b = pointOnWall(w, s1);
       if (w.kind === "kinh") {
         const off = vscale(n, w.thickness / 4);
-        push("TUONG-CAT", { kind: "line", a: add(a, off), b: add(b, off), weight: W.mid }, w.id);
-        push("TUONG-CAT", { kind: "line", a: sub(a, off), b: sub(b, off), weight: W.mid }, w.id);
+        push("MUROS-CORTE", { kind: "line", a: add(a, off), b: add(b, off), weight: W.mid }, w.id);
+        push("MUROS-CORTE", { kind: "line", a: sub(a, off), b: sub(b, off), weight: W.mid }, w.id);
       } else {
-        push("TUONG-CAT", {
+        push("MUROS-CORTE", {
           kind: "polygon",
           pts: [add(a, half), add(b, half), sub(b, half), sub(a, half)],
           fill: WALL_FILL[w.kind],
@@ -244,17 +244,17 @@ function drawOpening(p: Project, w: Wall, o: Opening, mm: (v: number) => number,
 
   // nét má ô chờ (thấy)
   for (const j of [jambL, jambR]) {
-    push("TUONG-THAY", { kind: "line", a: add(j, half), b: sub(j, half), weight: W.mid }, o.id);
+    push("MUROS-VISTA", { kind: "line", a: add(j, half), b: sub(j, half), weight: W.mid }, o.id);
   }
 
   if (o.kind === "window") {
     // 3 nét song song trong bề dày tường + bậu là 2 nét mép
     for (const k of [-0.5, 0, 0.5]) {
       const off = vscale(n, w.thickness * k);
-      push("CUA", { kind: "line", a: add(jambL, off), b: add(jambR, off), weight: W.mid }, o.id);
+      push("VANOS", { kind: "line", a: add(jambL, off), b: add(jambR, off), weight: W.mid }, o.id);
     }
     const labelAt = add(midOf(jambL, jambR), vscale(n, w.thickness / 2 + mm(2.2)));
-    push("CUA", { kind: "text", at: labelAt, text: o.id, size: 2.2, anchor: "middle" }, o.id);
+    push("VANOS", { kind: "text", at: labelAt, text: o.id, size: 2.2, anchor: "middle" }, o.id);
     return;
   }
 
@@ -266,8 +266,8 @@ function drawOpening(p: Project, w: Wall, o: Opening, mm: (v: number) => number,
     const mid = midOf(jambL, jambR);
     const a = add(mid, vscale(d, -o.width * 0.45));
     const b = add(mid, vscale(d, o.width * 0.45));
-    push("CUA", { kind: "line", a, b, weight: W.strong }, o.id);
-    push("CUA", { kind: "line", a: add(a, vscale(n, mm(0.9))), b: add(b, vscale(n, mm(0.9))), weight: W.thin }, o.id);
+    push("VANOS", { kind: "line", a, b, weight: W.strong }, o.id);
+    push("VANOS", { kind: "line", a: add(a, vscale(n, mm(0.9))), b: add(b, vscale(n, mm(0.9))), weight: W.thin }, o.id);
   } else if (swing !== "none") {
     const side = swing.startsWith("in") ? 1 : -1;
     const leaves: Array<[Point, Point, number]> =
@@ -276,16 +276,16 @@ function drawOpening(p: Project, w: Wall, o: Opening, mm: (v: number) => number,
         : [swing.endsWith("-L") ? [jambL, jambR, o.width] : [jambR, jambL, o.width]];
     for (const [hinge, other, r] of leaves) {
       const open = vscale(n, side * r);
-      push("CUA", { kind: "line", a: hinge, b: add(hinge, open), weight: W.strong }, o.id);
+      push("VANOS", { kind: "line", a: hinge, b: add(hinge, open), weight: W.strong }, o.id);
       const closedDir = sub(other, hinge);
       const a0 = deg(Math.atan2(closedDir[1], closedDir[0]));
       const a1 = deg(Math.atan2(side * n[1], side * n[0]));
-      push("CUA", { kind: "arc", c: hinge, r, a0, a1, weight: W.thin }, o.id);
+      push("VANOS", { kind: "arc", c: hinge, r, a0, a1, weight: W.thin }, o.id);
     }
   }
   const labelSide = swing.startsWith("out") ? -1 : 1;
   const labelAt = add(midOf(jambL, jambR), vscale(n, labelSide * (w.thickness / 2 + mm(2.2))));
-  push("CUA", { kind: "text", at: labelAt, text: o.id, size: 2.2, anchor: "middle" }, o.id);
+  push("VANOS", { kind: "text", at: labelAt, text: o.id, size: 2.2, anchor: "middle" }, o.id);
 }
 
 const midOf = (a: Point, b: Point): Point => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
@@ -296,7 +296,7 @@ const deg = (rad: number): number => (rad * 180) / Math.PI;
 function drawSlabHoles(p: Project, levelId: string, push: Push): void {
   const slab = floorSlabOf(p, levelId);
   for (const hole of slab?.holes ?? []) {
-    push("TUONG-THAY", { kind: "polyline", pts: hole, close: true, weight: W.thin, dash: "2.5 1.2" }, slab!.id);
+    push("MUROS-VISTA", { kind: "polyline", pts: hole, close: true, weight: W.thin, dash: "2.5 1.2" }, slab!.id);
   }
 }
 
@@ -312,14 +312,14 @@ function drawStairs(p: Project, levelId: string, mm: (v: number) => number, push
 
     const lay = stairLayout(st, base);
     for (const f of lay.flights) {
-      push("THANG", { kind: "polyline", pts: f.rect, close: true, weight: W.mid }, st.id);
+      push("ESCALERAS", { kind: "polyline", pts: f.rect, close: true, weight: W.mid }, st.id);
       const across = vscale(rotate(f.dir, 90), st.width / 2);
       for (let i = 1; i <= f.treads; i++) {
         const c = add(f.start, vscale(f.dir, i * st.tread));
-        push("THANG", { kind: "line", a: add(c, across), b: sub(c, across), weight: W.mid }, st.id);
+        push("ESCALERAS", { kind: "line", a: add(c, across), b: sub(c, across), weight: W.mid }, st.id);
       }
     }
-    if (lay.landing) push("THANG", { kind: "polyline", pts: lay.landing, close: true, weight: W.mid }, st.id);
+    if (lay.landing) push("ESCALERAS", { kind: "polyline", pts: lay.landing, close: true, weight: W.mid }, st.id);
 
     // mũi tên đi lên: chân vế 1 → giữa chiếu nghỉ → lối ra
     const f1 = lay.flights[0]!;
@@ -330,19 +330,19 @@ function drawStairs(p: Project, levelId: string, mm: (v: number) => number, push
       pts.push(add(f1.start, vscale(f1.dir, f1.treads * st.tread + (st.landing ?? st.width) / 2)), lc);
     }
     pts.push(lay.topExit.at);
-    push("THANG", { kind: "polyline", pts, weight: W.thin }, st.id);
+    push("ESCALERAS", { kind: "polyline", pts, weight: W.thin }, st.id);
     const tip = lay.topExit.at;
     const d = lay.topExit.dir;
     const back = vscale(d, -mm(2.2));
     const side = vscale(rotate(d, 90), mm(0.8));
-    push("THANG", { kind: "polygon", pts: [tip, add(add(tip, back), side), sub(add(tip, back), side)], fill: "#000" }, st.id);
+    push("ESCALERAS", { kind: "polygon", pts: [tip, add(add(tip, back), side), sub(add(tip, back), side)], fill: "#000" }, st.id);
     // nhãn chạy dọc vế 1, lệch khỏi đường mũi tên nửa vế
     const labelAt = add(
       add(f1.start, vscale(f1.dir, f1.treads * st.tread * 0.45)),
       vscale(rotate(f1.dir, 90), st.width * 0.24),
     );
-    push("THANG", {
-      kind: "text", at: labelAt, text: `LÊN ${st.steps} BẬC`, size: 2.2, anchor: "middle",
+    push("ESCALERAS", {
+      kind: "text", at: labelAt, text: `SUBE ${st.steps} PELD.`, size: 2.2, anchor: "middle",
       along: { from: f1.start, to: add(f1.start, f1.dir) },
     }, st.id);
 
@@ -352,7 +352,7 @@ function drawStairs(p: Project, levelId: string, mm: (v: number) => number, push
       const a = add(cutAt, vscale(rotate(f1.dir, 90), st.width * 0.75));
       const b = sub(cutAt, vscale(rotate(f1.dir, 90), st.width * 0.75));
       const zig = zigzag(a, b, mm(1.2));
-      push("THANG", { kind: "polyline", pts: zig, weight: W.mid }, st.id);
+      push("ESCALERAS", { kind: "polyline", pts: zig, weight: W.mid }, st.id);
     }
   }
 }
@@ -380,9 +380,9 @@ function drawFurniture(p: Project, levelId: string, push: Push): void {
     const corners = obbCorners(furnitureObb(f, asset));
     // đồ treo (tủ bếp trên, máy lạnh…) — nét đứt theo quy ước "trên cao"
     const hung = asset.mountHeight != null || (f.elevation ?? 0) > 0;
-    push("NOI-THAT", { kind: "polyline", pts: corners, close: true, weight: W.thin, ...(hung ? { dash: "2 1" } : {}) }, f.id);
+    push("MOBILIARIO", { kind: "polyline", pts: corners, close: true, weight: W.thin, ...(hung ? { dash: "2 1" } : {}) }, f.id);
     for (const prim of furnitureGlyphPrims(asset.category, asset.footprint)) {
-      push("NOI-THAT", transformPrim(prim, f.at, f.rotation), f.id);
+      push("MOBILIARIO", transformPrim(prim, f.at, f.rotation), f.id);
     }
   }
 }
@@ -609,7 +609,7 @@ function drawDims(p: Project, walls: Wall[], b: Bounds, mm: (v: number) => numbe
     for (const [v, gap] of far) {
       const a = pt(side, v, side.edge + side.out * mm(1.5));
       const bpt = pt(side, v, side.edge + side.out * mm(gap + 1.2));
-      push("DIM", { kind: "line", a, b: bpt, weight: W.hair });
+      push("COTAS", { kind: "line", a, b: bpt, weight: W.hair });
     }
 
     for (const ch of chains) {
@@ -617,11 +617,11 @@ function drawDims(p: Project, walls: Wall[], b: Bounds, mm: (v: number) => numbe
       const linePos = side.edge + side.out * mm(ch.gap);
       const a = pt(side, ch.events[0]!, linePos);
       const z = pt(side, ch.events[ch.events.length - 1]!, linePos);
-      push("DIM", { kind: "line", a, b: z, weight: W.hair });
+      push("COTAS", { kind: "line", a, b: z, weight: W.hair });
       for (const v of ch.events) {
         const c = pt(side, v, linePos);
         const t = mm(1.1);
-        push("DIM", { kind: "line", a: [c[0] - t, c[1] - t], b: [c[0] + t, c[1] + t], weight: W.mid });
+        push("COTAS", { kind: "line", a: [c[0] - t, c[1] - t], b: [c[0] + t, c[1] + t], weight: W.mid });
       }
       let alt = 0;
       for (let i = 0; i + 1 < ch.events.length; i++) {
@@ -632,7 +632,7 @@ function drawDims(p: Project, walls: Wall[], b: Bounds, mm: (v: number) => numbe
         const narrow = len / mm(1) < String(len).length * 1.9;
         const off = narrow ? side.out * mm(2.1 + (alt++ % 2) * 2.2) : -side.out * mm(1.0);
         const at = pt(side, (v0 + v1) / 2, linePos + off);
-        push("DIM", {
+        push("COTAS", {
           kind: "text", at, text: String(len), size: 2.5, anchor: "middle",
           along: { from: pt(side, v0, linePos), to: pt(side, v1, linePos) },
         });
@@ -685,16 +685,16 @@ function drawRoomLabels(p: Project, level: Level, tf: PlanTransform, paperVec: (
       lineStep = paperVec(0, small ? 3.4 : 4.6);
     }
 
-    push("TEXT", { kind: "text", at: c, text: name, size: size1, anchor: "middle", ...(along ? { along } : {}) }, r.id);
-    push("TEXT", { kind: "text", at: add(c, lineStep), text: `${area.toFixed(1)}m²`, size: size2, anchor: "middle", ...(along ? { along } : {}) }, r.id);
+    push("TEXTOS", { kind: "text", at: c, text: name, size: size1, anchor: "middle", ...(along ? { along } : {}) }, r.id);
+    push("TEXTOS", { kind: "text", at: add(c, lineStep), text: `${area.toFixed(1)}m²`, size: size2, anchor: "middle", ...(along ? { along } : {}) }, r.id);
   }
   if (biggest) {
     const at = add(biggest.c, paperVec(0, 9.5));
     const e = level.elevation;
     const label = e === 0 ? "±0.000" : `${e > 0 ? "+" : "−"}${(Math.abs(e) / 1000).toFixed(3)}`;
     const s1 = paperVec(-1.4, 0), s2 = paperVec(1.4, 0), tip = paperVec(0, 1.6);
-    push("TEXT", { kind: "polyline", pts: [add(at, s1), add(at, s2), add(at, tip)], close: true, weight: W.thin });
-    push("TEXT", { kind: "text", at: add(at, paperVec(0, -1.2)), text: label, size: 2.5, anchor: "middle" });
+    push("TEXTOS", { kind: "polyline", pts: [add(at, s1), add(at, s2), add(at, tip)], close: true, weight: W.thin });
+    push("TEXTOS", { kind: "text", at: add(at, paperVec(0, -1.2)), text: label, size: 2.5, anchor: "middle" });
   }
 }
 
@@ -720,20 +720,20 @@ function drawRoomDims(p: Project, levelId: string, mm: (v: number) => number, pu
     // dim ngang — cần đủ chỗ cho chữ (≈6mm giấy)
     if (w >= mm(6) && h >= mm(5)) {
       const y = minY + h * 0.3;
-      push("DIM", { kind: "line", a: [minX, y], b: [maxX, y], weight: W.hair });
-      dimTick(push, "DIM", [minX, y], t);
-      dimTick(push, "DIM", [maxX, y], t);
-      push("DIM", {
+      push("COTAS", { kind: "line", a: [minX, y], b: [maxX, y], weight: W.hair });
+      dimTick(push, "COTAS", [minX, y], t);
+      dimTick(push, "COTAS", [maxX, y], t);
+      push("COTAS", {
         kind: "text", at: [(minX + maxX) / 2, y + mm(1.0)], text: String(Math.round(w)), size: 2.5,
         anchor: "middle", along: { from: [minX, y], to: [maxX, y] },
       });
     }
     if (h >= mm(6) && w >= mm(5)) {
       const x = minX + w * 0.3;
-      push("DIM", { kind: "line", a: [x, minY], b: [x, maxY], weight: W.hair });
-      dimTick(push, "DIM", [x, minY], t);
-      dimTick(push, "DIM", [x, maxY], t);
-      push("DIM", {
+      push("COTAS", { kind: "line", a: [x, minY], b: [x, maxY], weight: W.hair });
+      dimTick(push, "COTAS", [x, minY], t);
+      dimTick(push, "COTAS", [x, maxY], t);
+      push("COTAS", {
         // chữ đặt ở 30% chiều dim — điểm giữa là chỗ nhãn tên phòng đứng
         kind: "text", at: [x - mm(1.0), minY + h * 0.3], text: String(Math.round(h)), size: 2.5,
         anchor: "middle", along: { from: [x, minY], to: [x, maxY] },
@@ -764,17 +764,17 @@ function drawSectionMark(p: Project, levelId: string, b: Bounds, mm: (v: number)
 
   const y0 = b.minY - mm(8);
   const y1 = b.maxY + mm(8);
-  push("TEXT", { kind: "line", a: [x, y0], b: [x, y1], weight: W.hair, dash: "10 3 2 3" });
+  push("TEXTOS", { kind: "line", a: [x, y0], b: [x, y1], weight: W.hair, dash: "10 3 2 3" });
   for (const [yEnd, dirY] of [[y0, 1], [y1, -1]] as Array<[number, number]>) {
     // đoạn đậm ở đầu vết + mũi tên chỉ HƯỚNG NHÌN (−x, khớp section-scene) + chữ A
-    push("TEXT", { kind: "line", a: [x, yEnd], b: [x, yEnd + dirY * mm(4)], weight: W.frame });
+    push("TEXTOS", { kind: "line", a: [x, yEnd], b: [x, yEnd + dirY * mm(4)], weight: W.frame });
     const ax = x - mm(0.6);
-    push("TEXT", {
+    push("TEXTOS", {
       kind: "polygon",
       pts: [[ax - mm(3), yEnd], [ax, yEnd + mm(1.1)], [ax, yEnd - mm(1.1)]],
       fill: "#000",
     });
-    push("TEXT", { kind: "text", at: [x + mm(2.6), yEnd], text: "A", size: 3.5, anchor: "middle", bold: true });
+    push("TEXTOS", { kind: "text", at: [x + mm(2.6), yEnd], text: "A", size: 3.5, anchor: "middle", bold: true });
   }
 }
 

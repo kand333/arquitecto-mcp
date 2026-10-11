@@ -47,7 +47,7 @@ describe("catalog P5 — ≥100 asset chuẩn hóa", () => {
     expect(getAsset("may-lanh-treo")!.mountHeight).toBeGreaterThan(2000);
     const wc = searchAssets("", "bon-cau");
     expect(wc.length).toBeGreaterThanOrEqual(2);
-    const nho = searchAssets("giường", undefined, { w: 1200 });
+    const nho = searchAssets("cama", undefined, { w: 1200 });
     expect(nho.every((a) => a.footprint.w <= 1200)).toBe(true);
     expect(nho.some((a) => a.id === "giuong-1m2")).toBe(true);
   });

@@ -4,7 +4,7 @@
 
 ## Estado actual
 
-- **Etapa:** E6 (registro en Claude Code y prueba final) completada (2026-10-11). Plan E0–E6 terminado. Siguiente: los pendientes post-E6 (abajo), a decisión del usuario. El usuario validó contra el PDF oficial `CL-ALT-01`, `CL-VEN-01` y `CL-CIP-*` (2026-10-11, `verified: true`); `CL-VEN-02` (planned) sigue pendiente. Con eso desaparecen la nota ⚠ de los planos y el aviso de reglas sin validar en `validate`. Volver a modo de permisos manual.
+- **Etapa:** E6 (registro en Claude Code y prueba final) completada (2026-10-11). Plan E0–E6 terminado. Post-E6: vietnamita residual eliminado. Siguiente: pendientes post-E6 (abajo), a decisión del usuario. El usuario validó contra el PDF oficial `CL-ALT-01`, `CL-VEN-01` y `CL-CIP-*` (2026-10-11, `verified: true`); `CL-VEN-02` (planned) sigue pendiente. Con eso desaparecen la nota ⚠ de los planos y el aviso de reglas sin validar en `validate`. Volver a modo de permisos manual.
 - Al terminar cada etapa, actualiza esta sección. Registra la etapa completada, los commits y lo que quedó pendiente o falló.
 
 | Etapa | Estado | Commits / notas |
@@ -150,13 +150,29 @@
 - **Verificación del usuario pendiente:** `/mcp` en una sesión nueva de Claude Code muestra `arquitecto` y abrir el PDF.
 - **Hallazgo:** el motivo de la lámina de corte omitida sale en vietnamita en la respuesta MCP («Model chưa có thang…»). Además de los rótulos de las láminas, ya conocidos.
 
-### Pendientes para después de E6 (decisión del usuario: no ejecutar todavía)
+### Post-E6 · Vietnamita residual eliminado (2026-10-11)
 
-- **Mensajes de render en vietnamita visibles por MCP:** motivos de láminas omitidas (`Model chưa có thang…`) y títulos de láminas («MẶT BẰNG», «MẶT ĐỨNG CHÍNH», «THỐNG KÊ PHÒNG & CỬA»), más las capas DXF TCVN.
+- **Inventario:** 191 literales vietnamitas en 14 archivos de producción (106 en el catálogo, 85 en render/errores/logs), más textos sin tildes: capas DXF, código `KT-NN`, nombres de archivo, carpeta `ho-so/` y la flecha del norte «B» (*Bắc*).
+- **Traducido:**
+  - Láminas: `PLANTA`, `ELEVACIÓN PRINCIPAL`, `CORTE A-A`, `CUADRO DE RECINTOS Y VANOS` y `PRESUPUESTO PRELIMINAR`, con código `ARQ-NN`.
+  - Archivos `arq-NN-planta-l1`…, carpeta `exports/expediente/` (decisión del usuario: todo a español) y `render_plan` → `planta-<nivel>.svg`.
+  - Capas DXF: `CALCO, EJES, MUROS-CORTE, MUROS-VISTA, VANOS, ESCALERAS, TECHUMBRE, MOBILIARIO, COTAS, TEXTOS, ACHURADOS, VINETA`.
+  - Catálogo (86 piezas + 20 variantes; el editor muestra `label` en ES y `labelEn` en EN), errores, IFC (`tramo`/`descanso`), logs de consola y textos del pack UK (solo tests, sin cambiar `verified`).
+- **Viñeta:**
+  - Campos: lámina, contenido, escala, fecha, firmas de arquitecto y propietario, dibujo, y norte «N».
+  - Nota: «no reemplaza los planos firmados… (OGUC art. 1.2.2)».
+  - La OGUC no fija un formato de viñeta; se citaron literalmente los art. 1.2.2 y 5.1.6 n°7 (detalle en `docs/oguc-sources.md`). No se marcó nada como verificado.
+- **Sin tocar:** comentarios de código, claves de esquema e IDs (`khach`, `quy_hoach`, `sofa-don`), geometría, reglas, formatos y esquemas de entrada de las herramientas MCP.
+- **Tests:**
+  - Nuevo `server/src/render/no-vietnamese.test.ts` (4 tests): literales de producción, `rules/*.json` y el juego de láminas generado (SVG + DXF), más la viñeta.
+  - Aserciones de texto actualizadas y 5 snapshots regenerados: el diff solo cambia `<text>` y grupos de capa.
+  - Test MCP de rutas de salida (`planta-l1.svg`, `elevacion.svg`, `corte-a-a.svg`, `expediente/<id>-expediente.pdf`); `scripts/demo-p4.ts` apunta a la ruta nueva.
+  - Suite **287/287**, `live-e2e` 17/17 con el editor recompilado y smoke del bundle 8/8.
+
+### Pendientes para después de E6 (decisión del usuario: no ejecutar todavía)
 
 - **Deuda técnica:** `smoke.mts` crea `%TEMP%\arquitecto-smoke-*` y no las borra. TODO: borrar las carpetas con más de 12 h al arrancar el smoke.
 - **Limpieza manual fuera del proyecto:** borrar las carpetas `%TEMP%\arquitecto-smoke-*` existentes con más de 12 h. La hace el usuario: queda fuera de `D:\0Claude\arquitecto-mcp`.
-- **Mensajes de consola del servidor en vietnamita** (stderr, p. ej. «MCP server sẵn sàng»): no se ven en el navegador ni en las respuestas MCP; traducir.
 
 ## Origen y objetivo
 

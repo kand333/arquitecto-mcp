@@ -109,7 +109,7 @@ const plan = new Plan2D(document.getElementById("paper-viewport")!, document.get
     const id = nextId(m, "F");
     sendOps(
       [{ op: "add", entity: "furniture", data: { id, level: state.activeLevel, asset: assetId, at, rotation: 0 } }],
-      t("note.place", { label: asset?.labelEn ?? asset?.label ?? assetId }),
+      t("note.place", { label: (LANG === "en" ? asset?.labelEn : asset?.label) ?? assetId }),
       "edit",
     );
     // giữ chế độ đặt — đặt liên tiếp tới khi Esc/V

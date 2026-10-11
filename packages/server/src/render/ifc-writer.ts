@@ -217,7 +217,7 @@ export function modelToIfc(p: Project): string {
       const solid = boxSolid(c[0], c[1], z, run, st.width, fl.treads * lay.riser, fl.dir[0], fl.dir[1]);
       parts.push(
         f.e("IFCSTAIRFLIGHT", [
-          G(`${st.id}-f${i}`), "$", str(`${st.id} vế ${i + 1}`), "$", "$", worldPlacement, bodyRep(solid), "$",
+          G(`${st.id}-f${i}`), "$", str(`${st.id} tramo ${i + 1}`), "$", "$", worldPlacement, bodyRep(solid), "$",
           String(lay.riser > 0 ? fl.treads : 0), String(fl.treads), real(lay.riser), real(st.tread), ".STRAIGHT.",
         ]),
       );
@@ -226,7 +226,7 @@ export function modelToIfc(p: Project): string {
       const f1 = lay.flights[0]!;
       const zTop = lv.elevation + (f1.firstStep - 1 + f1.treads) * lay.riser;
       const solid = prismSolid(lay.landing, [], zTop - 140, 140);
-      parts.push(f.e("IFCSLAB", [G(`${st.id}-landing`), "$", str(`${st.id} chiếu nghỉ`), "$", "$", worldPlacement, bodyRep(solid), "$", ".LANDING."]));
+      parts.push(f.e("IFCSLAB", [G(`${st.id}-landing`), "$", str(`${st.id} descanso`), "$", "$", worldPlacement, bodyRep(solid), "$", ".LANDING."]));
     }
     const stair = f.e("IFCSTAIR", [G(st.id), "$", str(st.id), "$", "$", worldPlacement, "$", "$", ".HALF_TURN_STAIR."]);
     f.e("IFCRELAGGREGATES", [G(`${st.id}-parts`), "$", "$", "$", stair, `(${parts.join(",")})`]);

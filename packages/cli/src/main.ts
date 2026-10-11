@@ -23,12 +23,12 @@ mkdirSync(baseDir, { recursive: true });
 const store = new ProjectStore(baseDir);
 try {
   store.openProject();
-  console.error(`[arquitecto] đã tự mở dự án có sẵn tại ${store.filePath}`);
+  console.error(`[arquitecto] proyecto existente abierto: ${store.filePath}`);
 } catch {
-  console.error(`[arquitecto] chưa có dự án tại ${baseDir} — chờ project_new/project_open`);
+  console.error(`[arquitecto] no hay proyecto en ${baseDir}: esperando project_new/project_open`);
 }
 
 const live = new LiveServer(store, { webDist: process.env.ARQUITECTO_WEB_DIST ?? path.join(pkgRoot, "web") });
 const server = createArquitectoServer(store, live);
 await server.connect(new StdioServerTransport());
-console.error("[arquitecto] MCP server sẵn sàng (stdio)");
+console.error("[arquitecto] servidor MCP listo (stdio)");

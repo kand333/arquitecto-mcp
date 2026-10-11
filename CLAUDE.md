@@ -6,7 +6,7 @@
 - Sin remotos ni push salvo pedido explícito.
 
 ## Convenciones
-- UI, descripciones de herramientas MCP, mensajes y docs: español. Código, identificadores y commits: inglés. El legado VN se borró en E4b (packs `std-vn`/`loban`/`pln`, región `vn`, VND, diccionario `vi`); la región por defecto es `cl`. Quedan claves de esquema (`quy_hoach`, `dien_tich`…), rótulos de planos exportados y comentarios en vietnamita: no los expongas en superficies nuevas.
+- UI, descripciones de herramientas MCP, mensajes y docs: español. Código, identificadores y commits: inglés. El legado VN se borró en E4b (packs `std-vn`/`loban`/`pln`, región `vn`, VND, diccionario `vi`); la región por defecto es `cl`. Solo quedan en vietnamita claves de esquema e IDs (`quy_hoach`, `khach`, `sofa-don`…: contratos de datos) y comentarios de código. Láminas (código `ARQ-NN`, capas DXF en español, viñeta), catálogo y logs están en español; `server/src/render/no-vietnamese.test.ts` falla si vuelve a aparecer vietnamita en un literal de producción, en `rules/*.json` o en las láminas generadas.
 - Nombres: `@arquitecto/{core,server,web}`, bin `arquitecto-mcp`, servidor MCP `arquitecto`, env `ARQUITECTO_*`, archivos `arquitecto.project.json` y `.arquitecto/`.
 - No renombres «Atelier» en: `LICENSE`, URLs `github.com/lebac-svg/Atelier`, `docs/reference-en/`, `packages/core/assets/license-manifest.json`. Es atribución o referencia upstream.
 - `@arquitecto/core` es puro: sin imports `node:` ni DOM en `src/` (salvo tests). Disco, red y render van en `server`.
