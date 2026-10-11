@@ -155,7 +155,7 @@ describe("furnitureDragSession — kéo nội thất", () => {
     const st = s.typed(100, SNAP);
     // fixture có tường quanh phòng — phải có neo
     expect(st).not.toBeNull();
-    expect(st!.hud!.text).toContain("khe");
+    expect(st!.hud!.text).toContain("holgura");
     expect(st!.hud!.text).toContain("100");
   });
 });

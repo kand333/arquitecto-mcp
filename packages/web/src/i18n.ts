@@ -1,15 +1,13 @@
 /**
- * i18n cho UI editor (doc 09: "tiếng Việt trước, i18n để sẵn khung" — khung đây).
- * - TỰ NHẬN THEO QUỐC GIA (quyết định 13/07/2026): máy ở Việt Nam (múi giờ
- *   Asia/Ho_Chi_Minh/Saigon) hoặc trình duyệt có tiếng Việt → vi; ngoài ra → en.
- *   Không gọi geo-IP — app local, múi giờ + ngôn ngữ trình duyệt là đủ và riêng tư.
- * - Lựa chọn TAY luôn thắng auto: ?lang=… hoặc nút VI/EN (lưu localStorage).
- * - Bản vẽ xuất ra + thông điệp validator/summary từ server vẫn tiếng Việt (v1):
- *   hồ sơ là tài liệu TCVN, còn message server broadcast chung mọi client.
- * Chạy được cả trong Node (test) — localStorage/location được guard.
+ * i18n del editor web.
+ * - Español por defecto (arquitecto-mcp es para Chile). El botón alterna ES/EN.
+ * - La elección manual gana: ?lang=… o el botón (se guarda en localStorage).
+ * - "vi" es legado del upstream: solo con ?lang=vi explícito; se elimina en E4.
+ * - Los planos exportados aún llevan rótulos del upstream (pendiente).
+ * Funciona también en Node (tests): localStorage/location están protegidos.
  */
 
-export type Lang = "vi" | "en";
+export type Lang = "es" | "en" | "vi";
 
 type Dict = Record<string, string>;
 
@@ -107,7 +105,7 @@ const EN: Dict = {
   "share.title": "Copy a VIEW-ONLY link for family — they see everything live but cannot edit; revoke with POST /share/rotate",
   "share.copied": "View-only link copied — send it to your family:\n{url}",
   "share.error": "Could not fetch the share link — try reloading the page.",
-  "lang.title": "Chuyển giao diện sang tiếng Việt",
+  "lang.title": "Cambiar la interfaz a español",
   "tool.select": "Select / move — drag walls, doors, furniture; type a number while dragging for exact mm; Alt disables snapping; R rotates the selected furniture",
   "tool.wall": "Draw wall — coming later",
   "tool.door": "Place door — coming later",
@@ -177,40 +175,119 @@ const EN: Dict = {
   "note.redo": "redo: {label}",
 };
 
-const DICTS: Record<Lang, Dict> = { vi: VI, en: EN };
-
-export const DICT_KEYS = Object.keys(VI);
-export const DICT_EN_KEYS = Object.keys(EN);
-
-export type DetectInput = {
-  /** ?lang trong URL. */
-  query?: string | null;
-  /** Lựa chọn tay đã lưu (localStorage). */
-  saved?: string | null;
-  /** Múi giờ máy — Asia/Ho_Chi_Minh/Saigon = đang ở Việt Nam. */
-  timeZone?: string | null;
-  /** Danh sách ngôn ngữ trình duyệt. */
-  languages?: readonly string[];
+const ES: Dict = {
+  "app.connecting": "conectando…",
+  "conn.on": "en vivo",
+  "conn.connecting": "conectando…",
+  "conn.off": "conexión perdida: reintentando…",
+  "view.plan": "Planta",
+  "view.3d": "3D",
+  "view.split": "Dividida",
+  "share.btn": "compartir",
+  "share.title": "Copia un link de SOLO LECTURA: se ve todo en vivo pero no se puede editar (solo funciona en este equipo)",
+  "share.copied": "Link de solo lectura copiado:\n{url}",
+  "share.error": "No se pudo obtener el link compartido: prueba recargar la página.",
+  "lang.title": "Switch interface language to English",
+  "tool.select": "Seleccionar / mover: arrastra muros, puertas y muebles; mientras arrastras escribe un número para fijar la medida exacta; Alt desactiva el ajuste; R gira el mueble seleccionado",
+  "tool.wall": "Dibujar muro (próximamente)",
+  "tool.door": "Poner puerta (próximamente)",
+  "tool.window": "Poner ventana (próximamente)",
+  "tool.room": "Dibujar recinto (próximamente)",
+  "tool.furniture": "Mobiliario: abre el catálogo, elige una pieza y haz clic en la planta para ubicarla; Esc/V para terminar",
+  "tool.measure": "Medir (próximamente)",
+  "tool.locked": "Link de solo lectura: no se puede editar",
+  "pane2d.empty": "Esperando un proyecto: el plano crece a medida que Claude construye.",
+  "pane2d.hint": "arrastrar objeto: mover · escribir mientras arrastras: medida exacta · Alt: sin ajuste",
+  "fit2d": "ajustar",
+  "fit2d.title": "Ajustar el plano a la vista",
+  "walk.btn": "recorrer",
+  "walk.title": "Recorrer la casa: WASD para moverse, mouse para mirar, Shift para correr, Esc para salir",
+  "walk.hint": "WASD: moverse · mouse: mirar · Shift: correr · Esc: salir",
+  "sun.btn": "sol",
+  "sun.title": "Asoleamiento por hora y mes (latitud desde el brief)",
+  "sun.hour": "hora",
+  "sun.month": "mes",
+  "reset3d": "vista inicial",
+  "reset3d.title": "Volver a la cámara por defecto",
+  "hint3d.orbit": "arrastrar: orbitar · rueda: zoom · botón derecho: desplazar",
+  "panel.props": "Propiedades",
+  "panel.issues": "Revisión",
+  "props.empty": "Toca un objeto del plano para ver sus datos.",
+  "props.empty.sub": "Arrastra para mover; mientras arrastras, escribe un número para la medida exacta.",
+  "issues.clean": "Plano limpio: sin observaciones.",
+  "issues.pending": "Aún no hay resultados de revisión.",
+  "footer.levels": "Piso",
+  "footer.revision": "Revisión",
+  "footer.conn": "Conexión",
+  "footer.claude": "Claude",
+  "footer.undo": "Deshacer",
+  "footer.snap": "Ajuste",
+  "undo.title": "Deshacer (Ctrl+Z): solo tus acciones",
+  "redo.title": "Rehacer (Ctrl+Y)",
+  "snap.title": "Paso de la grilla de ajuste (mm); 0 lo desactiva",
+  "toast.claude": "Claude",
+  "toast.user": "Tú",
+  "toast.reject": "Rechazado",
+  "toast.rejectFallback": "El servidor rechazó el cambio.",
+  "toast.readonly": "Estás en un link de solo lectura: puedes mirar, no editar.",
+  "toast.deleteUnsupported": "Aún no se puede eliminar {kind} desde el editor.",
+  "viewer.badge": "SOLO LECTURA",
+  "hud.typing": "⏎ fijar · Esc borrar",
+  "hud.typable": "escribe un número para la medida exacta",
+  "hud.gap": "holgura",
+  "catalog.title": "Mobiliario",
+  "catalog.search": "buscar: bed, sofa, table… (nombres en inglés por ahora)",
+  "catalog.empty": "Ninguna pieza coincide.",
+  "catalog.mounted": "colgado",
+  "kind.wall": "Muro",
+  "kind.opening": "Vano",
+  "kind.slab": "Losa",
+  "kind.roof": "Techo",
+  "kind.stair": "Escalera",
+  "kind.room": "Recinto",
+  "kind.furniture": "Mueble",
+  "kind.level": "Piso",
+  "note.place": "ubicar {label}",
+  "note.rotate": "girar {id}",
+  "note.delete": "eliminar {id}",
+  "note.drag": "mover {id}",
+  "note.typed": "{id}: escrito {value}",
+  "note.prop": "editar {id}.{field}",
+  "note.undo": "deshacer: {label}",
+  "note.redo": "rehacer: {label}",
 };
 
-/** Chọn ngôn ngữ — THUẦN, test được: tay (query > saved) thắng auto (VN → vi, ngoài → en). */
+const DICTS: Record<Lang, Dict> = { es: ES, en: EN, vi: VI };
+
+export const DICT_KEYS = Object.keys(ES);
+export const DICT_EN_KEYS = Object.keys(EN);
+export const DICT_VI_KEYS = Object.keys(VI);
+
+export type DetectInput = {
+  /** ?lang de la URL. */
+  query?: string | null;
+  /** Elección manual guardada (localStorage). */
+  saved?: string | null;
+};
+
+const isLang = (v: string | null | undefined): v is Lang => v === "es" || v === "en" || v === "vi";
+
+/** Elige el idioma (función pura, testeable): ?lang > guardado > español. */
 export function detectLang(input: DetectInput): Lang {
-  if (input.query === "en" || input.query === "vi") return input.query;
-  if (input.saved === "en" || input.saved === "vi") return input.saved;
-  if (input.timeZone === "Asia/Ho_Chi_Minh" || input.timeZone === "Asia/Saigon") return "vi";
-  if (input.languages?.some((l) => l?.toLowerCase().startsWith("vi"))) return "vi";
-  return "en";
+  if (isLang(input.query)) return input.query;
+  if (isLang(input.saved)) return input.saved;
+  return "es";
 }
 
 function detect(): Lang {
   let query: string | null = null;
   if (typeof location !== "undefined") {
     query = new URLSearchParams(location.search).get("lang");
-    if (query === "en" || query === "vi") {
+    if (isLang(query)) {
       try {
         localStorage.setItem("arquitecto-lang", query);
       } catch {
-        // storage bị chặn — vẫn dùng được trong phiên
+        // storage bloqueado: igual sirve durante la sesión
       }
     }
   }
@@ -220,24 +297,14 @@ function detect(): Lang {
   } catch {
     // ignore
   }
-  let timeZone: string | null = null;
-  try {
-    timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone ?? null;
-  } catch {
-    // ignore
-  }
-  const languages =
-    typeof navigator !== "undefined"
-      ? [navigator.language, ...(navigator.languages ?? [])].filter(Boolean)
-      : [];
-  return detectLang({ query, saved, timeZone, languages });
+  return detectLang({ query, saved });
 }
 
 export const LANG: Lang = detect();
 
-/** Tra từ điển theo ngôn ngữ CHỈ ĐỊNH — nuôi test không phụ thuộc môi trường. */
+/** Busca en el diccionario del idioma INDICADO (para tests independientes del entorno). */
 export function translate(lang: Lang, key: string, params?: Record<string, string | number>): string {
-  let s = DICTS[lang][key] ?? VI[key] ?? key;
+  let s = DICTS[lang][key] ?? ES[key] ?? key;
   if (params) for (const [k, v] of Object.entries(params)) s = s.split(`{${k}}`).join(String(v));
   return s;
 }
@@ -246,8 +313,9 @@ export function t(key: string, params?: Record<string, string | number>): string
   return translate(LANG, key, params);
 }
 
-/** Áp từ điển lên DOM tĩnh: [data-i18n] → textContent, [data-i18n-title] → title. */
+/** Aplica el diccionario al DOM estático: [data-i18n] → textContent, [data-i18n-title] → title. */
 export function applyDom(root: ParentNode = document): void {
+  if (root === document) document.documentElement.lang = LANG;
   for (const el of root.querySelectorAll<HTMLElement>("[data-i18n]")) {
     el.textContent = t(el.dataset.i18n!);
   }
@@ -258,11 +326,11 @@ export function applyDom(root: ParentNode = document): void {
 
 export function toggleLang(): void {
   try {
-    localStorage.setItem("arquitecto-lang", LANG === "vi" ? "en" : "vi");
+    localStorage.setItem("arquitecto-lang", LANG === "en" ? "es" : "en");
   } catch {
     // ignore
   }
-  // giữ nguyên đường dẫn (kể cả /xem/<token>), bỏ ?lang cũ để localStorage cầm lái
+  // conserva la ruta (incluido /xem/<token> y ?token=) y quita ?lang para que mande localStorage
   const url = new URL(location.href);
   url.searchParams.delete("lang");
   location.href = url.toString();

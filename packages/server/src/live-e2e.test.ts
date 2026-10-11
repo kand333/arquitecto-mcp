@@ -49,7 +49,7 @@ describe.skipIf(!hasDist)("E2E editor thật (chromium headless)", () => {
     await page.waitForSelector("#paper svg", { timeout: 15_000 });
     const levels = await page.$$eval("#level-tabs .level-btn", (els) => els.map((e) => e.textContent));
     expect(levels).toEqual(["L1", "L2"]);
-    expect(await page.textContent("#conn-text")).toBe("trực tiếp");
+    expect(await page.textContent("#conn-text")).toBe("en vivo");
     expect(await page.textContent("#rev-seal")).toBe("r 0");
   }, 30_000);
 
@@ -377,7 +377,7 @@ describe.skipIf(!hasDist)("E2E editor thật (chromium headless)", () => {
       await viewer.waitForSelector("#paper svg", { timeout: 15_000 });
 
       // vai khách hiện rõ + công cụ khóa
-      expect(await viewer.textContent(".view-badge")).toBe("CHỈ XEM");
+      expect(await viewer.textContent(".view-badge")).toBe("SOLO LECTURA");
       expect(await viewer.$eval("#share-btn", (el) => (el as HTMLElement).hidden)).toBe(true);
       expect(await viewer.$eval("#tool-select", (el) => (el as HTMLButtonElement).disabled)).toBe(true);
 
@@ -429,7 +429,7 @@ describe.skipIf(!hasDist)("E2E editor thật (chromium headless)", () => {
     }
   }, 40_000);
 
-  it("i18n: máy NGOÀI Việt Nam tự ra tiếng Anh (không cần ?lang)", async () => {
+  it("i18n: sin ?lang la UI sale en español en cualquier país (sin autodetección)", async () => {
     const abroad = await browser.newPage({
       viewport: { width: 1200, height: 800 },
       locale: "en-US",
@@ -438,19 +438,19 @@ describe.skipIf(!hasDist)("E2E editor thật (chromium headless)", () => {
     try {
       await abroad.goto(live.editorUrl()!);
       await abroad.waitForSelector("#paper svg", { timeout: 15_000 });
-      expect(await abroad.textContent("#share-btn")).toBe("share");
-      expect(await abroad.textContent("#conn-text")).toBe("live");
-      expect(await abroad.textContent("#lang-btn")).toBe("VI");
+      expect(await abroad.textContent("#share-btn")).toBe("compartir");
+      expect(await abroad.textContent("#conn-text")).toBe("en vivo");
+      expect(await abroad.textContent("#lang-btn")).toBe("EN"); // el botón muestra el idioma DESTINO
     } finally {
       await abroad.close();
     }
   }, 30_000);
 
-  it("i18n: ?lang=en → UI tiếng Anh (kể cả catalog + badge viewer); máy ở VN mặc định vẫn tiếng Việt", async () => {
+  it("i18n: ?lang=en → UI en inglés (incluye catálogo y badge del viewer); sin ?lang sigue en español", async () => {
     const en = await browser.newPage({
       viewport: { width: 1200, height: 800 },
-      locale: "vi-VN",
-      timezoneId: "Asia/Ho_Chi_Minh", // ở VN nhưng chủ động chọn EN — tay thắng auto
+      locale: "es-CL",
+      timezoneId: "America/Santiago",
     });
     try {
       await en.goto(`${live.editorUrl()!}&lang=en`);
@@ -458,7 +458,7 @@ describe.skipIf(!hasDist)("E2E editor thật (chromium headless)", () => {
       expect(await en.textContent("#share-btn")).toBe("share");
       expect(await en.textContent('[data-view-btn="plan"]')).toBe("Plan");
       expect(await en.textContent("#conn-text")).toBe("live");
-      expect(await en.textContent("#lang-btn")).toBe("VI"); // nút hiện ngôn ngữ ĐÍCH
+      expect(await en.textContent("#lang-btn")).toBe("ES"); // el botón muestra el idioma DESTINO
       // catalog hiện tên tiếng Anh
       await en.click("#tool-furniture");
       await en.fill("#catalog-panel .cat-search", "scooter");
@@ -471,8 +471,8 @@ describe.skipIf(!hasDist)("E2E editor thật (chromium headless)", () => {
     } finally {
       await en.close();
     }
-    // tab chính (không ?lang) vẫn nguyên tiếng Việt — Việt trước là mặc định
-    expect(await page.textContent("#share-btn")).toBe("chia sẻ");
+    // la pestaña principal (sin ?lang) sigue en español, el idioma por defecto
+    expect(await page.textContent("#share-btn")).toBe("compartir");
   }, 40_000);
 
   it("nút chia sẻ trên tab chủ nhà lấy được link /xem/<token>", async () => {

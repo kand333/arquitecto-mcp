@@ -72,7 +72,7 @@ export class CatalogPanel {
       btn.dataset.asset = a.id;
       const name = document.createElement("span");
       name.className = "cat-name";
-      name.textContent = LANG === "en" && a.labelEn ? a.labelEn : a.label;
+      name.textContent = LANG !== "vi" && a.labelEn ? a.labelEn : a.label; // ES usa el inglés hasta tener nombres en español
       const dims = document.createElement("span");
       dims.className = "cat-dims";
       dims.textContent = `${a.footprint.w}×${a.footprint.d}${a.mountHeight != null ? ` · ${t("catalog.mounted")}` : ""}`;

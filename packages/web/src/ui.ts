@@ -39,7 +39,7 @@ export type UICallbacks = {
 
 const $ = <T extends HTMLElement>(id: string): T => {
   const el = document.getElementById(id);
-  if (!el) throw new Error(`Thiếu #${id} trong index.html`);
+  if (!el) throw new Error(`Falta #${id} en index.html`);
   return el as T;
 };
 
@@ -320,7 +320,7 @@ function renderValue(key: string, value: unknown): string | null {
   if (typeof value === "string" || typeof value === "boolean") return String(value);
   if (Array.isArray(value)) {
     if (value.length === 2 && value.every((v) => typeof v === "number")) return `${value[0]}, ${value[1]}`;
-    return `${value.length} phần tử`;
+    return `${value.length} elementos`;
   }
   return null; // object lồng nhau — chưa sửa trực tiếp
 }

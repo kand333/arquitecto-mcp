@@ -1,6 +1,7 @@
 import type { Op, Point, Project } from "@arquitecto/core";
 import { furnitureDragSession, openingDragSession, wallDragSession, type DragSession, type DragState } from "./drag.js";
 import { Hud } from "./hud.js";
+import { t } from "./i18n.js";
 import { clientToPaper, modelDeltaToPaper, modelPerPixel, paperToModel, readPlanTf } from "./plan-geom.js";
 
 export type Plan2DDeps = {
@@ -143,14 +144,14 @@ export class Plan2D {
   /** Chụp tờ giấy hiện tại thành PNG base64 (nuôi capture_view target "plan"). */
   async capture(targetWidth = 1600): Promise<string> {
     const svg = this.svg;
-    if (!svg) throw new Error("Chưa có bản vẽ để chụp.");
+    if (!svg) throw new Error("Aún no hay plano para capturar.");
     const xml = new XMLSerializer().serializeToString(svg);
     const url = URL.createObjectURL(new Blob([xml], { type: "image/svg+xml" }));
     try {
       const img = new Image();
       await new Promise<void>((res, rej) => {
         img.onload = () => res();
-        img.onerror = () => rej(new Error("Không nạp được SVG để chụp."));
+        img.onerror = () => rej(new Error("No se pudo cargar el SVG para la captura."));
         img.src = url;
       });
       const w = img.naturalWidth || 1600;
@@ -306,7 +307,7 @@ export class Plan2D {
           return;
         }
         applyPreview(st);
-        finish(st.op, `${hitId}: gõ ${typing}`);
+        finish(st.op, t("note.typed", { id: String(hitId), value: typing }));
         ev.preventDefault();
         ev.stopPropagation();
         return;

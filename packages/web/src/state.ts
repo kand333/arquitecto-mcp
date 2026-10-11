@@ -104,9 +104,9 @@ export class AppState {
     const p = this.model;
     if (!p) return null;
     const lists: Array<[string, EntityKind, Array<{ id: string }>]> = [
-      ["Tường", "wall", p.walls], ["Cửa", "opening", p.openings], ["Sàn", "slab", p.slabs],
-      ["Mái", "roof", p.roofs ?? []], ["Thang", "stair", p.stairs], ["Phòng", "room", p.rooms],
-      ["Nội thất", "furniture", p.furniture], ["Tầng", "level", p.levels],
+      ["Muro", "wall", p.walls], ["Vano", "opening", p.openings], ["Losa", "slab", p.slabs],
+      ["Techo", "roof", p.roofs ?? []], ["Escalera", "stair", p.stairs], ["Recinto", "room", p.rooms],
+      ["Mueble", "furniture", p.furniture], ["Piso", "level", p.levels],
     ];
     for (const [kind, entity, list] of lists) {
       const e = list.find((x) => x.id === id);

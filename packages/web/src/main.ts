@@ -109,7 +109,7 @@ const plan = new Plan2D(document.getElementById("paper-viewport")!, document.get
     const id = nextId(m, "F");
     sendOps(
       [{ op: "add", entity: "furniture", data: { id, level: state.activeLevel, asset: assetId, at, rotation: 0 } }],
-      t("note.place", { label: (LANG === "en" ? asset?.labelEn : undefined) ?? asset?.label ?? assetId }),
+      t("note.place", { label: (LANG !== "vi" ? asset?.labelEn : undefined) ?? asset?.label ?? assetId }),
       "edit",
     );
     // giữ chế độ đặt — đặt liên tiếp tới khi Esc/V
@@ -134,7 +134,7 @@ const ws = new WsClient({
   onReject: (m) => {
     pending.shift(); // op của mình vừa bị từ chối (browser chỉ có một nguồn gửi)
     plan.clearPreview();
-    ui.toast("reject", m.errors.map((e) => e.message).join(" · ") || "Server từ chối thay đổi.");
+    ui.toast("reject", m.errors.map((e) => e.message).join(" · ") || t("toast.rejectFallback"));
     syncUndoButtons();
     if (m.currentRevision > state.revision) ws.resync(); // mirror tụt hậu — xin snapshot tươi
   },
@@ -172,7 +172,7 @@ state.on("patch", ({ revision, ops, origin, note, summary, changedIds }) => {
   // level mới xuất hiện/mất đi → làm mới tab tầng
   ui.setLevels(state.model.levels, state.activeLevel);
   if (origin === "claude") {
-    const what = note ?? summary ?? "cập nhật model";
+    const what = note ?? summary ?? "actualización del modelo";
     ui.toast("claude", what, revision);
     ui.claudeNote(what);
   }
@@ -373,7 +373,7 @@ if (READONLY) {
 
 // nút đổi ngôn ngữ — hiện NGÔN NGỮ ĐÍCH, giữ nguyên trang (kể cả /xem/<token>)
 const langBtn = document.getElementById("lang-btn") as HTMLButtonElement;
-langBtn.textContent = LANG === "vi" ? "EN" : "VI";
+langBtn.textContent = LANG === "en" ? "ES" : "EN";
 langBtn.addEventListener("click", toggleLang);
 
 ws.connect();
