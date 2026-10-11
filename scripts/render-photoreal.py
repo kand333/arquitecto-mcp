@@ -1,8 +1,8 @@
-# Render photoreal từ GLB của Atelier bằng Blender (backlog P5+ — doc 10).
+# Render photoreal từ GLB của Arquitecto bằng Blender (backlog P5+ — doc 10).
 #
 #   blender -b -P scripts/render-photoreal.py -- <file.glb> <out.png> [gio] [thang]
 #
-# - Nhập GLB (export format 'gltf' của Atelier — mét thật, mỗi entity một node).
+# - Nhập GLB (export format 'gltf' của Arquitecto — mét thật, mỗi entity một node).
 # - Dựng nắng theo giờ + tháng (mặc định 9h, tháng 6) — cùng công thức rút gọn
 #   với sun study trong editor; trời nền procedural (Nishita sky).
 # - Camera tự đóng khung toàn nhà từ góc 3/4; Cycles 128 samples.

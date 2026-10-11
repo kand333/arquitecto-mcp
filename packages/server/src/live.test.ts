@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import WebSocket from "ws";
 import type {
   PatchMsg, RejectMsg, ServerMessage, SnapshotMsg, ValidationMsg,
-} from "@atelier/core";
+} from "@arquitecto/core";
 import { LiveServer, type LiveOptions } from "./live.js";
 import { ProjectStore } from "./store.js";
 
@@ -15,7 +15,7 @@ afterEach(async () => {
 });
 
 async function boot(opts: LiveOptions = {}): Promise<{ store: ProjectStore; live: LiveServer; url: string }> {
-  const store = new ProjectStore(mkdtempSync(path.join(tmpdir(), "atelier-live-")));
+  const store = new ProjectStore(mkdtempSync(path.join(tmpdir(), "arquitecto-live-")));
   store.newProject("Nhà anh Ba", "nha-ong-4x16-2t");
   const live = new LiveServer(store, { port: 0, ...opts });
   const url = await live.start();
@@ -235,7 +235,7 @@ describe("LiveServer", () => {
 
   it("link chia sẻ chỉ-xem: token persist, viewer bị VIEW-01, không soft-lock được, rotate đá viewer", async () => {
     const { store, live, url } = await boot();
-    // token qua HTTP + persist qua restart LiveServer (đọc lại .atelier/share.json)
+    // token qua HTTP + persist qua restart LiveServer (đọc lại .arquitecto/share.json)
     const share = (await (await fetch(`${url}/share`)).json()) as { url: string; token: string };
     expect(share.url).toContain(`/xem/${share.token}`);
     const live2 = new LiveServer(store, { port: 0 });

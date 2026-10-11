@@ -11,13 +11,13 @@ import { WebSocketServer, type WebSocket as WsSocket } from "ws";
 import {
   parseClientMessage, validateProject,
   type CaptureCamera, type CaptureTarget, type ClientKind, type ServerMessage, type ValidationMsg,
-} from "@atelier/core";
+} from "@arquitecto/core";
 import { compareHtml, type VariantSide } from "./compare.js";
 import { loadUnderlay } from "./import/underlay.js";
 import { renderPlanSvg } from "./render/render.js";
 import type { ProjectStore, StoreEvent } from "./store.js";
 
-/** dist của web editor — build bằng `pnpm --filter @atelier/web build`. */
+/** dist của web editor — build bằng `pnpm --filter @arquitecto/web build`. */
 export const DEFAULT_WEB_DIST = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "web", "dist");
 
 const MIME: Record<string, string> = {
@@ -34,14 +34,14 @@ const MIME: Record<string, string> = {
   ".glb": "model/gltf-binary",
 };
 
-const NO_DIST_PAGE = `<!doctype html><meta charset="utf-8"><title>Atelier</title>
+const NO_DIST_PAGE = `<!doctype html><meta charset="utf-8"><title>Arquitecto</title>
 <body style="font-family:system-ui;display:grid;place-items:center;min-height:100vh;margin:0;background:#111;color:#eee">
-<div style="max-width:34rem;line-height:1.6"><h1 style="font-weight:600">📐 Atelier — editor chưa được build</h1>
+<div style="max-width:34rem;line-height:1.6"><h1 style="font-weight:600">📐 Arquitecto — editor chưa được build</h1>
 <p>Chạy lệnh sau rồi tải lại trang:</p>
-<pre style="background:#000;padding:.8rem 1rem;border-radius:8px">pnpm --filter @atelier/web build</pre></div>`;
+<pre style="background:#000;padding:.8rem 1rem;border-radius:8px">pnpm --filter @arquitecto/web build</pre></div>`;
 
 export type LiveOptions = {
-  /** Cổng ưa thích (mặc định env ATELIER_PORT hoặc 4823); bận thì tự thử +1…+9. 0 = hệ điều hành tự cấp. */
+  /** Cổng ưa thích (mặc định env ARQUITECTO_PORT hoặc 4823); bận thì tự thử +1…+9. 0 = hệ điều hành tự cấp. */
   port?: number;
   host?: string;
   webDist?: string;
@@ -87,7 +87,7 @@ export class LiveServer {
   private unsubscribe: (() => void) | null = null;
   /** Token phiên — đổi mỗi lần model thay MỚI (project_new/open) để tab cũ không tưởng nhầm còn sync. */
   private session = randomUUID();
-  /** Token link chia sẻ chỉ-xem — nạp/lưu .atelier/share.json (sống qua restart). */
+  /** Token link chia sẻ chỉ-xem — nạp/lưu .arquitecto/share.json (sống qua restart). */
   private share: string | null = null;
   url: string | null = null;
 
@@ -112,9 +112,9 @@ export class LiveServer {
   /** Khởi động (idempotent) — trả URL editor. */
   async start(): Promise<string> {
     if (this.url) return this.url;
-    // ATELIER_HOST=0.0.0.0 → máy khác trong LAN mở được editor + link chia sẻ (mặc định chỉ loopback)
-    const host = this.opts.host ?? process.env.ATELIER_HOST ?? "127.0.0.1";
-    const prefer = this.opts.port ?? Number(process.env.ATELIER_PORT ?? 4823);
+    // ARQUITECTO_HOST=0.0.0.0 → máy khác trong LAN mở được editor + link chia sẻ (mặc định chỉ loopback)
+    const host = this.opts.host ?? process.env.ARQUITECTO_HOST ?? "127.0.0.1";
+    const prefer = this.opts.port ?? Number(process.env.ARQUITECTO_PORT ?? 4823);
     let lastErr: unknown = null;
     for (let i = 0; i < 10; i++) {
       try {
@@ -163,7 +163,7 @@ export class LiveServer {
   /** Token chia sẻ hiện hành — tạo mới + lưu file nếu chưa có. */
   shareToken(): string {
     if (this.share) return this.share;
-    const fp = path.join(this.store.baseDir, ".atelier", "share.json");
+    const fp = path.join(this.store.baseDir, ".arquitecto", "share.json");
     try {
       const saved = JSON.parse(readFileSync(fp, "utf8")) as { token?: string };
       if (typeof saved.token === "string" && saved.token.length >= 8) {
@@ -179,7 +179,7 @@ export class LiveServer {
   /** Cấp token mới (thu hồi link cũ) — mọi tab viewer đang mở bị ngắt. */
   rotateShareToken(): string {
     this.share = randomBytes(9).toString("base64url");
-    const dir = path.join(this.store.baseDir, ".atelier");
+    const dir = path.join(this.store.baseDir, ".arquitecto");
     mkdirSync(dir, { recursive: true });
     writeFileSync(path.join(dir, "share.json"), JSON.stringify({ token: this.share }) + "\n", "utf8");
     for (const peer of this.peers) {
@@ -256,7 +256,7 @@ export class LiveServer {
     app.get("/xem/:token", (c) => {
       if (c.req.param("token") !== this.shareToken()) {
         return c.html(
-          `<!doctype html><meta charset="utf-8"><title>Atelier</title>
+          `<!doctype html><meta charset="utf-8"><title>Arquitecto</title>
 <body style="font-family:system-ui;display:grid;place-items:center;min-height:100vh;margin:0;background:#111;color:#eee">
 <div style="max-width:30rem;line-height:1.6"><h1 style="font-weight:600">🔒 Link không còn hiệu lực</h1>
 <p>Link chia sẻ này đã được thu hồi hoặc gõ sai — xin chủ nhà gửi lại link mới.</p></div>`,

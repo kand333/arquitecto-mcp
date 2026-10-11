@@ -1,4 +1,4 @@
-import type { Point } from "@atelier/core";
+import type { Point } from "@arquitecto/core";
 
 export type Bounds = { minX: number; minY: number; maxX: number; maxY: number };
 

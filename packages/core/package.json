@@ -1,9 +1,9 @@
 {
-  "name": "@atelier/core",
+  "name": "@arquitecto/core",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Atelier core — schema, geometry, ops, validator. Thuần, không I/O.",
+  "description": "Arquitecto core — schema, geometry, ops, validator. Thuần, không I/O.",
   "exports": {
     ".": "./src/index.ts"
   },

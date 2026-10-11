@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { estimateCost, loadBietThuDoc, loadNhaOng4x16 } from "@atelier/core";
+import { estimateCost, loadBietThuDoc, loadNhaOng4x16 } from "@arquitecto/core";
 import { buildPlanScene } from "./plan-scene.js";
 import { buildElevationScene } from "./elevation-scene.js";
 import { buildSectionScene } from "./section-scene.js";

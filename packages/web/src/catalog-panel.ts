@@ -1,4 +1,4 @@
-import { CATALOG, type Asset } from "@atelier/core";
+import { CATALOG, type Asset } from "@arquitecto/core";
 import { LANG, t } from "./i18n.js";
 
 /**

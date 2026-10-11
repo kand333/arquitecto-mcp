@@ -1,4 +1,4 @@
-import type { Opening } from "@atelier/core";
+import type { Opening } from "@arquitecto/core";
 
 /**
  * Tách tường thành mảnh hộp quanh openings — thay CSG ở P2 (doc 10:

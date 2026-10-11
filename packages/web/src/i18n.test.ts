@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { detectLang, DICT_EN_KEYS, DICT_KEYS, translate } from "./i18n.js";
-import { CATALOG } from "@atelier/core";
+import { CATALOG } from "@arquitecto/core";
 
 describe("i18n editor — song ngữ vi/en, tự nhận theo quốc gia", () => {
   it("hai từ điển có ĐÚNG cùng bộ key (không key mồ côi)", () => {

@@ -4,7 +4,7 @@
     "name": "UK detached — 3 bed, gable roof",
     "revision": 1,
     "unit": "mm",
-    "app": "atelier/0.1"
+    "app": "arquitecto/0.1"
   },
   "config": { "region": "uk", "typology": "detached" },
   "brief": {

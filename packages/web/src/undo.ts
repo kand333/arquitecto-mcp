@@ -1,4 +1,4 @@
-import type { EntityKind, Op, Project } from "@atelier/core";
+import type { EntityKind, Op, Project } from "@arquitecto/core";
 
 /**
  * Undo per-origin (doc 06): stack cục bộ = nghịch đảo các op DO CHÍNH MÌNH tạo,

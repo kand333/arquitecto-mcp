@@ -4,7 +4,7 @@
     "name": "Căn hộ 2PN — cải tạo trong khung có sẵn",
     "revision": 1,
     "unit": "mm",
-    "app": "atelier/0.1"
+    "app": "arquitecto/0.1"
   },
   "config": { "typology": "can-ho" },
   "brief": {

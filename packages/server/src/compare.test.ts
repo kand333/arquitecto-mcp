@@ -2,12 +2,12 @@ import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { applyOps, loadNhaOng4x16 } from "@atelier/core";
+import { applyOps, loadNhaOng4x16 } from "@arquitecto/core";
 import { compareHtml, compareProjects } from "./compare.js";
 import { ProjectStore } from "./store.js";
 
 function freshStore(): ProjectStore {
-  const store = new ProjectStore(mkdtempSync(path.join(tmpdir(), "atelier-variant-")));
+  const store = new ProjectStore(mkdtempSync(path.join(tmpdir(), "arquitecto-variant-")));
   store.newProject("Nhà anh Ba", "nha-ong-4x16-2t");
   return store;
 }

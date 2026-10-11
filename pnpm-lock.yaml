@@ -24,7 +24,7 @@ importers:
         specifier: ^1.53.0
         version: 1.61.1
     devDependencies:
-      '@atelier/server':
+      '@arquitecto/server':
         specifier: workspace:*
         version: link:../server
       '@modelcontextprotocol/sdk':
@@ -48,7 +48,7 @@ importers:
 
   packages/server:
     dependencies:
-      '@atelier/core':
+      '@arquitecto/core':
         specifier: workspace:*
         version: link:../core
       '@hono/node-server':
@@ -88,7 +88,7 @@ importers:
 
   packages/web:
     dependencies:
-      '@atelier/core':
+      '@arquitecto/core':
         specifier: workspace:*
         version: link:../core
       three:

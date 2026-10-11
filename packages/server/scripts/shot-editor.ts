@@ -1,11 +1,11 @@
 /**
  * Chụp toàn trang editor đang chạy thành PNG (đồ nghề dev/docs).
  * Dùng:  tsx packages/server/scripts/shot-editor.ts [file-ra.png]
- * Env:   ATELIER_URL (mặc định http://localhost:4823)
+ * Env:   ARQUITECTO_URL (mặc định http://localhost:4823)
  */
 import { chromium } from "playwright";
 
-const url = process.env.ATELIER_URL ?? "http://localhost:4823";
+const url = process.env.ARQUITECTO_URL ?? "http://localhost:4823";
 const out = process.argv[2] ?? "editor-full.png";
 
 const browser = await chromium.launch();

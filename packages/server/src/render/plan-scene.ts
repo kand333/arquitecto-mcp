@@ -3,7 +3,7 @@ import {
   floorSlabOf, pointOnWall, roofGeometry, roofsOfLevel, rotate, scale as vscale, stairLayout, sub, unverifiedRules,
   wallBand, wallDir, wallLength, wallNormal, type Furniture, type Level, type Opening,
   type Point, type Project, type Wall,
-} from "@atelier/core";
+} from "@arquitecto/core";
 import { dimTick, drawSheetFrame } from "./frame.js";
 import { LAYERS, W, type LayerName, type Prim, type Scene2D, type SceneItem } from "./scene.js";
 import { planTransform, type Bounds, type PlanTransform } from "./transform.js";

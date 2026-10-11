@@ -1,4 +1,4 @@
-import type { Point, Polygon } from "@atelier/core";
+import type { Point, Polygon } from "@arquitecto/core";
 
 /**
  * Đọc DXF (ASCII, mọi bản AC10xx) thành polyline thuần — nuôi underlay đồ lại

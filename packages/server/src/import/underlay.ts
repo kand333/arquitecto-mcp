@@ -1,12 +1,12 @@
 import { readFileSync, statSync } from "node:fs";
 import path from "node:path";
-import type { Point, Polygon, Project, Underlay } from "@atelier/core";
+import type { Point, Polygon, Project, Underlay } from "@arquitecto/core";
 import { parseDxf, placePoint, type DxfDrawing } from "./dxf.js";
 import { imageSize } from "./image-size.js";
 
 /**
  * Nạp underlay từ model → dữ liệu render sẵn cho plan-scene.
- * Model chỉ giữ THAM CHIẾU (source trong .atelier/underlay/) — file đọc và
+ * Model chỉ giữ THAM CHIẾU (source trong .arquitecto/underlay/) — file đọc và
  * parse ở đây, cache theo mtime để mỗi lần render không đọc lại đĩa.
  */
 
@@ -20,7 +20,7 @@ export type UnderlayRender = {
 };
 
 export function underlayDir(projectDir: string): string {
-  return path.join(projectDir, ".atelier", "underlay");
+  return path.join(projectDir, ".arquitecto", "underlay");
 }
 
 type CacheEntry = { key: string; dxf?: DxfDrawing; href?: string; wpx?: number; hpx?: number };

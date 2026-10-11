@@ -1,4 +1,4 @@
-import type { Point } from "@atelier/core";
+import type { Point } from "@arquitecto/core";
 import { LAYERS, type Prim, type Scene2D } from "./scene.js";
 
 /**

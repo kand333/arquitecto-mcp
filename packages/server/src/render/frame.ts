@@ -1,4 +1,4 @@
-import { unverifiedRules, type Point } from "@atelier/core";
+import { unverifiedRules, type Point } from "@arquitecto/core";
 import { PAPER } from "./transform.js";
 import { W, type LayerName, type Prim } from "./scene.js";
 
@@ -50,7 +50,7 @@ export function drawSheetFrame(push: FramePush, o: SheetFrameOptions): void {
   T(xm + 3, y0 + 7.6, o.sheetNo, 3.4, true);
   T(x0 + 3, y0 + 18.6, o.title.toUpperCase(), 3.0, true);
   T(xm + 3, y0 + 18.6, `TỶ LỆ ${o.scaleLabel}`, 2.8);
-  T(x0 + 3, y0 + 28.6, `Thiết kế: Atelier AI${o.designer ? ` + ${o.designer}` : ""}`, 2.4);
+  T(x0 + 3, y0 + 28.6, `Thiết kế: Arquitecto AI${o.designer ? ` + ${o.designer}` : ""}`, 2.4);
   T(xm + 3, y0 + 28.6, `Ngày: ${o.date ?? "—"}`, 2.4);
   T(x0 + 3, y0 + 38.6, "Kiểm: ................", 2.4);
   T(xm + 3, y0 + 38.6, o.app, 2.4);

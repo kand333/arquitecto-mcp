@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { loadNhaOng4x16 } from "@atelier/core";
+import { loadNhaOng4x16 } from "@arquitecto/core";
 import { buildPlanScene } from "./plan-scene.js";
 import { sceneToSvg } from "./svg-writer.js";
 

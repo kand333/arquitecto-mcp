@@ -4,7 +4,7 @@ import {
   getAsset, groundAt, roofGeometry, roofsOf, stairLayout, wallLength,
   type CaptureCamera, type Furniture, type Level, type Op, type Project, type Roof, type Room, type Slab, type Stair,
   type Wall,
-} from "@atelier/core";
+} from "@arquitecto/core";
 import { wallPieces } from "./geo3d.js";
 import { buildFurnitureLocal } from "./furniture3d.js";
 import { sunPosition } from "./sun.js";

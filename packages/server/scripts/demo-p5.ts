@@ -6,7 +6,7 @@
  *   cạnh → bật 3D, ĐI BỘ (WASD) xuyên nhà có nội thất → ngắm nắng chiều.
  *
  * "Người dùng" = chromium do Playwright điều khiển. Mặc định chạy headed để
- * xem tận mắt; ATELIER_DEMO_NO_BROWSER=1 chạy headless kiểm thử.
+ * xem tận mắt; ARQUITECTO_DEMO_NO_BROWSER=1 chạy headless kiểm thử.
  *
  * Chạy từ repo root:  pnpm demo:p5
  */
@@ -14,13 +14,13 @@ import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium, type Page } from "playwright";
-import { loadNhaOng4x16, validateProject, type Op, type Point } from "@atelier/core";
+import { loadNhaOng4x16, validateProject, type Op, type Point } from "@arquitecto/core";
 import { LiveServer } from "../src/live.js";
 import { ProjectStore } from "../src/store.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const DIR = path.join(ROOT, "sandbox", "demo-p5");
-const HEADLESS = process.env.ATELIER_DEMO_NO_BROWSER === "1";
+const HEADLESS = process.env.ARQUITECTO_DEMO_NO_BROWSER === "1";
 const NHIP_MS = HEADLESS ? 60 : 650;
 
 const t0 = Date.now();
@@ -69,7 +69,7 @@ async function pointOn(page: Page, id: string, dModel: [number, number]): Promis
   );
 }
 
-console.log('🎬 Atelier — demo 60 giây (doc 01): "nhà ống 4×16m, 2 tầng, 3 phòng ngủ, để được 2 xe máy"\n');
+console.log('🎬 Arquitecto — demo 60 giây (doc 01): "nhà ống 4×16m, 2 tầng, 3 phòng ngủ, để được 2 xe máy"\n');
 rmSync(DIR, { recursive: true, force: true });
 mkdirSync(DIR, { recursive: true });
 

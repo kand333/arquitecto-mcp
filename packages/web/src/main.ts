@@ -1,4 +1,4 @@
-import { areaM2, getAsset, nextId, type EntityKind, type Op } from "@atelier/core";
+import { areaM2, getAsset, nextId, type EntityKind, type Op } from "@arquitecto/core";
 import { AppState } from "./state.js";
 import { CatalogPanel } from "./catalog-panel.js";
 import { Plan2D } from "./plan2d.js";

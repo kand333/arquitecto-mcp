@@ -1,7 +1,7 @@
 import {
   applyOps,
   type EntityKind, type Issue, type Op, type PatchMsg, type Project, type SnapshotMsg, type ValidationMsg,
-} from "@atelier/core";
+} from "@arquitecto/core";
 
 export type ConnState = "connecting" | "on" | "off";
 export type ViewMode = "plan" | "3d" | "split";

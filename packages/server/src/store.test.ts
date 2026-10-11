@@ -2,10 +2,10 @@ import { mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import type { Project } from "@atelier/core";
+import type { Project } from "@arquitecto/core";
 import { ProjectStore, slugify } from "./store.js";
 
-const freshStore = (): ProjectStore => new ProjectStore(mkdtempSync(path.join(tmpdir(), "atelier-")));
+const freshStore = (): ProjectStore => new ProjectStore(mkdtempSync(path.join(tmpdir(), "arquitecto-")));
 
 describe("ProjectStore", () => {
   it("tạo từ template, revision 0, file ghi ra đĩa", () => {

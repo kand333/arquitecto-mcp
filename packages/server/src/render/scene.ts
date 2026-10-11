@@ -1,4 +1,4 @@
-import type { Point } from "@atelier/core";
+import type { Point } from "@arquitecto/core";
 
 /**
  * SceneGraph2D trung gian (doc 08): mọi writer (SVG P1, DXF P4)

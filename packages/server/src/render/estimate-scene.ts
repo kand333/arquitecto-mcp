@@ -1,4 +1,4 @@
-import { DON_GIA, donGiaFor, estimateCost, formatVnd, unverifiedRules, type Project } from "@atelier/core";
+import { DON_GIA, donGiaFor, estimateCost, formatVnd, unverifiedRules, type Project } from "@arquitecto/core";
 import { drawSheetFrame } from "./frame.js";
 import { drawTable, type Col } from "./schedule-scene.js";
 import { type LayerName, type Prim, type Scene2D } from "./scene.js";

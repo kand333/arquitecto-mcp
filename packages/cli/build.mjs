@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
 
 /**
- * Đóng gói atelier-mcp: bundle server (core + hono + ws + zod + MCP SDK…) thành
+ * Đóng gói arquitecto-mcp: bundle server (core + hono + ws + zod + MCP SDK…) thành
  * MỘT file dist/main.mjs, rồi copy web editor đã build + font vào package.
  * playwright để external (dependency thường) — nặng và có binary riêng.
  * Chạy: pnpm build:cli (root — tự build web trước).
@@ -36,4 +36,4 @@ await build({
 
 cpSync(webDist, path.join(here, "web"), { recursive: true });
 cpSync(fonts, path.join(here, "assets", "fonts"), { recursive: true });
-console.log("✔ atelier-mcp: dist/main.mjs + web/ + assets/fonts/");
+console.log("✔ arquitecto-mcp: dist/main.mjs + web/ + assets/fonts/");

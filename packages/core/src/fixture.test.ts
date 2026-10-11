@@ -9,7 +9,7 @@ describe("fixture nha-ong-4x16", () => {
   it("meta đúng quy ước", () => {
     expect(p.meta.unit).toBe("mm");
     expect(p.meta.revision).toBeGreaterThanOrEqual(0);
-    expect(p.meta.app).toMatch(/^atelier\//);
+    expect(p.meta.app).toMatch(/^arquitecto\//);
   });
 
   it("ID không trùng nhau trong toàn model", () => {

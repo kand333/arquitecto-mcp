@@ -4,7 +4,7 @@
     "name": "Nhà cấp 4 — 2 phòng ngủ, mái tôn",
     "revision": 1,
     "unit": "mm",
-    "app": "atelier/0.1"
+    "app": "arquitecto/0.1"
   },
   "config": { "typology": "nha-cap-4" },
   "brief": {

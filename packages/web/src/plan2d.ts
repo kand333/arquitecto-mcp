@@ -1,4 +1,4 @@
-import type { Op, Point, Project } from "@atelier/core";
+import type { Op, Point, Project } from "@arquitecto/core";
 import { furnitureDragSession, openingDragSession, wallDragSession, type DragSession, type DragState } from "./drag.js";
 import { Hud } from "./hud.js";
 import { clientToPaper, modelDeltaToPaper, modelPerPixel, paperToModel, readPlanTf } from "./plan-geom.js";

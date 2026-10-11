@@ -1,9 +1,9 @@
 {
-  "name": "@atelier/server",
+  "name": "@arquitecto/server",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Atelier server — MCP (stdio) + renderer 2D + model store + journal. Một process duy nhất.",
+  "description": "Arquitecto server — MCP (stdio) + renderer 2D + model store + journal. Một process duy nhất.",
   "exports": {
     ".": "./src/index.ts"
   },
@@ -11,7 +11,7 @@
     "mcp": "tsx src/mcp.ts"
   },
   "dependencies": {
-    "@atelier/core": "workspace:*",
+    "@arquitecto/core": "workspace:*",
     "@hono/node-server": "^2.0.8",
     "@modelcontextprotocol/sdk": "^1.12.0",
     "hono": "^4.12.29",

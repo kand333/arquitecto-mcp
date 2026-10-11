@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import type { Asset } from "@atelier/core";
+import type { Asset } from "@arquitecto/core";
 
 /**
  * Dựng 3D THAM SỐ cho nội thất theo category (P5) — thay khối hộp trơn của P2.

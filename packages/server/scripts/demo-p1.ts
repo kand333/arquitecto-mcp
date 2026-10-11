@@ -8,14 +8,14 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { closePngRenderer } from "../src/render/png.js";
 import { ProjectStore } from "../src/store.js";
-import { createAtelierServer } from "../src/tools.js";
+import { createArquitectoServer } from "../src/tools.js";
 
 const dir = path.resolve(process.argv[2] ?? "sandbox/demo-p1");
 rmSync(dir, { recursive: true, force: true });
 mkdirSync(dir, { recursive: true });
 
 const store = new ProjectStore(dir);
-const server = createAtelierServer(store);
+const server = createArquitectoServer(store);
 const [ct, st] = InMemoryTransport.createLinkedPair();
 const client = new Client({ name: "demo", version: "0" });
 await Promise.all([server.connect(st), client.connect(ct)]);

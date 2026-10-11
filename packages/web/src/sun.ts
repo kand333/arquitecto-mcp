@@ -1,4 +1,4 @@
-import type { Point } from "@atelier/core";
+import type { Point } from "@arquitecto/core";
 
 /**
  * Sun study (P5, doc 09): vị trí mặt trời từ giờ + tháng + vĩ độ,

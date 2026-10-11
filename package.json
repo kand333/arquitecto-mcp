@@ -1,5 +1,5 @@
 {
-  "name": "atelier",
+  "name": "arquitecto",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -12,26 +12,18 @@
     "test:watch": "vitest",
     "typecheck": "tsc -b && tsc -p packages/web/tsconfig.json",
     "build": "tsc -b",
-    "build:web": "pnpm --filter @atelier/web build",
+    "build:web": "pnpm --filter @arquitecto/web build",
     "demo:p2": "tsx packages/server/scripts/demo-p2.ts",
     "demo:p3": "tsx packages/server/scripts/demo-p3.ts",
     "demo:p4": "tsx packages/server/scripts/demo-p4.ts",
     "demo:p5": "tsx packages/server/scripts/demo-p5.ts",
-    "build:cli": "pnpm build:web && pnpm --filter atelier-mcp build"
+    "build:cli": "pnpm build:web && pnpm --filter arquitecto-mcp build"
   },
   "devDependencies": {
     "typescript": "^5.9.0",
     "vitest": "^3.2.0",
     "tsx": "^4.19.0"
   },
-  "description": "An AI architect for any MCP client — multi-typology houses on any lot, pluggable building-standard rule packs (TCVN, UK Approved Documents), live two-way browser editor, furnished 3D walkthrough, PDF/DXF/IFC documentation",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/lebac-svg/Atelier.git"
-  },
-  "homepage": "https://github.com/lebac-svg/Atelier#readme",
-  "bugs": {
-    "url": "https://github.com/lebac-svg/Atelier/issues"
-  }
+  "description": "Arquitecto IA local vía MCP: levantamiento de propiedades y diseño de casas, editor web 2D/3D, normas de Chile (OGUC), exportes PDF/DXF/IFC/glTF. Derivado de Atelier (MIT).",
+  "license": "MIT"
 }

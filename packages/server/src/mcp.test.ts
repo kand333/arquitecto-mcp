@@ -6,7 +6,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { LiveServer } from "./live.js";
 import { ProjectStore } from "./store.js";
-import { createAtelierServer } from "./tools.js";
+import { createArquitectoServer } from "./tools.js";
 
 const lives: LiveServer[] = [];
 afterEach(async () => {
@@ -14,10 +14,10 @@ afterEach(async () => {
 });
 
 async function connect() {
-  const store = new ProjectStore(mkdtempSync(path.join(tmpdir(), "atelier-mcp-")));
+  const store = new ProjectStore(mkdtempSync(path.join(tmpdir(), "arquitecto-mcp-")));
   const live = new LiveServer(store, { port: 0 }); // port 0: hệ điều hành tự cấp, không đụng cổng thật
   lives.push(live);
-  const server = createAtelierServer(store, live);
+  const server = createArquitectoServer(store, live);
   const [clientT, serverT] = InMemoryTransport.createLinkedPair();
   const client = new Client({ name: "test", version: "0.0.0" });
   await Promise.all([server.connect(serverT), client.connect(clientT)]);
@@ -143,7 +143,7 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
     ].join("\n");
     const { mkdtempSync, writeFileSync: wf } = await import("node:fs");
     const { tmpdir } = await import("node:os");
-    const src = path.join(mkdtempSync(path.join(tmpdir(), "atelier-dxf-")), "nha-cu.dxf");
+    const src = path.join(mkdtempSync(path.join(tmpdir(), "arquitecto-dxf-")), "nha-cu.dxf");
     wf(src, dxf, "utf8");
 
     const imp = await client.callTool({ name: "underlay_import", arguments: { path: src } });

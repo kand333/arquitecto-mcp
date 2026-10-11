@@ -1,7 +1,7 @@
 import {
   pointOnWall, roofGeometry, roofsOf, stairLayout, wallDir, wallLength,
   type Point, type Polygon, type Project, type Vec3, type Wall,
-} from "@atelier/core";
+} from "@arquitecto/core";
 
 /**
  * Model → IFC4 (STEP/SPF) thuần TS — backlog "bàn giao KTS thật" (doc 10).
@@ -260,8 +260,8 @@ export function modelToIfc(p: Project): string {
   return [
     "ISO-10303-21;",
     "HEADER;",
-    `FILE_DESCRIPTION(('Atelier concept model — not for construction'),'2;1');`,
-    `FILE_NAME(${str(p.meta.id + ".ifc")},'${now}',(''),(''),${str(p.meta.app)},${str("atelier ifc-writer")},'');`,
+    `FILE_DESCRIPTION(('Arquitecto concept model — not for construction'),'2;1');`,
+    `FILE_NAME(${str(p.meta.id + ".ifc")},'${now}',(''),(''),${str(p.meta.app)},${str("arquitecto ifc-writer")},'');`,
     "FILE_SCHEMA(('IFC4'));",
     "ENDSEC;",
     "DATA;",

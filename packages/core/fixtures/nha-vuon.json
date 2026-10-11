@@ -4,7 +4,7 @@
     "name": "Nhà vườn — 1 tầng mái ngói, mật độ thấp",
     "revision": 1,
     "unit": "mm",
-    "app": "atelier/0.1"
+    "app": "arquitecto/0.1"
   },
   "config": { "typology": "nha-vuon" },
   "brief": {

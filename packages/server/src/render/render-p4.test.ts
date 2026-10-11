@@ -2,7 +2,7 @@ import { mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { loadNhaOng4x16 } from "@atelier/core";
+import { loadNhaOng4x16 } from "@arquitecto/core";
 import { buildElevationScene } from "./elevation-scene.js";
 import { buildSectionScene, cutIntervals } from "./section-scene.js";
 import { buildScheduleScene } from "./schedule-scene.js";
@@ -181,7 +181,7 @@ describe("P4 — PDF hồ sơ (Chromium print)", () => {
   it("gộp bộ tờ thành MỘT file PDF nhiều trang A3", async () => {
     const { svgsToPdf, closePdfRenderer } = await import("./pdf.js");
     const set = buildSheetSet(p, { date: "13/07/2026" });
-    const out = path.join(mkdtempSync(path.join(tmpdir(), "atelier-pdf-")), "ho-so.pdf");
+    const out = path.join(mkdtempSync(path.join(tmpdir(), "arquitecto-pdf-")), "ho-so.pdf");
     try {
       await svgsToPdf(set.sheets.map((s) => sheetSvg(s)), out);
     } finally {

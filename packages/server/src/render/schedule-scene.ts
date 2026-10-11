@@ -1,4 +1,4 @@
-import { areaM2, unverifiedRules, type Project, type RoomUse } from "@atelier/core";
+import { areaM2, unverifiedRules, type Project, type RoomUse } from "@arquitecto/core";
 import { drawSheetFrame } from "./frame.js";
 import { W, type LayerName, type Prim, type Scene2D } from "./scene.js";
 import { PAPER, planTransform, type PlanTransform } from "./transform.js";

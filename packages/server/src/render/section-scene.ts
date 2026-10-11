@@ -1,7 +1,7 @@
 import {
   groundAt, pointOnWall, polygonBounds, roofGeometry, roofProfile, roofsOf, stairLayout, unverifiedRules, wallLength,
   type Level, type Point, type Polygon, type Project, type Wall,
-} from "@atelier/core";
+} from "@arquitecto/core";
 import { drawLevelMark, drawVerticalDims } from "./elevation-scene.js";
 import { drawSheetFrame } from "./frame.js";
 import { W, type LayerName, type Prim, type Scene2D } from "./scene.js";

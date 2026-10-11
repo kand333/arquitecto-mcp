@@ -1,4 +1,4 @@
-import type { EntityKind, Issue, Level } from "@atelier/core";
+import type { EntityKind, Issue, Level } from "@arquitecto/core";
 import { t } from "./i18n.js";
 import type { ConnState, FoundEntity, ViewMode } from "./state.js";
 
@@ -97,7 +97,7 @@ export class UI {
 
   setProject(name: string): void {
     this.projectName.textContent = name;
-    document.title = `${name} — Atelier`;
+    document.title = `${name} — Arquitecto`;
     this.empty2d.hidden = true;
   }
 

@@ -1,16 +1,16 @@
 {
-  "name": "@atelier/web",
+  "name": "@arquitecto/web",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Atelier web editor — bản live 2D + 3D trên trình duyệt (doc 09). P2: một chiều, xem là chính.",
+  "description": "Arquitecto web editor — bản live 2D + 3D trên trình duyệt (doc 09). P2: một chiều, xem là chính.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@atelier/core": "workspace:*",
+    "@arquitecto/core": "workspace:*",
     "three": "^0.182.0"
   },
   "devDependencies": {

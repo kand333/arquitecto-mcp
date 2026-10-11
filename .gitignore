@@ -4,10 +4,10 @@ dist/
 coverage/
 *.tsbuildinfo
 
-# Dự án nhà tạo ra khi chạy thử Atelier (không thuộc repo này)
+# Dự án nhà tạo ra khi chạy thử Arquitecto (không thuộc repo này)
 sandbox/
-/.atelier/
-/atelier.project.json
+/.arquitecto/
+/arquitecto.project.json
 
 # Editor / OS
 .DS_Store

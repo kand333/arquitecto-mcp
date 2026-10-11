@@ -5,7 +5,7 @@
  * get_changes_since thấy thay đổi và TỰ ĐIỀU CHỈNH hai phòng bên cạnh.
  *
  * "Người dùng" ở đây là chromium do Playwright điều khiển — chạy headed để
- * xem tận mắt, hoặc ATELIER_DEMO_NO_BROWSER=1 để chạy kiểm thử im lặng.
+ * xem tận mắt, hoặc ARQUITECTO_DEMO_NO_BROWSER=1 để chạy kiểm thử im lặng.
  *
  * Chạy từ repo root:  pnpm demo:p3
  */
@@ -13,13 +13,13 @@ import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium, type Page } from "playwright";
-import { validateProject, type Point } from "@atelier/core";
+import { validateProject, type Point } from "@arquitecto/core";
 import { LiveServer } from "../src/live.js";
 import { ProjectStore } from "../src/store.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const DIR = path.join(ROOT, "sandbox", "demo-p3");
-const HEADLESS = process.env.ATELIER_DEMO_NO_BROWSER === "1";
+const HEADLESS = process.env.ARQUITECTO_DEMO_NO_BROWSER === "1";
 const NHIP_MS = HEADLESS ? 0 : 900;
 
 const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
@@ -61,7 +61,7 @@ async function pointOn(page: Page, id: string, dModel: [number, number]): Promis
   );
 }
 
-console.log("🤝 Atelier — demo P3: người dùng chỉnh tay, Claude thích nghi\n");
+console.log("🤝 Arquitecto — demo P3: người dùng chỉnh tay, Claude thích nghi\n");
 rmSync(DIR, { recursive: true, force: true });
 mkdirSync(DIR, { recursive: true });
 

@@ -1,10 +1,10 @@
 import { defineConfig } from "vite";
 
 /**
- * Dev: `pnpm --filter @atelier/web dev` + live server chạy riêng (demo-p2 hoặc editor_open) —
+ * Dev: `pnpm --filter @arquitecto/web dev` + live server chạy riêng (demo-p2 hoặc editor_open) —
  * proxy đẩy /ws /plan /healthz sang server thật. Prod: build ra dist, live server tự serve.
  */
-const target = process.env.ATELIER_SERVER ?? "http://localhost:4823";
+const target = process.env.ARQUITECTO_SERVER ?? "http://localhost:4823";
 
 export default defineConfig({
   server: {

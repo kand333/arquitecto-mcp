@@ -3,10 +3,10 @@ import path from "node:path";
 import {
   applyOps, loadBietThuDoc, loadCanHo, loadDetachedUk, loadNhaCap4, loadNhaOng4x16, loadNhaVuon, setDonGia, validateProject,
   type ApplyResult, type Issue, type Op, type OpOrigin, type Point, type Project,
-} from "@atelier/core";
+} from "@arquitecto/core";
 import { SoftLocks } from "./locks.js";
 
-export const PROJECT_FILE = "atelier.project.json";
+export const PROJECT_FILE = "arquitecto.project.json";
 
 export type JournalEntry = {
   revision: number;
@@ -34,8 +34,8 @@ export const TEMPLATES: Record<string, { label: string; load: () => Project }> =
 
 /**
  * Model store: một dự án tại một thư mục (doc 03).
- * - atelier.project.json — NGUỒN SỰ THẬT, ghi atomic (tmp + rename)
- * - .atelier/history.jsonl — journal ops (append-only)
+ * - arquitecto.project.json — NGUỒN SỰ THẬT, ghi atomic (tmp + rename)
+ * - .arquitecto/history.jsonl — journal ops (append-only)
  */
 export class ProjectStore {
   private project: Project | null = null;
@@ -76,11 +76,11 @@ export class ProjectStore {
   }
 
   get exportDir(): string {
-    return path.join(this.baseDir, ".atelier", "exports");
+    return path.join(this.baseDir, ".arquitecto", "exports");
   }
 
   private get journalPath(): string {
-    return path.join(this.baseDir, ".atelier", "history.jsonl");
+    return path.join(this.baseDir, ".arquitecto", "history.jsonl");
   }
 
   get isOpen(): boolean {
@@ -134,7 +134,7 @@ export class ProjectStore {
     }
     const raw = JSON.parse(readFileSync(fp, "utf8")) as Project;
     if (typeof raw?.meta?.revision !== "number" || raw.meta.unit !== "mm") {
-      throw new Error(`${fp} không phải file dự án Atelier hợp lệ (thiếu meta.revision / unit mm).`);
+      throw new Error(`${fp} không phải file dự án Arquitecto hợp lệ (thiếu meta.revision / unit mm).`);
     }
     this.project = raw;
     this.emit({ kind: "project", reason: "opened" });
@@ -189,7 +189,7 @@ export class ProjectStore {
   // đường thẳng nhất, và cũng chính là ngữ nghĩa người dùng cần: "lưu bố trí này lại".
 
   get variantsDir(): string {
-    return path.join(this.baseDir, ".atelier", "phuong-an");
+    return path.join(this.baseDir, ".arquitecto", "phuong-an");
   }
 
   /** Lưu model hiện tại thành phương án (cùng tên → cập nhật đè). Trả slug. */
@@ -323,7 +323,7 @@ function touchedIds(p: Project, ops: Op[]): Set<string> {
 export function blankProject(brief?: Project["brief"]): Project {
   const boundary: Point[] = brief?.dat?.ranh_gioi ?? [[0, 0], [10000, 0], [10000, 10000], [0, 10000]];
   return {
-    meta: { id: "du-an-moi", name: "Dự án mới", revision: 0, unit: "mm", app: "atelier/0.1" },
+    meta: { id: "du-an-moi", name: "Dự án mới", revision: 0, unit: "mm", app: "arquitecto/0.1" },
     brief: brief ? structuredClone(brief) : {},
     site: { boundary: structuredClone(boundary), north: 0, front: 0 },
     axes: { x: [], y: [] },

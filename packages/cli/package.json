@@ -1,10 +1,11 @@
 {
-  "name": "atelier-mcp",
+  "name": "arquitecto-mcp",
   "version": "0.4.0",
-  "description": "AI architect MCP server — multi-typology houses (tube house, villa, single-storey, garden house, apartment, UK detached) on any lot incl. sloping terrain; pluggable building-standard rule packs (TCVN, UK Approved Documents); standards-checked plans, live two-way browser editor, furnished 3D walkthrough, PDF/DXF/IFC export. Works with any MCP client: Claude Code, Codex CLI, Gemini CLI, Claude Desktop, Cursor.",
+  "private": true,
+  "description": "Servidor MCP de arquitecto-mcp empaquetado en un solo bundle local. Derivado de Atelier (MIT).",
   "type": "module",
   "bin": {
-    "atelier-mcp": "bin/atelier-mcp.mjs"
+    "arquitecto-mcp": "bin/arquitecto-mcp.mjs"
   },
   "files": [
     "bin",
@@ -23,7 +24,7 @@
     "playwright": "^1.53.0"
   },
   "devDependencies": {
-    "@atelier/server": "workspace:*",
+    "@arquitecto/server": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.12.0",
     "esbuild": "^0.25.0"
   },
@@ -42,14 +43,5 @@
     "villa",
     "pitched-roof"
   ],
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/lebac-svg/Atelier.git",
-    "directory": "packages/cli"
-  },
-  "homepage": "https://github.com/lebac-svg/Atelier#readme",
-  "bugs": {
-    "url": "https://github.com/lebac-svg/Atelier/issues"
-  }
+  "license": "MIT"
 }

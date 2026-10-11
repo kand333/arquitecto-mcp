@@ -1,4 +1,4 @@
-import type { Point, Polygon } from "@atelier/core";
+import type { Point, Polygon } from "@arquitecto/core";
 
 /**
  * Heuristic dò TƯỜNG từ nét DXF (đã đặt về mm model): hai đoạn SONG SONG

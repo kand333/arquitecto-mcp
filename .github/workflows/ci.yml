@@ -17,7 +17,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @atelier/server exec playwright install --with-deps chromium
+      - run: pnpm --filter @arquitecto/server exec playwright install --with-deps chromium
       - run: pnpm typecheck
       - run: pnpm build:web
       - run: pnpm test
@@ -26,9 +26,9 @@ jobs:
       # like an end user, then drive the installed bin over MCP stdio.
       - name: Smoke-test a real install of the npm package
         run: |
-          pnpm --filter atelier-mcp build
+          pnpm --filter arquitecto-mcp build
           TGZ=$(cd packages/cli && npm pack | tail -1)
           mkdir -p "$RUNNER_TEMP/pkg"
           mv "packages/cli/$TGZ" "$RUNNER_TEMP/pkg/"
           cd "$RUNNER_TEMP/pkg" && npm init -y && npm i "./$TGZ"
-          cd "$GITHUB_WORKSPACE" && npx tsx packages/cli/smoke.mts "$RUNNER_TEMP/pkg/node_modules/atelier-mcp"
+          cd "$GITHUB_WORKSPACE" && npx tsx packages/cli/smoke.mts "$RUNNER_TEMP/pkg/node_modules/arquitecto-mcp"

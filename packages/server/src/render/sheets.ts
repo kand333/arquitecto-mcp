@@ -1,4 +1,4 @@
-import type { Project } from "@atelier/core";
+import type { Project } from "@arquitecto/core";
 import { buildElevationScene } from "./elevation-scene.js";
 import { buildEstimateScene } from "./estimate-scene.js";
 import { buildPlanScene } from "./plan-scene.js";

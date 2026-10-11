@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getAsset, loadNhaOng4x16, stairLayout } from "@atelier/core";
+import { getAsset, loadNhaOng4x16, stairLayout } from "@arquitecto/core";
 import { buildMeshes, earClip, modelToGlb } from "./gltf-writer.js";
 import { ifcGuid, modelToIfc } from "./ifc-writer.js";
 

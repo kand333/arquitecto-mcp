@@ -9,14 +9,14 @@
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { loadNhaOng4x16, validateProject, type Op } from "@atelier/core";
+import { loadNhaOng4x16, validateProject, type Op } from "@arquitecto/core";
 import { LiveServer, openInBrowser } from "../src/live.js";
 import { ProjectStore } from "../src/store.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const DIR = path.join(ROOT, "sandbox", "demo-p2");
-/** ATELIER_DEMO_NO_BROWSER=1 — chạy kiểm thử im lặng: không mở browser, không nghỉ nhịp. */
-const HEADLESS = process.env.ATELIER_DEMO_NO_BROWSER === "1";
+/** ARQUITECTO_DEMO_NO_BROWSER=1 — chạy kiểm thử im lặng: không mở browser, không nghỉ nhịp. */
+const HEADLESS = process.env.ARQUITECTO_DEMO_NO_BROWSER === "1";
 const NHIP_MS = HEADLESS ? 0 : 1000;
 
 const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
@@ -85,7 +85,7 @@ for (const level of [...f.levels].sort((a, b) => a.elevation - b.elevation)) {
 }
 
 // ── Chạy ──────────────────────────────────────────────────────
-console.log("🏗  Atelier — demo P2: làm đến đâu dựng đến đó\n");
+console.log("🏗  Arquitecto — demo P2: làm đến đâu dựng đến đó\n");
 rmSync(DIR, { recursive: true, force: true });
 mkdirSync(DIR, { recursive: true });
 

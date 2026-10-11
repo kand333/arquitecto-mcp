@@ -1,17 +1,17 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { Project } from "@atelier/core";
+import type { Project } from "@arquitecto/core";
 import { buildElevationScene, type ElevationOptions } from "./elevation-scene.js";
 import { buildPlanScene, type PlanOptions } from "./plan-scene.js";
 import { buildScheduleScene, type ScheduleOptions } from "./schedule-scene.js";
 import { buildSectionScene, type SectionOptions } from "./section-scene.js";
 import { sceneToSvg } from "./svg-writer.js";
 
-// ATELIER_FONT_DIR: bản đóng gói (atelier-mcp) trỏ font trong package — nguồn repo thì tự tìm cạnh src.
+// ARQUITECTO_FONT_DIR: bản đóng gói (arquitecto-mcp) trỏ font trong package — nguồn repo thì tự tìm cạnh src.
 // Đọc LƯỜI (không phải const cấp module): env do entry set SAU khi import hoisting đã chạy body module này.
 const fontDir = (): string =>
-  process.env.ATELIER_FONT_DIR
+  process.env.ARQUITECTO_FONT_DIR
   ?? path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "assets", "fonts");
 
 let cachedFontCss: string | null = null;
@@ -74,7 +74,7 @@ export type RenderedFiles = RenderedPlan & {
   pngError?: string;
 };
 
-/** Render ra file trong <dir> (mặc định .atelier/exports). PNG best-effort qua Chromium. */
+/** Render ra file trong <dir> (mặc định .arquitecto/exports). PNG best-effort qua Chromium. */
 export async function renderPlanFiles(
   p: Project,
   levelId: string,

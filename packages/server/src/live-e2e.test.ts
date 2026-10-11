@@ -19,7 +19,7 @@ describe.skipIf(!hasDist)("E2E editor thật (chromium headless)", () => {
   let baseUrl: string;
 
   beforeAll(async () => {
-    store = new ProjectStore(mkdtempSync(path.join(tmpdir(), "atelier-e2e-")));
+    store = new ProjectStore(mkdtempSync(path.join(tmpdir(), "arquitecto-e2e-")));
     store.newProject("Nhà anh Ba", "nha-ong-4x16-2t");
     live = new LiveServer(store, { port: 0, lockReleaseMs: 300 }); // khóa nguội ngắn cho test
     baseUrl = await live.start();

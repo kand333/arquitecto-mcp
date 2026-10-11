@@ -1,4 +1,4 @@
-import type { Asset, Point } from "@atelier/core";
+import type { Asset, Point } from "@arquitecto/core";
 import { furnitureGlyphPrims, transformPrim } from "./plan-scene.js";
 import { fontCss } from "./render.js";
 import { W, type Prim, type Scene2D } from "./scene.js";
@@ -40,7 +40,7 @@ function scalePrim(prim: Prim, k: number): Prim {
   }
 }
 
-export function buildAssetsSheetSvg(assets: Asset[], title = "CATALOG NỘI THẤT — ATELIER"): string {
+export function buildAssetsSheetSvg(assets: Asset[], title = "CATALOG NỘI THẤT — ARQUITECTO"): string {
   const items: Scene2D = [];
   const push = (prim: Prim): void => {
     items.push({ layer: "KHUNG", prim, space: "paper" });

@@ -1,4 +1,4 @@
-import type { Point } from "@atelier/core";
+import type { Point } from "@arquitecto/core";
 
 /**
  * Đảo ngược phép chiếu model → giấy của renderer (server nhúng thông số vào

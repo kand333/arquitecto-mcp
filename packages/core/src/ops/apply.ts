@@ -222,7 +222,7 @@ function applyUnderlay(draft: Project, op: Op): Issue | null {
       return issue("OPS-08", "block", ["U1"], `Underlay cần data.kind = "dxf" | "image".`);
     }
     if (typeof d.source !== "string" || d.source.length === 0) {
-      return issue("OPS-08", "block", ["U1"], "Underlay thiếu data.source (file trong .atelier/underlay/).");
+      return issue("OPS-08", "block", ["U1"], "Underlay thiếu data.source (file trong .arquitecto/underlay/).");
     }
     if (typeof d.scale !== "number" || !(d.scale > 0)) {
       return issue("OPS-08", "block", ["U1"], "Underlay cần data.scale > 0 (mm model trên một đơn vị nguồn).");

@@ -39,7 +39,7 @@ export type ProjectMeta = {
   name: string;
   revision: number;
   unit: "mm";
-  app: string; // "atelier/0.x"
+  app: string; // "arquitecto/0.x"
 };
 
 /**
@@ -272,13 +272,13 @@ export type Brief = {
 /**
  * Underlay đồ lại — bản vẽ cũ (DXF) hoặc ảnh mặt bằng đặt MỜ dưới plan
  * để dựng model theo. SINGLETON (id luôn "U1"), đi qua ops như mọi entity.
- * Model chỉ lưu THAM CHIẾU file (đã copy vào .atelier/underlay/) + phép đặt;
+ * Model chỉ lưu THAM CHIẾU file (đã copy vào .arquitecto/underlay/) + phép đặt;
  * hình học nguồn không vào model — underlay là giàn giáo, không phải nhà.
  */
 export type Underlay = {
   id: string; // "U1"
   kind: "dxf" | "image";
-  /** Tên file trong <dự án>/.atelier/underlay/ (server copy khi import). */
+  /** Tên file trong <dự án>/.arquitecto/underlay/ (server copy khi import). */
   source: string;
   /** Điểm model (mm) nơi gốc (0,0) của nguồn được đặt. Ảnh: gốc = góc DƯỚI-TRÁI. */
   origin: Point;

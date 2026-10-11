@@ -1,6 +1,6 @@
 import type {
   CaptureRequestMsg, ClientMessage, PatchMsg, RejectMsg, ServerMessage, SnapshotMsg, ValidationMsg,
-} from "@atelier/core";
+} from "@arquitecto/core";
 import type { ConnState } from "./state.js";
 
 export type WsHandlers = {

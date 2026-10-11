@@ -6,7 +6,7 @@ import {
   areaM2, ASSET_CATEGORIES, DON_GIA, estimateCost, formatVnd, getLevel, searchAssets,
   stairLayout, validateProject,
   type AssetCategory, type CaptureCamera, type FinishLevel, type Issue, type Op, type Project,
-} from "@atelier/core";
+} from "@arquitecto/core";
 import { buildAssetsSheetSvg, SHEET_CAPACITY } from "./render/assets-sheet.js";
 import { compareHtml, compareProjects } from "./compare.js";
 import { DEFAULT_WEB_DIST, LiveServer, openInBrowser } from "./live.js";
@@ -62,8 +62,8 @@ function projectBrief(p: Project): string {
   return `"${p.meta.name}" (revision ${p.meta.revision}) — ${p.levels.length} tầng: ${perLevel}. Openings: ${p.openings.length}, nội thất: ${p.furniture.length}.`;
 }
 
-export function createAtelierServer(store: ProjectStore, live: LiveServer = new LiveServer(store)): McpServer {
-  const server = new McpServer({ name: "atelier", version: "0.1.0" });
+export function createArquitectoServer(store: ProjectStore, live: LiveServer = new LiveServer(store)): McpServer {
+  const server = new McpServer({ name: "arquitecto", version: "0.1.0" });
 
   server.registerTool(
     "project_new",
@@ -216,7 +216,7 @@ export function createAtelierServer(store: ProjectStore, live: LiveServer = new 
     {
       title: "Render mặt bằng (PNG + SVG)",
       description:
-        "Sinh bản vẽ mặt bằng một tầng đúng ký hiệu + dim từ model, trả ảnh PNG để nhìn ngay trong chat (SVG lưu ở .atelier/exports). layers để lọc (vd chỉ TUONG-CAT,DIM khi cần soi kích thước). scale 50/100 (mặc định tự chọn).",
+        "Sinh bản vẽ mặt bằng một tầng đúng ký hiệu + dim từ model, trả ảnh PNG để nhìn ngay trong chat (SVG lưu ở .arquitecto/exports). layers để lọc (vd chỉ TUONG-CAT,DIM khi cần soi kích thước). scale 50/100 (mặc định tự chọn).",
       inputSchema: {
         level: z.string().describe("ID level, vd L1"),
         scale: z.number().int().optional(),
@@ -268,12 +268,12 @@ export function createAtelierServer(store: ProjectStore, live: LiveServer = new 
         if (args.openBrowser !== false) openInBrowser(url);
         const distNote = existsSync(DEFAULT_WEB_DIST)
           ? ""
-          : "\n⚠ Web editor chưa build — trang sẽ hướng dẫn chạy: pnpm --filter @atelier/web build";
+          : "\n⚠ Web editor chưa build — trang sẽ hướng dẫn chạy: pnpm --filter @arquitecto/web build";
         const share = live.shareUrl();
         return text(
           `✅ Editor: ${url}${args.openBrowser !== false ? " (đã mở trình duyệt)" : ""} — browser đang nối: ${live.browserCount}.${distNote}` +
             (share
-              ? `\n👁 Link chia sẻ CHỈ-XEM (gửi cho người thân cùng ngắm, không sửa được): ${share}\n   (mặc định server chỉ nghe 127.0.0.1 — muốn máy khác trong mạng LAN mở được, đặt ATELIER_HOST=0.0.0.0 rồi mở lại; thu hồi link: POST /share/rotate)`
+              ? `\n👁 Link chia sẻ CHỈ-XEM (gửi cho người thân cùng ngắm, không sửa được): ${share}\n   (mặc định server chỉ nghe 127.0.0.1 — muốn máy khác trong mạng LAN mở được, đặt ARQUITECTO_HOST=0.0.0.0 rồi mở lại; thu hồi link: POST /share/rotate)`
               : ""),
         );
       } catch (e) {
@@ -362,12 +362,12 @@ export function createAtelierServer(store: ProjectStore, live: LiveServer = new 
         try {
           const svg = buildAssetsSheetSvg(
             found.slice(0, SHEET_CAPACITY),
-            args.query || args.category ? `KẾT QUẢ: ${args.query ?? args.category}` : "CATALOG NỘI THẤT — ATELIER",
+            args.query || args.category ? `KẾT QUẢ: ${args.query ?? args.category}` : "CATALOG NỘI THẤT — ARQUITECTO",
           );
           const { svgToPng } = await import("./render/png.js");
           const { mkdtempSync } = await import("node:fs");
           const os = await import("node:os");
-          const fp = path.join(mkdtempSync(path.join(os.tmpdir(), "atelier-assets-")), "sheet.png");
+          const fp = path.join(mkdtempSync(path.join(os.tmpdir(), "arquitecto-assets-")), "sheet.png");
           await svgToPng(svg, fp);
           const png = readFileSync(fp).toString("base64");
           return {
@@ -433,7 +433,7 @@ export function createAtelierServer(store: ProjectStore, live: LiveServer = new 
     {
       title: "Lưu phương án (A/B)",
       description:
-        "Chụp model hiện tại thành PHƯƠNG ÁN có tên (.atelier/phuong-an/) để so sánh A/B — vd trước khi thử một bố trí khác: variant_save('Phương án A — thang giữa nhà'). Cùng tên → cập nhật đè. Xem cạnh nhau: variant_compare hoặc trang /so-sanh trên editor.",
+        "Chụp model hiện tại thành PHƯƠNG ÁN có tên (.arquitecto/phuong-an/) để so sánh A/B — vd trước khi thử một bố trí khác: variant_save('Phương án A — thang giữa nhà'). Cùng tên → cập nhật đè. Xem cạnh nhau: variant_compare hoặc trang /so-sanh trên editor.",
       inputSchema: { name: z.string().min(1).describe("Tên phương án, vd 'Phương án A — bếp quay ra sau'") },
     },
     (args) => {
@@ -512,7 +512,7 @@ export function createAtelierServer(store: ProjectStore, live: LiveServer = new 
           const { htmlToPng } = await import("./render/png.js");
           const { mkdtempSync } = await import("node:fs");
           const os = await import("node:os");
-          const fp = path.join(mkdtempSync(path.join(os.tmpdir(), "atelier-sosanh-")), "so-sanh.png");
+          const fp = path.join(mkdtempSync(path.join(os.tmpdir(), "arquitecto-sosanh-")), "so-sanh.png");
           await htmlToPng(html, fp);
           const png = readFileSync(fp).toString("base64");
           return {
@@ -586,7 +586,7 @@ export function createAtelierServer(store: ProjectStore, live: LiveServer = new 
     {
       title: "Xuất hồ sơ bản vẽ",
       description:
-        "Xuất hồ sơ vào .atelier/exports/ho-so/. format: 'pdf' = BỘ tờ KT-01… một file A3 nhiều trang (bàn giao); 'svg' = mỗi tờ một file; 'dxf' = mỗi tờ hình học một file mm thật (mở CAD đo được; tờ bảng không có DXF); 'gltf' = MỘT file .glb toàn nhà (mét, mỗi entity một node theo id — mở viewer/Blender, kèm scripts/render-photoreal.py để render đẹp); 'ifc' = IFC4 concept (tường + lỗ cửa đúng quan hệ voids/fills, sàn có lỗ, thang, IfcSpace từng phòng — bàn giao KTS/BIM, KHÔNG phải hồ sơ thi công). sheets chỉ áp cho pdf/svg/dxf: plan-<levelId> | elevation | section | schedule | estimate. LUÔN validate + tự soi render trước khi bàn giao (checkpoint 5).",
+        "Xuất hồ sơ vào .arquitecto/exports/ho-so/. format: 'pdf' = BỘ tờ KT-01… một file A3 nhiều trang (bàn giao); 'svg' = mỗi tờ một file; 'dxf' = mỗi tờ hình học một file mm thật (mở CAD đo được; tờ bảng không có DXF); 'gltf' = MỘT file .glb toàn nhà (mét, mỗi entity một node theo id — mở viewer/Blender, kèm scripts/render-photoreal.py để render đẹp); 'ifc' = IFC4 concept (tường + lỗ cửa đúng quan hệ voids/fills, sàn có lỗ, thang, IfcSpace từng phòng — bàn giao KTS/BIM, KHÔNG phải hồ sơ thi công). sheets chỉ áp cho pdf/svg/dxf: plan-<levelId> | elevation | section | schedule | estimate. LUÔN validate + tự soi render trước khi bàn giao (checkpoint 5).",
       inputSchema: {
         format: z.enum(["pdf", "svg", "dxf", "gltf", "ifc"]),
         sheets: z.array(z.string()).optional(),

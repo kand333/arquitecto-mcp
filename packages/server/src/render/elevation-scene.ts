@@ -1,7 +1,7 @@
 import {
   groundAt, normalize, pointOnWall, roofGeometry, roofsOf, sub, unverifiedRules,
   type Level, type Opening, type Point, type Project, type Wall,
-} from "@atelier/core";
+} from "@arquitecto/core";
 import { dimTick, drawSheetFrame } from "./frame.js";
 import { W, type LayerName, type Prim, type Scene2D } from "./scene.js";
 import { planTransform, type Bounds, type PlanTransform } from "./transform.js";

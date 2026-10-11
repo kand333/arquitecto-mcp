@@ -2,7 +2,7 @@ import {
   add, dot, getAsset, obbCorners, scale, sub,
   wallDir, wallLength, wallNormal, wallsParallel,
   type Furniture, type Op, type Opening, type Point, type Project, type Wall,
-} from "@atelier/core";
+} from "@arquitecto/core";
 import { LANG, t } from "./i18n.js";
 
 /**

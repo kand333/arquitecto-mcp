@@ -8,17 +8,17 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
  * Smoke test bản ĐÓNG GÓI trước khi publish — chạy đúng bin trong một bản cài
  * thật (npm pack + npm i tgz) như người dùng cuối:
  *
- *   npm pack --pack-destination /tmp/t && cd /tmp/t && npm init -y && npm i ./atelier-mcp-*.tgz
- *   npx tsx smoke.mts /tmp/t/node_modules/atelier-mcp
+ *   npm pack --pack-destination /tmp/t && cd /tmp/t && npm init -y && npm i ./arquitecto-mcp-*.tgz
+ *   npx tsx smoke.mts /tmp/t/node_modules/arquitecto-mcp
  */
 
 const pkgRoot = process.argv[2];
 if (!pkgRoot) {
-  console.error("Cách dùng: npx tsx smoke.mts <đường dẫn node_modules/atelier-mcp của bản cài thử>");
+  console.error("Cách dùng: npx tsx smoke.mts <đường dẫn node_modules/arquitecto-mcp của bản cài thử>");
   process.exit(1);
 }
-const BIN = path.join(pkgRoot, "bin", "atelier-mcp.mjs");
-const HOUSE = mkdtempSync(path.join(tmpdir(), "atelier-smoke-"));
+const BIN = path.join(pkgRoot, "bin", "arquitecto-mcp.mjs");
+const HOUSE = mkdtempSync(path.join(tmpdir(), "arquitecto-smoke-"));
 
 const ok = (cond: boolean, label: string): void => {
   console.log(cond ? `✔ ${label}` : `✘ ${label}`);
@@ -30,7 +30,7 @@ const textOf = (r: { content?: unknown }): string =>
 const transport = new StdioClientTransport({
   command: process.execPath,
   args: [BIN],
-  env: { ...(process.env as Record<string, string>), ATELIER_DIR: HOUSE, ATELIER_PORT: "4991" },
+  env: { ...(process.env as Record<string, string>), ARQUITECTO_DIR: HOUSE, ARQUITECTO_PORT: "4991" },
   stderr: "pipe",
 });
 const client = new Client({ name: "smoke", version: "0.0.0" });

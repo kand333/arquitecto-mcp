@@ -1,7 +1,7 @@
 import {
   add, getAsset, pointOnWall, roofGeometry, roofsOf, rotate, scale as vscale, stairLayout, wallDir, wallLength,
   wallNormal, wallPieces, type Point, type Polygon, type Project,
-} from "@atelier/core";
+} from "@arquitecto/core";
 
 /**
  * Model → GLB (glTF 2.0 binary) — P5+ backlog "render photoreal": xuất hình học
@@ -341,7 +341,7 @@ export function modelToGlb(p: Project): Buffer {
 
   const binBuf = Buffer.concat(bin);
   const json = {
-    asset: { version: "2.0", generator: `atelier ${p.meta.app}` },
+    asset: { version: "2.0", generator: `arquitecto ${p.meta.app}` },
     scene: 0,
     scenes: [{ name: p.meta.name, nodes: nodes.map((_, i) => i) }],
     nodes,

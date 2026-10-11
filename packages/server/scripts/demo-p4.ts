@@ -12,14 +12,14 @@ import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { closePngRenderer } from "../src/render/png.js";
 import { closePdfRenderer } from "../src/render/pdf.js";
 import { ProjectStore } from "../src/store.js";
-import { createAtelierServer } from "../src/tools.js";
+import { createArquitectoServer } from "../src/tools.js";
 
 const dir = path.resolve(process.argv[2] ?? "sandbox/demo-p4");
 rmSync(dir, { recursive: true, force: true });
 mkdirSync(dir, { recursive: true });
 
 const store = new ProjectStore(dir);
-const server = createAtelierServer(store);
+const server = createArquitectoServer(store);
 const [ct, st] = InMemoryTransport.createLinkedPair();
 const client = new Client({ name: "demo", version: "0" });
 await Promise.all([server.connect(st), client.connect(ct)]);
@@ -38,7 +38,7 @@ const show = (title: string, content: ToolContent): void => {
   }
 };
 
-console.log("📁 Atelier — demo P4: hồ sơ bản vẽ hoàn chỉnh (pha E)\n");
+console.log("📁 Arquitecto — demo P4: hồ sơ bản vẽ hoàn chỉnh (pha E)\n");
 
 // nhà mẫu (các pha A–D đã diễn ra ở demo P1–P3)
 show("Mở nhà mẫu", await call("project_new", { name: "Nhà ống 4×16m — 2 tầng 3PN", template: "nha-ong-4x16-2t" }));

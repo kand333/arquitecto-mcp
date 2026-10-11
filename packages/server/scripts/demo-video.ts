@@ -12,7 +12,7 @@ import { mkdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
-import { loadBietThuDoc, validateProject, type Op, type Project } from "@atelier/core";
+import { loadBietThuDoc, validateProject, type Op, type Project } from "@arquitecto/core";
 import { LiveServer } from "../src/live.js";
 import { ProjectStore } from "../src/store.js";
 import { buildSheetSet, sheetSvg } from "../src/render/sheets.js";
@@ -32,7 +32,7 @@ function chunk<T>(arr: T[], n: number): T[][] {
   return out;
 }
 
-console.log("🎬 Atelier — quay video quy trình từ đầu đến cuối");
+console.log("🎬 Arquitecto — quay video quy trình từ đầu đến cuối");
 console.log('   Gia chủ: "lô góc 12×15m hai mặt đường, đất dốc ~1.1m, muốn biệt thự 2 tầng mái ngói"\n');
 
 // ── 0) Brief từ phỏng vấn pha A → project chỉ có ĐẤT (site + terrain), chưa có nhà ──
@@ -47,7 +47,7 @@ const đấtTrống: Project = {
   styles: { openings: {} },
   finishes: {},
 };
-writeFileSync(path.join(DIR, "atelier.project.json"), JSON.stringify(đấtTrống, null, 2));
+writeFileSync(path.join(DIR, "arquitecto.project.json"), JSON.stringify(đấtTrống, null, 2));
 
 const store = new ProjectStore(DIR);
 store.openProject();
@@ -213,7 +213,7 @@ await sleep(1500);
 const video = page.video();
 await context.close();
 const raw = await video!.path();
-const out = path.join(DIR, "atelier-tu-dau-den-cuoi.webm");
+const out = path.join(DIR, "arquitecto-tu-dau-den-cuoi.webm");
 renameSync(raw, out);
 await browser.close();
 await live.stop();

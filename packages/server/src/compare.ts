@@ -1,4 +1,4 @@
-import { areaM2, estimateCost, formatVnd, type Project } from "@atelier/core";
+import { areaM2, estimateCost, formatVnd, type Project } from "@arquitecto/core";
 import { renderPlanSvg } from "./render/render.js";
 
 /**

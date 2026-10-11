@@ -208,7 +208,7 @@ function detect(): Lang {
     query = new URLSearchParams(location.search).get("lang");
     if (query === "en" || query === "vi") {
       try {
-        localStorage.setItem("atelier-lang", query);
+        localStorage.setItem("arquitecto-lang", query);
       } catch {
         // storage bị chặn — vẫn dùng được trong phiên
       }
@@ -216,7 +216,7 @@ function detect(): Lang {
   }
   let saved: string | null = null;
   try {
-    saved = typeof localStorage !== "undefined" ? localStorage.getItem("atelier-lang") : null;
+    saved = typeof localStorage !== "undefined" ? localStorage.getItem("arquitecto-lang") : null;
   } catch {
     // ignore
   }
@@ -258,7 +258,7 @@ export function applyDom(root: ParentNode = document): void {
 
 export function toggleLang(): void {
   try {
-    localStorage.setItem("atelier-lang", LANG === "vi" ? "en" : "vi");
+    localStorage.setItem("arquitecto-lang", LANG === "vi" ? "en" : "vi");
   } catch {
     // ignore
   }
