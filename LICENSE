@@ -1,5 +1,6 @@
 MIT License
 
+Copyright (c) 2026 Kand
 Copyright (c) 2026 Bắc Lê (lebac-svg)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,13 +23,17 @@ SOFTWARE.
 
 ---
 
-Ghi chú thành phần đi kèm (không thuộc phạm vi MIT ở trên):
+Origen: arquitecto-mcp deriva de Atelier (https://github.com/lebac-svg/Atelier),
+publicado bajo la licencia MIT por Bắc Lê. El aviso de copyright original se
+conserva arriba, como exige esa licencia.
 
-- Font "Be Vietnam Pro" (packages/server/assets/fonts, packages/web/public/fonts)
-  — SIL Open Font License 1.1, xem OFL.txt cạnh file font.
-- Catalog nội thất tham số + license-manifest (packages/core/assets)
-  — CC0-1.0, tự sinh trong repo này.
-- Số liệu tiêu chuẩn trong rules/*.json trích dẫn TCVN/QCVN kèm nguồn ở
-  field "source"; bảng đơn giá rules/don-gia.json là số THAM KHẢO.
-- Bản vẽ/model sinh ra bởi Atelier là bản concept — không thay thế hồ sơ
-  thiết kế có chữ ký kiến trúc sư hành nghề (xem README).
+Componentes incluidos (fuera del alcance de la licencia MIT anterior):
+
+- Fuente "Be Vietnam Pro" (packages/server/assets/fonts, packages/web/public/fonts)
+  — SIL Open Font License 1.1; ver OFL.txt junto a cada fuente.
+- Catálogo paramétrico de mobiliario + license-manifest (packages/core/assets)
+  — CC0-1.0, generado dentro del repositorio upstream.
+- Los valores normativos de rules/*.json citan su fuente en el campo "source";
+  los precios de rules/don-gia.json son solo de REFERENCIA.
+- Los planos y modelos que genera arquitecto-mcp son de anteproyecto: no
+  reemplazan un proyecto firmado por un arquitecto habilitado.
