@@ -138,6 +138,25 @@ describe("loadUnderlay + render — nền mờ dưới mặt bằng", () => {
     expect(without).not.toContain('data-layer="CALCO"');
   });
 
+  it("las cotas y ejes miden la obra, no el calco (aunque el calco sea más grande)", () => {
+    const dir = makeDir();
+    writeFileSync(path.join(dir, ".arquitecto", "underlay", "cu.dxf"), DXF, "utf8");
+    const p = loadCasaPrueba2p();
+    // calco de 6000 × 4500 mm que sobresale 1 m a cada lado de la casa (4 m de ancho)
+    p.underlay = { id: "U1", kind: "dxf", source: "cu.dxf", origin: [-1000, 2000], scale: 1.5, opacity: 0.4 };
+    const u = loadUnderlay(p, dir)!;
+    const cotas = (svg: string): string[] => {
+      const g = svg.slice(svg.indexOf('data-layer="COTAS"'), svg.indexOf("</g>", svg.indexOf('data-layer="COTAS"')));
+      return [...g.matchAll(/>([^<]+)<\/text>/g)].map((m) => m[1]!).sort();
+    };
+    const withU = renderPlanSvg(p, "L1", { underlay: u, embedFont: false }).svg;
+    const without = renderPlanSvg(p, "L1", { embedFont: false }).svg;
+    expect(withU).toContain('data-layer="CALCO"');
+    expect(cotas(withU)).toEqual(cotas(without));
+    expect(cotas(withU)).toContain("400"); // ancho total de la casa: 4000 mm (el calco mide 6000)
+    expect(cotas(withU)).not.toContain("600");
+  });
+
   it("underlay khóa theo tầng chỉ hiện ở tầng đó", () => {
     const dir = makeDir();
     writeFileSync(path.join(dir, ".arquitecto", "underlay", "cu.dxf"), DXF, "utf8");

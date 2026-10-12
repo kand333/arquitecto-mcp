@@ -169,10 +169,25 @@
   - Test MCP de rutas de salida (`planta-l1.svg`, `elevacion.svg`, `corte-a-a.svg`, `expediente/<id>-expediente.pdf`); `scripts/demo-p4.ts` apunta a la ruta nueva.
   - Suite **287/287**, `live-e2e` 17/17 con el editor recompilado y smoke del bundle 8/8.
 
-### Pendientes para después de E6 (decisión del usuario: no ejecutar todavía)
+### Pendientes post-E6 resueltos (2026-10-11)
 
-- **Deuda técnica:** `smoke.mts` crea `%TEMP%\arquitecto-smoke-*` y no las borra. TODO: borrar las carpetas con más de 12 h al arrancar el smoke.
-- **Limpieza manual fuera del proyecto:** borrar las carpetas `%TEMP%\arquitecto-smoke-*` existentes con más de 12 h. La hace el usuario: queda fuera de `D:\0Claude\arquitecto-mcp`.
+- **Deuda técnica de `smoke.mts`:** al arrancar borra las carpetas `%TEMP%\arquitecto-smoke-*` con más de 12 h (solo directorios con ese prefijo en `tmpdir()`). Probado con una carpeta señuelo de 13 h: se borró y las recientes quedaron; smoke 8/8.
+- **Limpieza de `%TEMP%`:** pedida por el usuario. Al ejecutarla las 3 carpetas existentes tenían menos de 12 h, así que no se borró ninguna; el smoke las limpiará cuando venzan.
+### Post-E6 · CAD para AutoCAD, cotas reales y calco sin rastro (2026-10-12)
+
+- **DXF que abre en AutoCAD:** el writer declaraba AC1021 sin las estructuras obligatorias (BLOCK_RECORD, OBJECTS…) y AutoCAD lo rechazaba. Ahora emite **DXF R12 (AC1009)**:
+  - solo LINE / POLYLINE / CIRCLE / ARC / TEXT, sin rellenos;
+  - 100 % ASCII, con los acentos como `\U+XXXX`;
+  - solo las capas con contenido.
+- **Cotas reales:** cada cota es una entidad `DIMENSION` con su bloque anónimo `*Dn` y el estilo `ESTANDAR-PLANO` en el archivo (cm sin decimales, flecha cerrada, texto amarillo).
+  - El estándar del usuario está en `sandbox/0Standar-acotar/entregables/`: tabla de capas, DIMSTYLE, `.scr`, `.lsp` y `.dwt`.
+  - Las cotas del PDF/SVG también pasaron a **cm** (decisión del usuario). Los 94 textos de los snapshots cambiaron solo de mm a cm, sin cambios de geometría.
+- **El DWG** lo genera el usuario: abre el DXF en AutoCAD y usa Guardar como → DWG 2018. No se automatiza; `accoreconsole` no ejecuta scripts en este equipo.
+- **Calco sin rastro:**
+  - **Bug:** los límites de la planta sumaban el calco, así que cotas y ejes de `render_plan` y del editor medían la foto (15027 × 13239 en el depto-caro).
+  - **Corrección:** la obra manda en cotas y ejes; el calco solo amplía el encuadre. Test que primero falló y luego pasó.
+  - Flujo documentado: al terminar de trazar, `apply_ops delete underlay U1`. Las láminas exportadas nunca incluyen el calco.
+- **Auditoría:** typecheck en verde, suite 290/290 (con `live-e2e`), smoke 8/8, `pnpm audit` sin vulnerabilidades y `claude mcp get arquitecto` conectado.
 
 ## Origen y objetivo
 

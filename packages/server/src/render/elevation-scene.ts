@@ -2,7 +2,7 @@ import {
   groundAt, normalize, pointOnWall, roofGeometry, roofsOf, sub, unverifiedRules,
   type Level, type Opening, type Point, type Project, type Wall,
 } from "@arquitecto/core";
-import { dimTick, drawSheetFrame } from "./frame.js";
+import { cmText, dimTick, drawSheetFrame } from "./frame.js";
 import { W, type LayerName, type Prim, type Scene2D } from "./scene.js";
 import { planTransform, type Bounds, type PlanTransform } from "./transform.js";
 
@@ -216,10 +216,10 @@ export function drawVerticalDims(xEdge: number, zs: number[], mm: (v: number) =>
       const z0 = ch.events[i]!;
       const z1 = ch.events[i + 1]!;
       if (z1 - z0 < 1) continue;
-      push("COTAS", {
-        kind: "text", at: [x - mm(1.0), (z0 + z1) / 2], text: String(Math.round(z1 - z0)), size: 2.5,
-        anchor: "middle", along: { from: [x, z0], to: [x, z1] },
-      });
+      const at: Point = [x - mm(1.0), (z0 + z1) / 2];
+      const text = cmText(z1 - z0);
+      push("COTAS", { kind: "text", at, text, size: 2.5, anchor: "middle", along: { from: [x, z0], to: [x, z1] } });
+      push("COTAS", { kind: "dim", a: [xEdge, z0], b: [xEdge, z1], line: [x, z1], rot: 90, text, textAt: at });
     }
   }
 }

@@ -79,6 +79,11 @@ export function drawSheetFrame(push: FramePush, o: SheetFrameOptions): void {
   }
 }
 
+/** Valor de cota mostrado: el modelo está en mm y las cotas se leen en cm sin decimales (ESTANDAR-PLANO). */
+export function cmText(mmLen: number): string {
+  return String(Math.round(mmLen / 10));
+}
+
 /** Tick chéo 45° của dim kiến trúc VN — dùng chung mọi tờ. */
 export function dimTick(push: FramePush, layer: LayerName, c: Point, t: number): void {
   push(layer, { kind: "line", a: [c[0] - t, c[1] - t], b: [c[0] + t, c[1] + t], weight: W.mid });

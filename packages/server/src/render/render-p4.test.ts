@@ -109,29 +109,61 @@ describe("P4 — DXF writer (ADR-08: TS thuần)", () => {
   const build = buildPlanScene(p, "L1");
   const dxf = sceneToDxf(build.items, { scale: build.tf.scale });
 
-  it("cấu trúc DXF hợp lệ: header AC1021, layer TCVN, EOF", () => {
-    expect(dxf.startsWith("0\nSECTION")).toBe(true);
-    expect(dxf).toContain("$ACADVER");
-    expect(dxf).toContain("AC1021");
-    expect(dxf).toContain("MUROS-CORTE");
-    expect(dxf.trimEnd().endsWith("EOF")).toBe(true);
+  it("DXF R12 válido para AutoCAD: AC1009, secciones y tablas obligatorias, EOF", () => {
+    expect(dxf.startsWith("0\nSECTION\n2\nHEADER")).toBe(true);
+    expect(dxf).toContain("$ACADVER\n1\nAC1009\n");
+    expect(dxf).toContain("$EXTMIN");
+    for (const t of ["LTYPE", "LAYER", "STYLE"]) expect(dxf, t).toContain(`0\nTABLE\n2\n${t}\n`);
+    expect(dxf).toContain("0\nLAYER\n2\nMUROS-CORTE\n");
+    expect(dxf).not.toContain("\nCALCO\n"); // solo capas con contenido: sin rastro del calco
+    expect(dxf).toContain("0\nSECTION\n2\nENTITIES\n");
+    expect(dxf.trimEnd().endsWith("0\nEOF")).toBe(true);
+    // nada que R12 no conozca (AutoCAD rechazaba el AC1021 incompleto)
+    for (const t of ["LWPOLYLINE", "HATCH", "ELLIPSE", "AcDb"]) expect(dxf, t).not.toContain(`\n${t}\n`);
   });
 
   it("map 1-1 số lượng primitive model-space (doc 08: không bao giờ lệch SVG)", () => {
     const modelItems = build.items.filter((i) => i.space !== "paper");
-    const count = (kind: string): number => modelItems.filter((i) => i.prim.kind === kind).length;
-    // đếm ĐÚNG điểm bắt đầu entity (0\nTYPE) — "TEXT" còn xuất hiện làm tên layer ở group 8
-    const occurs = (needle: string): number => dxf.split(`\n0\n${needle}\n`).length - 1;
+    // las primitivas sueltas de la capa COTAS se reemplazan por DIMENSION reales
+    const drawn = modelItems.filter((i) => i.layer !== "COTAS");
+    const count = (kind: string): number => drawn.filter((i) => i.prim.kind === kind).length;
+    const dims = modelItems.filter((i) => i.prim.kind === "dim").length;
+    const entities = dxf.slice(dxf.indexOf("\n2\nENTITIES\n"));
+    // cuenta inicios de entidad (0\nTIPO) en ENTITIES; "TEXT" aparece también dentro de nombres de capa
+    const occurs = (needle: string, s = entities): number => s.split(`\n0\n${needle}\n`).length - 1;
+    expect(dims).toBeGreaterThan(10);
+    expect(occurs("DIMENSION")).toBe(dims);
     expect(occurs("LINE")).toBe(count("line"));
-    expect(occurs("LWPOLYLINE")).toBe(count("polyline") + count("polygon"));
+    expect(occurs("POLYLINE")).toBe(count("polyline") + count("polygon") + count("ellipse"));
+    expect(occurs("SEQEND")).toBe(occurs("POLYLINE"));
     expect(occurs("TEXT")).toBe(count("text"));
     expect(occurs("ARC")).toBe(count("arc"));
-    // polygon có fill → kèm HATCH solid (poché tường cắt)
-    const filled = modelItems.filter((i) => i.prim.kind === "polygon" && (i.prim as { fill?: string }).fill).length;
-    expect(occurs("HATCH")).toBe(filled);
+    expect(occurs("CIRCLE")).toBe(count("circle"));
+    // un bloque anónimo *Dn por cota, con dos flechas (SOLID) y un texto cada uno
+    expect(occurs("BLOCK", dxf)).toBe(dims);
+    expect(occurs("SOLID", dxf)).toBe(2 * dims);
   });
 
-  it("chữ tiếng Việt giữ nguyên UTF-8, cỡ chữ nhân tỷ lệ", () => {
+  it("cotas reales: DIMENSION con estilo ESTANDAR-PLANO, valor en cm (DIMLFAC 0.1, sin decimales)", () => {
+    expect(dxf).toContain("0\nTABLE\n2\nDIMSTYLE\n");
+    expect(dxf).toContain("0\nDIMSTYLE\n2\nESTANDAR-PLANO\n");
+    expect(dxf).toContain("$DIMSTYLE\n2\nESTANDAR-PLANO\n");
+    expect(dxf).toContain("$LUPREC\n70\n0\n");
+    expect(dxf).toContain("\n144\n0.1\n"); // DIMLFAC: mm → cm
+    // primera DIMENSION: referencia su bloque y el estilo; texto "" = valor medido
+    const d = dxf.slice(dxf.indexOf("\n0\nDIMENSION\n"));
+    expect(d).toMatch(/^\n0\nDIMENSION\n8\nCOTAS\n2\n\*D1\n3\nESTANDAR-PLANO\n/);
+    // el bloque *D1 muestra el valor en cm: 16000 mm del total → "1600" existe en algún bloque
+    expect(dxf).toContain("\n1\n1600\n");
+    expect(dxf).not.toContain("\n1\n16000\n");
+  });
+
+  it("archivo 100 % ASCII: los acentos van como \\U+XXXX", () => {
+    expect(/^[\x09\x0a\x0d\x20-\x7e]*$/.test(dxf)).toBe(true);
+    expect(dxf).toContain("BA\\U+00D1O");
+  });
+
+  it("texto en español, cỡ chữ nhân tỷ lệ", () => {
     expect(dxf).toContain("LIVING");
     // tên phòng 3.5mm giấy × scale 50 = 175mm model
     expect(dxf).toContain(`\n40\n${3.5 * build.tf.scale}\n`);
@@ -189,7 +221,7 @@ describe("P4 — bộ tờ hồ sơ", () => {
     const schedule = set.sheets.find((s) => s.id === "schedule")!;
     expect(schedule.hasModel).toBe(false);
     const plan = set.sheets.find((s) => s.id === "plan-L1")!;
-    expect(sheetDxf(plan)).toContain("LWPOLYLINE");
+    expect(sheetDxf(plan)).toContain("\n0\nPOLYLINE\n");
   });
 });
 

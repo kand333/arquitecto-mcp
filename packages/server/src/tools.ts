@@ -614,7 +614,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
     {
       title: "Exportar la documentación",
       description:
-        "Exporta a .arquitecto/exports/expediente/. format: 'pdf' = el JUEGO de láminas ARQ-01… en un solo A3 de varias páginas (para entregar); 'svg' = un archivo por lámina; 'dxf' = un archivo por lámina con geometría, en mm reales (se mide en CAD; las láminas de tablas no tienen DXF); 'gltf' = UN .glb de toda la casa (en metros, un nodo por entidad según su id; se abre en un visor o en Blender, con scripts/render-photoreal.py para render fotorrealista); 'ifc' = IFC4 de anteproyecto (muros + vanos con relaciones voids/fills, losas con perforaciones, escalera, IfcSpace por recinto: para pasar a un arquitecto/BIM, NO es un proyecto de construcción). sheets solo aplica a pdf/svg/dxf: plan-<levelId> | elevation | section | schedule | estimate. SIEMPRE validate y revisión del render antes de entregar (checkpoint 5).",
+        "Exporta a .arquitecto/exports/expediente/. format: 'pdf' = el JUEGO de láminas ARQ-01… en un solo A3 de varias páginas (para entregar); 'svg' = un archivo por lámina; 'dxf' = un archivo DXF R12 por lámina con geometría, en mm reales (abre en AutoCAD/LibreCAD; solo contornos, sin rellenos) (se mide en CAD; las láminas de tablas no tienen DXF); 'gltf' = UN .glb de toda la casa (en metros, un nodo por entidad según su id; se abre en un visor o en Blender, con scripts/render-photoreal.py para render fotorrealista); 'ifc' = IFC4 de anteproyecto (muros + vanos con relaciones voids/fills, losas con perforaciones, escalera, IfcSpace por recinto: para pasar a un arquitecto/BIM, NO es un proyecto de construcción). sheets solo aplica a pdf/svg/dxf: plan-<levelId> | elevation | section | schedule | estimate. SIEMPRE validate y revisión del render antes de entregar (checkpoint 5).",
       inputSchema: {
         format: z.enum(["pdf", "svg", "dxf", "gltf", "ifc"]),
         sheets: z.array(z.string()).optional(),
@@ -674,7 +674,7 @@ ${vNote}`);
             writeFileSync(fp, sheetDxf(s), "utf8");
             lines.push(`  ${s.no} ${s.title} → ${fp}`);
           }
-          lines.unshift(`✅ Láminas DXF (${withModel.length}; mm reales, capas en español):`);
+          lines.unshift(`✅ Láminas DXF R12 (${withModel.length}; mm reales, capas en español, sin rellenos; ábrelas en AutoCAD y usa Guardar como → DWG si necesitas .dwg):`);
         }
         lines.push(`Juego de láminas: ${set.sheets.map((s) => `${s.no} ${s.title}`).join("; ")}.`);
         for (const sk of set.skipped) lines.push(`⚠ Lámina omitida ${sk.id}: ${sk.reason}`);
@@ -784,6 +784,7 @@ ${vNote}`);
           ...info,
           `Se ve TENUE bajo la planta (editor + render_plan; NO sale en los planos exportados). Revisa con render_plan y ajusta la ubicación: apply_ops update underlay U1 (origin/rotation/scale/opacity/level).`,
           ...(kind === "dxf" ? ["Detectar muros desde las líneas del DXF: underlay_trace."] : []),
+          "Al terminar de trazar: apply_ops delete underlay U1 retira el calco del editor y de render_plan (no queda rastro del bosquejo).",
         ].join("\n"));
       } catch (e) {
         return fail(e);

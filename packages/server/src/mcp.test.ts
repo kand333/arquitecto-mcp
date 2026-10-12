@@ -112,7 +112,7 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
 
     const dxf = await client.callTool({ name: "export", arguments: { format: "dxf" } });
     const msg = textOf(dxf);
-    expect(msg).toContain("Láminas DXF (4;");
+    expect(msg).toContain("Láminas DXF R12 (4;");
     expect(msg).toContain("ARQ-01 PLANTA PISO 1");
     expect(msg).toContain("ARQ-04 CORTE A-A");
     expect(msg).not.toContain("CUADRO DE RECINTOS Y VANOS →"); // las láminas de cuadros no tienen DXF

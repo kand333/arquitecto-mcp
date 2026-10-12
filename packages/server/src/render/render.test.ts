@@ -33,9 +33,9 @@ describe("renderer 2D — mặt bằng", () => {
     // nhãn phòng HOA có dấu + diện tích dẫn xuất
     expect(svg).toContain("LIVING");
     expect(svg).toContain("13.3m²");
-    // dim: chuỗi trục 3780 và tổng 4000/16000
-    expect(svg).toContain(">3780<");
-    expect(svg).toContain(">16000<");
+    // cotas en cm sin decimales (ESTANDAR-PLANO): eje 3780 mm → 378, total 16000 mm → 1600
+    expect(svg).toContain(">378<");
+    expect(svg).toContain(">1600<");
     // thang: mũi tên LÊN + số bậc
     expect(svg).toContain("SUBE 21 PELD.");
     // cajetín + escala; reglas OGUC validadas por el usuario → sin la nota ⚠ de reglas sin validar

@@ -57,6 +57,21 @@ export type Prim =
       origin: Point;
       scale: number;
       rot: number;
+    }
+  | {
+      /**
+       * Cota semántica: el SVG la ignora (dibuja líneas, remates y texto ya presentes en la
+       * escena); el DXF la exporta como entidad DIMENSION real (editable en AutoCAD).
+       * a/b = puntos medidos; line = punto de la línea de cota; rot = 0 (horizontal) o 90;
+       * text/textAt = valor mostrado (cm) y su posición, iguales a los del texto del SVG.
+       */
+      kind: "dim";
+      a: Point;
+      b: Point;
+      line: Point;
+      rot: 0 | 90;
+      text: string;
+      textAt: Point;
     };
 
 export type SceneItem = {

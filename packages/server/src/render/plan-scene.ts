@@ -4,7 +4,7 @@ import {
   wallBand, wallDir, wallLength, wallNormal, type Furniture, type Level, type Opening,
   type Point, type Project, type Wall,
 } from "@arquitecto/core";
-import { dimTick, drawSheetFrame } from "./frame.js";
+import { cmText, dimTick, drawSheetFrame } from "./frame.js";
 import { LAYERS, W, type LayerName, type Prim, type Scene2D, type SceneItem } from "./scene.js";
 import { planTransform, type Bounds, type PlanTransform } from "./transform.js";
 
@@ -56,8 +56,9 @@ export function buildPlanScene(p: Project, levelId: string, opts: PlanOptions = 
   const underlay = opts.underlay && (!opts.underlay.level || opts.underlay.level === levelId)
     ? opts.underlay
     : undefined;
-  const bounds = computeBounds(p, walls, underlay, levelId);
-  const tf = planTransform(bounds, opts.scale);
+  // la obra (sin calco) manda en ejes, cotas y marca de corte; el calco solo amplía el encuadre
+  const bounds = computeBounds(p, walls, undefined, levelId);
+  const tf = planTransform(underlay ? computeBounds(p, walls, underlay, levelId) : bounds, opts.scale);
   const S = tf.scale;
   const mm = (paperMm: number): number => paperMm * S; // mm giấy → mm model
 
@@ -629,12 +630,17 @@ function drawDims(p: Project, walls: Wall[], b: Bounds, mm: (v: number) => numbe
         const v1 = ch.events[i + 1]!;
         const len = Math.round(v1 - v0);
         if (len <= 0) continue;
-        const narrow = len / mm(1) < String(len).length * 1.9;
+        const text = cmText(len);
+        const narrow = len / mm(1) < text.length * 1.9;
         const off = narrow ? side.out * mm(2.1 + (alt++ % 2) * 2.2) : -side.out * mm(1.0);
         const at = pt(side, (v0 + v1) / 2, linePos + off);
         push("COTAS", {
-          kind: "text", at, text: String(len), size: 2.5, anchor: "middle",
+          kind: "text", at, text, size: 2.5, anchor: "middle",
           along: { from: pt(side, v0, linePos), to: pt(side, v1, linePos) },
+        });
+        push("COTAS", {
+          kind: "dim", a: pt(side, v0, side.edge), b: pt(side, v1, side.edge), line: pt(side, v1, linePos),
+          rot: side.axis === "x" ? 0 : 90, text, textAt: at,
         });
       }
     }
@@ -723,21 +729,25 @@ function drawRoomDims(p: Project, levelId: string, mm: (v: number) => number, pu
       push("COTAS", { kind: "line", a: [minX, y], b: [maxX, y], weight: W.hair });
       dimTick(push, "COTAS", [minX, y], t);
       dimTick(push, "COTAS", [maxX, y], t);
+      const at: Point = [(minX + maxX) / 2, y + mm(1.0)];
       push("COTAS", {
-        kind: "text", at: [(minX + maxX) / 2, y + mm(1.0)], text: String(Math.round(w)), size: 2.5,
+        kind: "text", at, text: cmText(w), size: 2.5,
         anchor: "middle", along: { from: [minX, y], to: [maxX, y] },
       });
+      push("COTAS", { kind: "dim", a: [minX, y], b: [maxX, y], line: [maxX, y], rot: 0, text: cmText(w), textAt: at });
     }
     if (h >= mm(6) && w >= mm(5)) {
       const x = minX + w * 0.3;
       push("COTAS", { kind: "line", a: [x, minY], b: [x, maxY], weight: W.hair });
       dimTick(push, "COTAS", [x, minY], t);
       dimTick(push, "COTAS", [x, maxY], t);
+      const at: Point = [x - mm(1.0), minY + h * 0.3];
       push("COTAS", {
         // chữ đặt ở 30% chiều dim — điểm giữa là chỗ nhãn tên phòng đứng
-        kind: "text", at: [x - mm(1.0), minY + h * 0.3], text: String(Math.round(h)), size: 2.5,
+        kind: "text", at, text: cmText(h), size: 2.5,
         anchor: "middle", along: { from: [x, minY], to: [x, maxY] },
       });
+      push("COTAS", { kind: "dim", a: [x, minY], b: [x, maxY], line: [x, maxY], rot: 90, text: cmText(h), textAt: at });
     }
   }
 }
