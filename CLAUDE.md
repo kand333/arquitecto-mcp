@@ -1,10 +1,5 @@
 # CLAUDE.md — arquitecto-mcp
 
-## Antes de empezar
-- Lee `CONTEXTO.md`: plan por etapas (E0–E6), estado actual, decisiones y vulnerabilidades pendientes. Ejecuta una etapa por sesión, sigue su método didáctico y actualiza «Estado actual» al cerrarla.
-- `D:\0Claude\Atelier-main` es el upstream: solo lectura. No abras Claude Code allí; trae hooks y MCP de `haido`. Rechaza cualquier hook o servidor MCP de proyecto que se ofrezca confiar.
-- Sin remotos ni push salvo pedido explícito.
-
 ## Alcance (verificado en código y tests)
 Estado: ✅ completo · 🟡 parcial · ⛔ no disponible. No atribuyas a arquitecto-mcp funciones de Atelier o de los docs `reference-en` que no estén aquí.
 
@@ -39,7 +34,8 @@ Estado: ✅ completo · 🟡 parcial · ⛔ no disponible. No atribuyas a arquit
 **Limitaciones**: no reemplaza AutoCAD, Revit ni Archicad; no hace cálculo estructural ni instalaciones (MEP); no sustituye la revisión ni la firma de profesionales competentes (OGUC art. 1.2.2); sus planos son de **anteproyecto** y requieren revisión profesional antes de permisos u obra. Rasantes, coeficiente de constructibilidad, escaleras y accesibilidad no tienen reglas.
 
 ## Convenciones
-- UI, descripciones de herramientas MCP, mensajes y docs: español. Código, identificadores y commits: inglés. El legado VN se borró en E4b (packs `std-vn`/`loban`/`pln`, región `vn`, VND, diccionario `vi`); la región por defecto es `cl`. Solo quedan en vietnamita claves de esquema e IDs (`quy_hoach`, `khach`, `sofa-don`…: contratos de datos) y comentarios de código. Láminas (código `ARQ-NN`, capas DXF en español, viñeta), catálogo y logs están en español; `server/src/render/no-vietnamese.test.ts` falla si vuelve a aparecer vietnamita en un literal de producción, en `rules/*.json` o en las láminas generadas.
+- UI, descripciones de herramientas MCP, mensajes y docs: español. Código, identificadores y commits: inglés. Región por defecto `cl`. Solo quedan en vietnamita claves de esquema e IDs (`quy_hoach`, `khach`, `sofa-don`…: contratos de datos) y comentarios de código. Láminas (código `ARQ-NN`, capas DXF en español, viñeta), catálogo y logs están en español; `server/src/render/no-vietnamese.test.ts` falla si vuelve a aparecer vietnamita en un literal de producción, en `rules/*.json` o en las láminas generadas.
+- Sin remotos ni push salvo pedido explícito.
 - Nombres: `@arquitecto/{core,server,web}`, bin `arquitecto-mcp`, servidor MCP `arquitecto`, env `ARQUITECTO_*`, archivos `arquitecto.project.json` y `.arquitecto/`.
 - No renombres «Atelier» en: `LICENSE`, URLs `github.com/lebac-svg/Atelier`, `docs/reference-en/`, `packages/core/assets/license-manifest.json`. Es atribución o referencia upstream.
 - `@arquitecto/core` es puro: sin imports `node:` ni DOM en `src/` (salvo tests). Disco, red y render van en `server`.
@@ -49,7 +45,7 @@ Estado: ✅ completo · 🟡 parcial · ⛔ no disponible. No atribuyas a arquit
 ## Dependencias y build
 - Instalar siempre con `pnpm install --frozen-lockfile --ignore-scripts`.
 - `packages/cli/web/` es un bundle compilado versionado: no se edita a mano; lo regenera `pnpm build:cli`.
-- `SECURITY-AUDIT-BASE.md` es la línea base de `pnpm audit` del upstream; no lo sobrescribas. Desde E2 (DEPS) `pnpm audit` está limpio: una dependencia nueva o actualizada debe mantenerlo.
+- `SECURITY-AUDIT-BASE.md` es la línea base de `pnpm audit` del upstream; no lo sobrescribas. `pnpm audit` está limpio (ver `docs/security-tests/DEPS.md`): una dependencia nueva o actualizada debe mantenerlo.
 
 ## Comandos (verificados en `package.json` y scripts)
 - `pnpm typecheck` · `pnpm test` · `pnpm build` (tsc) · `pnpm build:web` (editor) · `pnpm build:cli` (editor + bundle `packages/cli/dist/main.mjs`).
@@ -66,4 +62,5 @@ Estado: ✅ completo · 🟡 parcial · ⛔ no disponible. No atribuyas a arquit
 ## Seguridad
 - Editor (`live.ts`, A1): escucha solo en `127.0.0.1`; WS y `/share`, `/share/rotate`, `/plan`, `/so-sanh` exigen `?token=` (propietario = escritura, link compartido = solo lectura); Host y Origin deben ser `localhost`/`127.0.0.1:<port>`. Toda ruta o cliente nuevo debe respetarlo.
 - IDs (A2): `isValidId` (core) en todo `add` y al cargar de disco; toda escritura de exportes pasa por `safeJoin` (`server/src/safe-path.ts`). `readVariant` exige slug `^[a-z0-9-]+$` (M2); `openProject` solo dentro de `baseDir` (M3). Underlay (M1): `source` = nombre de archivo simple, lectura confinada con `realpath` a `.arquitecto/underlay`, `underlay_import` solo dentro del proyecto y ≤20 MB.
-- En E2, cada fix lleva un test que primero falla; el output rojo y el verde se guardan en `docs/security-tests/<id>.md`.
+- Todo fix de seguridad lleva un test que primero falla; evidencia roja y verde en `docs/security-tests/<id>.md` (A1, A2, M1–M3, LOW, DEPS).
+- `D:\0Claude\Atelier-main` es el upstream: solo lectura. No abras Claude Code allí (trae hooks y MCP de `haido`); rechaza cualquier hook o servidor MCP de proyecto que se ofrezca confiar.
