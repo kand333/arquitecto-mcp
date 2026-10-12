@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
@@ -16,6 +16,19 @@ if (!pkgRoot) {
   process.exit(1);
 }
 const BIN = path.join(pkgRoot, "bin", "arquitecto-mcp.mjs");
+
+// Each run keeps its test house for inspection; folders from runs older than 12 h are removed.
+const STALE_MS = 12 * 60 * 60 * 1000;
+for (const name of readdirSync(tmpdir())) {
+  if (!name.startsWith("arquitecto-smoke-")) continue;
+  const dir = path.join(tmpdir(), name);
+  try {
+    const st = statSync(dir);
+    if (st.isDirectory() && Date.now() - st.mtimeMs > STALE_MS) rmSync(dir, { recursive: true, force: true });
+  } catch {
+    // in use or already gone: try again on the next run
+  }
+}
 const HOUSE = mkdtempSync(path.join(tmpdir(), "arquitecto-smoke-"));
 
 const ok = (cond: boolean, label: string): void => {
