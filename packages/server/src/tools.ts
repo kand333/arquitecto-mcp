@@ -243,7 +243,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
     {
       title: "Dibujar la planta (PNG + SVG)",
       description:
-        "Genera la planta de un piso con su simbología y cotas a partir del modelo y devuelve un PNG para verlo en el chat (el SVG queda en .arquitecto/exports). layers filtra capas (p. ej. solo TUONG-CAT,DIM para revisar medidas). scale 50/100 (por defecto se elige solo).",
+        "Genera la planta de un piso con su simbología y cotas a partir del modelo y devuelve un PNG para verlo en el chat (el SVG queda en .arquitecto/exports). layers filtra capas (p. ej. solo MUROS-CORTE,COTAS para revisar medidas). scale 50/100 (por defecto se elige solo).",
       inputSchema: {
         level: z.string().describe("ID del piso, p. ej. L1"),
         scale: z.number().int().optional(),
@@ -255,7 +255,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
         const p = store.current;
         const underlay = loadUnderlay(p, store.baseDir);
         const r = await renderPlanFiles(p, args.level, store.exportDir, {
-          date: new Date().toLocaleDateString("vi-VN"),
+          date: new Date().toLocaleDateString("es-CL"),
           ...(args.scale ? { scale: args.scale } : {}),
           ...(args.layers ? { layers: args.layers } : {}),
           ...(underlay ? { underlay } : {}),
@@ -341,7 +341,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
         if (args.target === "plan") {
           const ground = [...p.levels].sort((a, b) => a.elevation - b.elevation)[0]!;
           const r = await renderPlanFiles(p, ground.id, store.exportDir, {
-            date: new Date().toLocaleDateString("vi-VN"),
+            date: new Date().toLocaleDateString("es-CL"),
           });
           if (!r.pngPath) return fail(new Error(`Falló el render de respaldo: ${r.pngError ?? "desconocido"}`));
           const png = readFileSync(r.pngPath).toString("base64");
@@ -364,7 +364,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
     {
       title: "Buscar mobiliario en el catálogo",
       description:
-        `Busca en el catálogo de ${"≥100"} piezas normalizadas (medidas REALES en mm y holguras recomendadas; los nombres aún están en vietnamita, traducción pendiente). Usa el id devuelto en apply_ops add furniture. Devuelve además UNA lámina de contacto para ver forma y tamaño. maxFootprint {w,d} filtra lo que cabe en un hueco (p. ej. 900 mm). Categorías: ${ASSET_CATEGORIES.join(", ")}. Lo que va colgado indica "treo <mm>" (altura): se fija con el campo elevation del mueble.`,
+        `Busca en el catálogo de ${"≥100"} piezas normalizadas (medidas REALES en mm y holguras recomendadas; nombres en español; también se encuentra por el nombre en inglés o por id). Usa el id devuelto en apply_ops add furniture. Devuelve además UNA lámina de contacto para ver forma y tamaño. maxFootprint {w,d} filtra lo que cabe en un hueco (p. ej. 900 mm). Categorías: ${ASSET_CATEGORIES.join(", ")}. Lo que va colgado indica "treo <mm>" (altura): se fija con el campo elevation del mueble.`,
       inputSchema: {
         query: z.string().optional().describe("Palabra clave en español o inglés, o id/categoría; p. ej. 'sofá', 'cama'"),
         category: z.string().optional(),
@@ -424,7 +424,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
       try {
         const p = store.current;
         const opts = {
-          date: new Date().toLocaleDateString("vi-VN"),
+          date: new Date().toLocaleDateString("es-CL"),
           ...(args.scale ? { scale: args.scale } : {}),
         };
         const r = args.kind === "elevation" ? renderElevationSvg(p, opts) : renderSectionSvg(p, opts);
@@ -555,7 +555,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
     {
       title: "Presupuesto preliminar",
       description:
-        "Estima el costo de construcción desde el modelo: superficie equivalente (losas 100 %, fundaciones ~40 %, techo ~50 %) × precio de obra gruesa + superficie útil × precio de terminaciones según el nivel del brief (muc lo fuerza: co-ban básico | trung-binh-kha medio | cao-cap alto). Compara con el presupuesto del brief. Margen ±15–20 %; NO reemplaza una cotización. Hoy solo hay tabla de precios para el legado VN: en proyectos chilenos da solo cantidades hasta cargar la tabla CLP/UF (E4). La lámina de presupuesto también va en el export (id 'estimate').",
+        "Estima el costo de construcción desde el modelo: superficie equivalente (losas × coeficientes de la tabla) × precio de obra gruesa + superficie útil × precio de terminaciones según el nivel del brief (muc lo fuerza: co-ban básico | trung-binh-kha medio | cao-cap alto). Precios en UF/m². La tabla chilena empaquetada (rules/don-gia-cl.json) trae los precios «por completar» y solo el coeficiente de losas (1,0): sin precios entrega solo cantidades y NO inventa un total; con rules/don-gia.json en la carpeta del proyecto calcula el total en UF (y en CLP si declara valor_clp). Compara con el presupuesto del brief. NO reemplaza una cotización. La lámina de presupuesto va en el export (id 'estimate') solo si hay precios.",
       inputSchema: {
         muc: z.enum(["co-ban", "trung-binh-kha", "cao-cap"]).optional(),
       },
@@ -645,7 +645,7 @@ ${vNote}`);
         }
         store.refreshDonGia();
         const set = buildSheetSet(p, {
-          date: new Date().toLocaleDateString("vi-VN"),
+          date: new Date().toLocaleDateString("es-CL"),
           ...(args.sheets?.length ? { sheets: args.sheets } : {}),
         });
         if (set.sheets.length === 0) {
