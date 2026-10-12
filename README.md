@@ -4,7 +4,7 @@ Arquitecto IA local que se conecta a **Claude Code** mediante **MCP** (Model Con
 
 Deriva de [Atelier](https://github.com/lebac-svg/Atelier) (MIT, © 2026 Bắc Lê). Ver [`LICENSE`](LICENSE).
 
-> **Anteproyecto, no proyecto firmado.** Los planos y la validación son de referencia: no certifican cumplimiento legal ni reemplazan la revisión y firma de un arquitecto y del propietario (OGUC art. 1.2.2).
+> **Aviso legal: anteproyecto, no proyecto firmado.** Los planos y la validación son de referencia: no certifican cumplimiento legal ni reemplazan la revisión y firma de un arquitecto y del propietario (OGUC art. 1.2.2). Antes de usarlos para permisos u obra deben ser revisados por profesionales competentes.
 
 ## 1. Qué es y para quién
 
@@ -88,12 +88,8 @@ En una sesión nueva de Claude Code, con el servidor registrado:
 
 - No reemplaza AutoCAD, Revit ni Archicad. No hace cálculo estructural ni instalaciones (MEP).
 - Los recintos se declaran como polígonos; no se detectan solos a partir de los muros.
-- Solo hay una elevación (la principal); no hay planta de techumbre como lámina propia.
-- La conversión a DWG la haces tú en AutoCAD.
+- No hay planta de techumbre como lámina propia ni elevaciones laterales.
 - El presupuesto no trae precios: los completas tú (`rules/don-gia.json` del proyecto, en UF/m²).
-- No hay capturas de pantalla de arquitecto-mcp en este repositorio. Las de `docs/images` y `docs/media` son del proyecto original.
-
-**Aviso legal**: los resultados son anteproyectos de referencia. Antes de usarlos para permisos u obra, deben ser revisados y firmados por los profesionales competentes y el propietario.
 
 ## Para desarrolladores
 
