@@ -1,9 +1,10 @@
 import type { Project } from "@arquitecto/core";
-import { buildElevationScene } from "./elevation-scene.js";
+import { buildElevationsScene } from "./elevations.js";
 import { buildEstimateScene } from "./estimate-scene.js";
+import { planTitle } from "./frame.js";
 import { buildPlanScene } from "./plan-scene.js";
 import { buildScheduleScene } from "./schedule-scene.js";
-import { buildSectionScene } from "./section-scene.js";
+import { buildSectionsScene } from "./section-scene.js";
 import { sceneToDxf } from "./dxf-writer.js";
 import { fontCss } from "./render.js";
 import { sceneToSvg } from "./svg-writer.js";
@@ -66,15 +67,15 @@ export function buildSheetSet(p: Project, opts: SheetSetOptions = {}): SheetSet 
   for (const level of [...p.levels].sort((a, b) => a.elevation - b.elevation)) {
     tryBuild(`plan-${level.id}`, `planta-${level.id.toLowerCase()}`, (no) => {
       const b = buildPlanScene(p, level.id, { ...common, sheetNo: no });
-      return { items: b.items, tf: b.tf, title: `PLANTA ${b.meta.levelName.toUpperCase()}`, scaleLabel: b.meta.scaleLabel };
+      return { items: b.items, tf: b.tf, title: planTitle(b.meta.levelName), scaleLabel: b.meta.scaleLabel };
     });
   }
-  tryBuild("elevation", "elevacion", (no) => {
-    const b = buildElevationScene(p, { ...common, sheetNo: no });
+  tryBuild("elevation", "elevaciones", (no) => {
+    const b = buildElevationsScene(p, { ...common, sheetNo: no });
     return { items: b.items, tf: b.tf, ...b.meta };
   });
-  tryBuild("section", "corte-a-a", (no) => {
-    const b = buildSectionScene(p, { ...common, sheetNo: no });
+  tryBuild("section", "cortes", (no) => {
+    const b = buildSectionsScene(p, { ...common, sheetNo: no });
     return { items: b.items, tf: b.tf, ...b.meta };
   });
   tryBuild("schedule", "cuadro-recintos-vanos", (no) => {

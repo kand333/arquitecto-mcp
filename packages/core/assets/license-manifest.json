@@ -246,6 +246,11 @@
       "source": "Atelier parametric (tự sinh)",
       "model": "parametric"
     },
+    "bep-4": {
+      "license": "CC0-1.0",
+      "source": "arquitecto-mcp parametric",
+      "model": "parametric"
+    },
     "tu-lanh-sbs": {
       "license": "CC0-1.0",
       "source": "Atelier parametric (tự sinh)",

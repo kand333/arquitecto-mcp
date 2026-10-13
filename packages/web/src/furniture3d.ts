@@ -28,7 +28,7 @@ const CATEGORY_COLOR: Record<string, number> = {
   sofa: 0x7f94ad, "ban-tra": 0xb59a72, "ke-tv": 0xa98963,
   "ban-an": 0xb59a72, "ghe-an": 0x9c8464, "ban-lam-viec": 0xb59a72, "ghe-xoay": 0x5a5f66,
   "ke-sach": 0xa98963, "tu-giay": 0xa98963,
-  "tu-bep-duoi": 0x96876f, "tu-bep-tren": 0xa89a82, "tu-lanh": 0xd4d9de,
+  "tu-bep-duoi": 0x96876f, "tu-bep-tren": 0xa89a82, "tu-lanh": 0xd4d9de, bep: 0xd9dcdf,
   "bon-cau": 0xe9e9e6, lavabo: 0xe9e9e6, "voi-sen": 0xc9d6dc, "bon-tam": 0xe9e9e6,
   guong: 0xbfd4d9, "binh-nong-lanh": 0xdedede, "may-giat": 0xd0d3d6,
   "may-lanh": 0xe8eaec, "quat-cay": 0x9aa0a6, "den-cay": 0xc9b98a, "cay-canh": 0x5f7d4f,
@@ -150,6 +150,19 @@ export function buildFurnitureLocal(asset: Asset, assetId: string): THREE.Group 
       for (let i = 1; i < shelves; i++) {
         box(ctx, w - 60, d - 40, 20, 0, 10, (h / shelves) * i, inner);
       }
+      break;
+    }
+    case "bep": {
+      box(ctx, w, d, h); // cuerpo
+      box(ctx, w - 60, 20, h * 0.45, 0, d / 2, h * 0.12, shade(color, -0.45)); // puerta del horno
+      for (const sx of [-1, 1]) for (const sy of [-1, 1]) cyl(ctx, Math.min(w, d) / 7.5, 12, (sx * w) / 4.4, (sy * d) / 4.4, h, 0x2b2b2b); // platos
+      break;
+    }
+    case "tu-bep-duoi": {
+      box(ctx, w, d, h - 40); // muebles
+      box(ctx, w + 10, d + 10, 40, 0, 0, h - 40, 0xe6e2da); // cubierta
+      if (w >= 1500) box(ctx, 460, 340, 12, -w / 2 + w * 0.12 + 230, 0, h, 0x9aa3ab); // lavaplatos
+      if (w >= 2200) for (const sy of [-105, 115]) cyl(ctx, 95, 10, w / 2 - w * 0.3, sy, h, 0x2b2b2b); // encimera
       break;
     }
     case "tu-lanh": {

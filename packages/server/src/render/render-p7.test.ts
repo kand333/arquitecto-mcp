@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { estimateCost, loadCasa2Pisos, loadCasaPrueba2p, setDonGia } from "@arquitecto/core";
 import { buildPlanScene } from "./plan-scene.js";
-import { buildElevationScene } from "./elevation-scene.js";
-import { buildSectionScene } from "./section-scene.js";
+import { buildElevationsScene } from "./elevations.js";
+import { buildSectionsScene } from "./section-scene.js";
 import { modelToGlb } from "./gltf-writer.js";
 import { modelToIfc } from "./ifc-writer.js";
 import { sceneToDxf } from "./dxf-writer.js";
@@ -23,19 +23,19 @@ describe("P7 — biệt thự mái dốc trên lô góc đất dốc", () => {
     expect(mai.every((i) => i.dataId === "RF1")).toBe(true);
   });
 
-  it("mặt đứng: biệt thự LÙI 3m vẫn có tường mặt tiền (cụm gần nhất); 4 mặt mái; đất dốc", () => {
-    const elev = buildElevationScene(villa);
+  it("elevaciones: la techumbre hip se ve en las 4 caras; terreno con pendiente", () => {
+    const elev = buildElevationsScene(villa);
     const mai = elev.items.filter((i) => i.layer === "TECHUMBRE");
-    expect(mai).toHaveLength(4); // hip chiếu cạnh: 4 outline mặt
-    // đất dốc = polyline (không phải line ngang z=0)
+    expect(mai.length).toBeGreaterThan(4 * 4); // cantos y faldones en cada cara
+    // terreno con pendiente = polyline que no es horizontal
     const ground = elev.items.find((i) => i.layer === "MUROS-CORTE" && i.prim.kind === "polyline" && !("close" in i.prim && i.prim.close));
     expect(ground).toBeDefined();
     const zs = (ground!.prim as { pts: Array<[number, number]> }).pts.map(([, z]) => z);
-    expect(Math.min(...zs)).toBeLessThan(-50); // có đoạn đất thấp hơn cốt nền
+    expect(Math.max(...zs) - Math.min(...zs)).toBeGreaterThan(50);
   });
 
   it("mặt cắt: poché mái theo profile + mốc đỉnh vượt tường; nền đất dốc", () => {
-    const sect = buildSectionScene(villa);
+    const sect = buildSectionsScene(villa);
     const roofCut = sect.items.filter((i) => i.dataId === "RF1");
     expect(roofCut.length).toBeGreaterThanOrEqual(1);
     expect(roofCut.some((i) => i.prim.kind === "polygon" && (i.prim as { fill?: string }).fill === "#000000")).toBe(true);
@@ -70,9 +70,9 @@ describe("P7 — biệt thự mái dốc trên lô góc đất dốc", () => {
 
   it("nhà ống không mái/terrain: KHÔNG item MAI, đất vẫn line ngang z=0 (no-op)", () => {
     const p = loadCasaPrueba2p();
-    const elev = buildElevationScene(p);
+    const elev = buildElevationsScene(p);
     expect(elev.items.filter((i) => i.layer === "TECHUMBRE")).toHaveLength(0);
-    const sect = buildSectionScene(p);
+    const sect = buildSectionsScene(p);
     expect(sect.items.filter((i) => i.layer === "TECHUMBRE")).toHaveLength(0);
   });
 });

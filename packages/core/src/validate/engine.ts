@@ -3,7 +3,7 @@ import { sortIssues } from "../issues.js";
 import type { Project } from "../types.js";
 import type { Finding } from "./finding.js";
 import { activeRules, getRule, type RuleDef } from "./rules.js";
-import { geo01, geo02, geo03, geo04, geo05, geo06, geo07, geo08 } from "./evaluators-geo.js";
+import { geo01, geo02, geo03, geo04, geo05, geo06, geo07, geo08, geo09 } from "./evaluators-geo.js";
 import { std01, std02, std03, std04, std05, std06, std08, std09, std10, std11 } from "./evaluators-std.js";
 import { pln01, pln02, pln03, pln04, pln05, pln06, pln07 } from "./evaluators-pln.js";
 import { clAlt01, clCipAlt, clCipAnt, clCipCos, clCipDis, clCipFon, clCipPis, clVen01 } from "./evaluators-cl.js";
@@ -19,6 +19,7 @@ const EVALUATORS: Record<string, Evaluator> = {
   "GEO-06": geo06,
   "GEO-07": geo07,
   "GEO-08": geo08,
+  "GEO-09": geo09,
   "STD-01": std01,
   "STD-02": std02,
   "STD-03": std03,

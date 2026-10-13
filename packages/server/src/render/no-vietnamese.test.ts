@@ -70,7 +70,7 @@ describe("sin vietnamita en los textos controlados por el proyecto", () => {
         expect(texts.filter((t) => VN.test(t)), s.no).toEqual([]);
         if (s.hasModel) expect(VN.test(sheetDxf(s)), `${s.no} DXF`).toBe(false);
       }
-      expect([...LAYERS]).toEqual(["CALCO", "EJES", "MUROS-CORTE", "MUROS-VISTA", "VANOS", "ESCALERAS", "TECHUMBRE", "MOBILIARIO", "COTAS", "TEXTOS", "ACHURADOS", "VINETA"]);
+      expect([...LAYERS]).toEqual(["CALCO", "EJES", "MUROS-CORTE", "MUROS-VISTA", "VANOS", "ESCALERAS", "TECHUMBRE", "MOBILIARIO", "ARTEFACTOS", "COTAS", "TEXTOS", "ACHURADOS", "VINETA"]);
     });
 
     it("la viñeta lleva escala, fecha, firmas de arquitecto y propietario (OGUC 1.2.2) y norte «N»", () => {

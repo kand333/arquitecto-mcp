@@ -19,6 +19,7 @@ export const LAYERS = [
   "ESCALERAS",
   "TECHUMBRE", // mái dốc (P7): nét mái mặt bằng, hình mái mặt đứng/mặt cắt
   "MOBILIARIO",
+  "ARTEFACTOS", // sanitarios y cocina: tenues, se ven sobre todo en 3D
   "COTAS",
   "TEXTOS",
   "ACHURADOS",
@@ -27,15 +28,21 @@ export const LAYERS = [
 
 export type LayerName = (typeof LAYERS)[number];
 
+/** Ejes: rojos, segmentados y finos (segundo plano). Marca de corte: magenta, segmentada y gruesa. */
+export const AXIS_COLOR = "#d23c3c";
+export const CUT_COLOR = "#c000c0";
+
 export type Prim =
   | { kind: "line"; a: Point; b: Point; weight: number; dash?: string; color?: string }
   | { kind: "polyline"; pts: Point[]; weight: number; dash?: string; close?: boolean; color?: string }
   | { kind: "polygon"; pts: Point[]; fill?: string; weight?: number }
-  | { kind: "circle"; c: Point; r: number; weight: number; fill?: string; rPaper?: boolean }
-  | { kind: "ellipse"; c: Point; rx: number; ry: number; rot: number; weight: number }
+  | { kind: "circle"; c: Point; r: number; weight: number; fill?: string; rPaper?: boolean; color?: string }
+  | { kind: "ellipse"; c: Point; rx: number; ry: number; rot: number; weight: number; color?: string }
   | { kind: "arc"; c: Point; r: number; a0: number; a1: number; weight: number; dash?: string }
   | {
       kind: "text";
+      /** Color del texto (por defecto negro). */
+      color?: string;
       at: Point;
       text: string;
       size: number; // mm giấy
@@ -72,6 +79,18 @@ export type Prim =
       rot: 0 | 90;
       text: string;
       textAt: Point;
+    }
+  | {
+      /**
+       * Hoja de puerta abatible semántica: el SVG la ignora (dibuja hoja + arco ya presentes);
+       * el DXF la exporta como INSERT de un bloque de biblioteca PUERTA-<r> en la capa PUERTAS.
+       * a0 = dirección de la hoja cerrada, a1 = abierta (grados); siempre 90° entre ambas.
+       */
+      kind: "door";
+      hinge: Point;
+      r: number;
+      a0: number;
+      a1: number;
     };
 
 export type SceneItem = {

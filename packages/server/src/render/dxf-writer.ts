@@ -1,5 +1,5 @@
 import type { Point } from "@arquitecto/core";
-import { LAYERS, type Prim, type Scene2D } from "./scene.js";
+import { AXIS_COLOR, CUT_COLOR, LAYERS, type Prim, type Scene2D } from "./scene.js";
 
 /**
  * Scene2D → DXF R12 (AC1009), TS puro (ADR-08).
@@ -16,13 +16,14 @@ import { LAYERS, type Prim, type Scene2D } from "./scene.js";
  */
 
 const LAYER_COLOR: Record<string, number> = {
-  EJES: 8, // gris
+  EJES: 1, // rojo: ejes en segundo plano (segmentados, finos)
   "MUROS-CORTE": 7,
   "MUROS-VISTA": 7,
   VANOS: 7,
   ESCALERAS: 7,
   TECHUMBRE: 7,
   MOBILIARIO: 8,
+  ARTEFACTOS: 9, // gris muy claro: no compite con muros ni textos
   COTAS: 8,
   TEXTOS: 7,
   ACHURADOS: 8,
@@ -64,6 +65,9 @@ export function sceneToDxf(items: Scene2D, opts: DxfOptions): string {
     blocks.push(String(code), typeof value === "number" ? fmt(value) : value);
   };
   let nDim = 0;
+  // puertas abatibles: bloque de biblioteca PUERTA-<r> (una definición por ancho) + INSERT en la capa PUERTAS
+  const doorIds = new Set(items.filter((i) => i.prim.kind === "door" && i.dataId).map((i) => i.dataId!));
+  const doorBlocks = new Set<string>();
   for (const item of items) {
     if (item.space === "paper") continue; // la viñeta es de la lámina impresa, no del modelo CAD
     if (item.prim.kind === "dim") {
@@ -74,12 +78,21 @@ export function sceneToDxf(items: Scene2D, opts: DxfOptions): string {
       used.add(item.layer);
       continue;
     }
+    if (item.prim.kind === "door") {
+      const name = `PUERTA-${Math.round(item.prim.r)}`;
+      if (!doorBlocks.has(name)) { doorBlocks.add(name); writeDoorBlock(name, Math.round(item.prim.r), bg); }
+      writeDoorInsert(item.prim, name, g, pt);
+      used.add("PUERTAS");
+      continue;
+    }
+    // hoja y arco sueltos de una puerta abatible: los reemplaza el bloque PUERTA-<r>
+    if (item.layer === "VANOS" && item.dataId && doorIds.has(item.dataId) && (item.prim.kind === "line" || item.prim.kind === "arc")) continue;
     if (item.layer === "COTAS") continue; // líneas/remates/textos de cota: los reemplazan las DIMENSION
     used.add(item.layer);
     writePrim(item.prim, item.layer, S, g, pt);
   }
   // solo capas con contenido (+ "0", obligatoria): sin capas vacías como CALCO en el CAD
-  const layers = ["0", ...LAYERS.filter((l) => used.has(l))];
+  const layers = ["0", ...LAYERS.filter((l) => used.has(l)), ...(used.has("PUERTAS") ? ["PUERTAS"] : [])];
   if (!Number.isFinite(minX)) minX = minY = maxX = maxY = 0;
 
   const out: string[] = [];
@@ -95,6 +108,8 @@ export function sceneToDxf(items: Scene2D, opts: DxfOptions): string {
   h(9, "$EXTMAX"); h(10, maxX); h(20, maxY); h(30, 0);
   // unidades decimales sin decimales: con DIMLFAC 0.1 las cotas se leen en cm enteros
   h(9, "$LUNITS"); h(70, 2);
+  // tipos de línea a escala de impresión (patrones en mm de papel)
+  h(9, "$LTSCALE"); h(40, S);
   h(9, "$LUPREC"); h(70, 0);
   // variables de cota actuales = estilo ESTANDAR-PLANO (cotas nuevas que dibujes en AutoCAD)
   h(9, "$DIMSTYLE"); h(2, DIM_STYLE);
@@ -113,12 +128,14 @@ export function sceneToDxf(items: Scene2D, opts: DxfOptions): string {
   h(0, "ENDSEC");
   // ── TABLES: LTYPE + LAYER + STYLE ─────────────────────────
   h(0, "SECTION"); h(2, "TABLES");
-  h(0, "TABLE"); h(2, "LTYPE"); h(70, 1);
+  h(0, "TABLE"); h(2, "LTYPE"); h(70, 2);
   h(0, "LTYPE"); h(2, "CONTINUOUS"); h(70, 0); h(3, "Solid line"); h(72, 65); h(73, 0); h(40, 0);
+  // segmentada: trazo 3 mm + espacio 1,5 mm (papel), escalada por $LTSCALE
+  h(0, "LTYPE"); h(2, "DASHED"); h(70, 0); h(3, "Segmentada __ __ __"); h(72, 65); h(73, 2); h(40, 4.5); h(49, 3); h(49, -1.5);
   h(0, "ENDTAB");
   h(0, "TABLE"); h(2, "LAYER"); h(70, layers.length);
   for (const name of layers) {
-    h(0, "LAYER"); h(2, name); h(70, 0); h(62, LAYER_COLOR[name] ?? 7); h(6, "CONTINUOUS");
+    h(0, "LAYER"); h(2, name); h(70, 0); h(62, LAYER_COLOR[name] ?? 7); h(6, name === "EJES" ? "DASHED" : "CONTINUOUS");
   }
   h(0, "ENDTAB");
   h(0, "TABLE"); h(2, "STYLE"); h(70, 1);
@@ -158,11 +175,24 @@ function writePrim(prim: Prim, layer: string, S: number, g: G, pt: (x: number, y
     entity("SEQEND");
   };
   switch (prim.kind) {
-    case "line":
+    case "line": {
+      if (prim.color === CUT_COLOR) {
+        // marca de corte: polilínea con ancho (gruesa), magenta y segmentada
+        entity("POLYLINE");
+        g(6, "DASHED"); g(62, 6);
+        g(66, 1); g(10, 0); g(20, 0); g(30, 0); g(70, 0);
+        g(40, prim.weight * S); g(41, prim.weight * S);
+        for (const q of [prim.a, prim.b]) { g(0, "VERTEX"); g(8, layer); pt(q[0], q[1]); }
+        g(0, "SEQEND"); g(8, layer);
+        return;
+      }
       entity("LINE");
+      if (prim.dash) g(6, "DASHED");
+      if (prim.color === AXIS_COLOR) g(62, 1);
       pt(prim.a[0], prim.a[1]);
       pt(prim.b[0], prim.b[1], 11);
       return;
+    }
     case "polyline":
     case "polygon":
       // relleno (poché) omitido a propósito: en CAD solo contorno
@@ -170,6 +200,7 @@ function writePrim(prim: Prim, layer: string, S: number, g: G, pt: (x: number, y
       return;
     case "circle":
       entity("CIRCLE");
+      if (layer === "EJES") g(6, "CONTINUOUS"); // burbuja de eje: trazo continuo aunque la capa sea segmentada
       pt(prim.c[0], prim.c[1]);
       g(40, prim.rPaper ? prim.r * S : prim.r);
       return;
@@ -177,8 +208,11 @@ function writePrim(prim: Prim, layer: string, S: number, g: G, pt: (x: number, y
       entity("ARC");
       pt(prim.c[0], prim.c[1]);
       g(40, prim.r);
-      g(50, Math.min(prim.a0, prim.a1));
-      g(51, Math.max(prim.a0, prim.a1));
+      {
+        const [a0, a1] = shortArc(prim.a0, prim.a1);
+        g(50, a0);
+        g(51, a1);
+      }
       return;
     case "ellipse": {
       const rad = (prim.rot * Math.PI) / 180;
@@ -214,6 +248,36 @@ function writePrim(prim: Prim, layer: string, S: number, g: G, pt: (x: number, y
 }
 
 type DimPrim = Extract<Prim, { kind: "dim" }>;
+type DoorPrim = Extract<Prim, { kind: "door" }>;
+
+/**
+ * ARC de DXF va siempre antihorario de 50 a 51. El render usa el arco CORTO entre a0 y a1
+ * (igual que svg-writer); con min/max un arco que cruza 0° salía de 270° («un círculo» en CAD).
+ */
+export function shortArc(a0: number, a1: number): [number, number] {
+  const sweep = normDeg(a1 - a0); // (-180, 180]
+  const [s, e] = sweep >= 0 ? [a0, a1] : [a1, a0];
+  return [mod360(s), mod360(e)];
+}
+const normDeg = (d: number): number => { let x = mod360(d); if (x > 180) x -= 360; return x; };
+const mod360 = (d: number): number => ((d % 360) + 360) % 360;
+
+/** Bloque de biblioteca PUERTA-<r>: bisagra en el origen, hoja cerrada hacia +x, abierta hacia +y, arco 0–90°. */
+function writeDoorBlock(name: string, r: number, g: G): void {
+  g(0, "BLOCK"); g(8, "0"); g(2, name); g(70, 0); g(10, 0); g(20, 0); g(30, 0); g(3, name);
+  g(0, "LINE"); g(8, "0"); g(62, 0); g(10, 0); g(20, 0); g(30, 0); g(11, 0); g(21, r); g(31, 0);
+  g(0, "ARC"); g(8, "0"); g(62, 0); g(10, 0); g(20, 0); g(30, 0); g(40, r); g(50, 0); g(51, 90);
+  g(0, "ENDBLK"); g(8, "0");
+}
+
+/** INSERT del bloque: girado a la hoja cerrada; espejado en y si la puerta abre en sentido horario. */
+function writeDoorInsert(d: DoorPrim, name: string, g: G, pt: (x: number, y: number, cx?: number) => void): void {
+  const clockwise = normDeg(d.a1 - d.a0) < 0;
+  g(0, "INSERT"); g(8, "PUERTAS"); g(2, name);
+  pt(d.hinge[0], d.hinge[1]);
+  g(41, 1); g(42, clockwise ? -1 : 1); g(43, 1);
+  g(50, mod360(d.a0));
+}
 
 /** Entrada DIMSTYLE R12 con los valores de ESTANDAR-PLANO (STANDARD lleva los mismos). */
 function writeDimStyle(name: string, S: number, h: G): void {

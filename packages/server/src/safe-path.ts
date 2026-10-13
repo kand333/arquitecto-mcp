@@ -6,7 +6,9 @@ import path from "node:path";
  */
 export function safeJoin(dir: string, name: string): string {
   const base = path.resolve(dir);
-  const full = path.resolve(base, name);
+  // la barra invertida es separador en Windows pero no en Linux/macOS: se trata como separador en
+  // todos, así "..\x" es traversal en cualquier sistema (y las rutas de Windows siguen valiendo)
+  const full = path.resolve(base, name.replace(/\\/g, "/"));
   if (!full.startsWith(base + path.sep)) {
     throw new Error(`Ruta fuera del directorio permitido: ${JSON.stringify(name)}.`);
   }

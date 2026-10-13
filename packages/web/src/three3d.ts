@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import {
-  getAsset, groundAt, roofGeometry, roofsOf, stairLayout, wallLength,
+  defaultSwing, getAsset, groundAt, joinedWall, outdoorAt, pointInPolygon, pointOnWall, roofGeometry, roofsOf, stairLayout, wallLength, wallNormal,
   type CaptureCamera, type Furniture, type Level, type Op, type Project, type Roof, type Room, type Slab, type Stair,
   type Wall,
 } from "@arquitecto/core";
@@ -11,6 +11,10 @@ import { sunPosition } from "./sun.js";
 
 const MM = 1 / 1000; // model mm → three mét
 const DEG = Math.PI / 180;
+/** Puertas abatibles: cerradas por defecto; el botón «abrir puertas» las gira 90° hacia el lado de la regla. */
+const DOOR_OPEN = 90 * DEG;
+/** Ventanas de aluminio: perfil de marco y de hoja (mm), color antracita. */
+const ALU = { frame: 50, depth: 60, sash: 40, color: 0x3a3e44 };
 
 /** Bảng màu maquette bìa trắng trên bàn mực nho — khớp token CSS. */
 const C = {
@@ -53,6 +57,15 @@ export class Scene3D {
   private readonly env = new THREE.Group();
   private grid: THREE.GridHelper | null = null;
   private readonly groups = new Map<string, THREE.Group>();
+  /** Piso de cada grupo y qué grupos son techumbre: para «quitar techo» y «ver por pisos». */
+  private readonly groupLevel = new Map<string, string>();
+  private readonly roofIds = new Set<string>();
+  private levelZ = new Map<string, number>();
+  private roofVisible = true;
+  private doorsOpen = false;
+  /** Pivote de cada hoja abatible y su ángulo abierto (signo según la regla de apertura). */
+  private readonly doorPivots = new Set<{ pivot: THREE.Group; open: number }>();
+  private levelFilter: string | null = null;
   private readonly openingWall = new Map<string, string>();
   private home: { position: THREE.Vector3; target: THREE.Vector3 } | null = null;
   private dirty = true;
@@ -147,16 +160,18 @@ export class Scene3D {
   setModel(p: Project): void {
     for (const id of [...this.groups.keys()]) this.removeGroup(id);
     this.openingWall.clear();
+    this.levelZ = new Map(p.levels.map((l) => [l.id, l.elevation]));
 
     for (const level of p.levels) {
-      for (const w of p.walls) if (w.level === level.id) this.setGroup(w.id, this.buildWall(p, w, level));
-      for (const s of p.slabs) if (s.level === level.id) this.setGroup(s.id, this.buildSlab(s, level));
-      for (const rf of roofsOf(p)) if (rf.level === level.id) this.setGroup(rf.id, this.buildRoof(rf, level));
-      for (const st of p.stairs) if (st.level === level.id) this.setGroup(st.id, this.buildStair(st, level));
-      for (const f of p.furniture) if (f.level === level.id) this.setGroup(f.id, this.buildFurniture(f, level));
-      for (const r of p.rooms) if (r.level === level.id) this.setGroup(r.id, this.buildRoom(p, r, level));
+      for (const w of p.walls) if (w.level === level.id) this.setGroup(w.id, this.buildWall(p, w, level), level.id);
+      for (const s of p.slabs) if (s.level === level.id) this.setGroup(s.id, this.buildSlab(s, level), level.id);
+      for (const rf of roofsOf(p)) if (rf.level === level.id) this.setGroup(rf.id, this.buildRoof(p, rf, level), level.id, true);
+      for (const st of p.stairs) if (st.level === level.id) this.setGroup(st.id, this.buildStair(st, level), level.id);
+      for (const f of p.furniture) if (f.level === level.id) this.setGroup(f.id, this.buildFurniture(f, level), level.id);
+      for (const r of p.rooms) if (r.level === level.id) this.setGroup(r.id, this.buildRoom(p, r, level), level.id);
     }
     this.buildEnv(p);
+    this.applyVisibility();
     if (this.sunMode) this.applyShadowFlags(true);
     this.fitHome();
     this.invalidate();
@@ -216,7 +231,11 @@ export class Scene3D {
         this.rebuildWall(model, wid);
         affected.add(wid);
       }
+      // el frontón de la techumbre sigue a los muros
+      if (walls.size) for (const rf of roofsOf(model)) this.rebuildSingle(model, "roof", rf.id);
     }
+    this.levelZ = new Map(model.levels.map((l) => [l.id, l.elevation]));
+    this.applyVisibility();
     if (!this.home) this.fitHome(); // snapshot đầu có thể là dự án trống — fit ở nhịp đầu tiên có hình
     if (this.sunMode) this.applyShadowFlags(true); // mesh mới dựng chưa có cờ bóng
     this.invalidate();
@@ -231,7 +250,7 @@ export class Scene3D {
       for (const [oid, w] of this.openingWall) if (w === wid) this.openingWall.delete(oid);
       return;
     }
-    this.setGroup(wid, this.buildWall(model, wall, level));
+    this.setGroup(wid, this.buildWall(model, wall, level), level.id);
   }
 
   private rebuildSingle(model: Project, entity: "slab" | "roof" | "stair" | "room" | "furniture", id: string): void {
@@ -246,28 +265,30 @@ export class Scene3D {
     }
     const g =
       entity === "slab" ? this.buildSlab(e as Slab, level)
-      : entity === "roof" ? this.buildRoof(e as Roof, level)
+      : entity === "roof" ? this.buildRoof(model, e as Roof, level)
       : entity === "stair" ? this.buildStair(e as Stair, level)
       : entity === "room" ? this.buildRoom(model, e as Room, level)
       : this.buildFurniture(e as Furniture, level);
-    this.setGroup(id, g);
+    this.setGroup(id, g, level.id, entity === "roof");
   }
 
   // ── Builders (không gian model, mm→m) ──────────────────────
 
   private buildWall(p: Project, w: Wall, level: Level): THREE.Group {
     const g = new THREE.Group();
-    const len = wallLength(w);
+    // encuentro de muros: esquinas cerradas (mismo criterio que la planta y el GLB)
+    const { wall: jw, shift } = joinedWall(p.walls.filter((x) => x.level === w.level), w);
+    const len = wallLength(jw);
     const h = w.height ?? level.height;
     const openings = p.openings.filter((o) => o.wall === w.id);
     for (const o of openings) this.openingWall.set(o.id, w.id);
 
-    g.position.set(w.from[0] * MM, w.from[1] * MM, level.elevation * MM);
+    g.position.set(jw.from[0] * MM, jw.from[1] * MM, level.elevation * MM);
     g.rotation.z = Math.atan2(w.to[1] - w.from[1], w.to[0] - w.from[0]);
 
     const bodyMat = w.kind === "kinh" ? lambert(C.glass, { transparent: true, opacity: 0.4 }) : lambert(C.wall);
     const edgeMat = new THREE.LineBasicMaterial({ color: C.edge });
-    for (const piece of wallPieces(len, h, openings)) {
+    for (const piece of wallPieces(len, h, openings.map((o) => ({ ...o, offset: o.offset + shift })))) {
       const geo = new THREE.BoxGeometry((piece.u1 - piece.u0) * MM, w.thickness * MM, (piece.z1 - piece.z0) * MM);
       const mesh = new THREE.Mesh(geo, bodyMat);
       mesh.position.set(((piece.u0 + piece.u1) / 2) * MM, 0, ((piece.z0 + piece.z1) / 2) * MM);
@@ -278,24 +299,75 @@ export class Scene3D {
     }
 
     for (const o of openings) {
-      const mid = (o.offset + o.width / 2) * MM;
+      const mid = (o.offset + shift + o.width / 2) * MM;
       if (o.kind === "door") {
-        const leaf = new THREE.Mesh(
-          new THREE.BoxGeometry(o.width * 0.94 * MM, 42 * MM, o.height * MM),
-          lambert(C.door),
-        );
-        leaf.position.set(mid, 0, (o.height / 2) * MM);
-        g.add(leaf);
+        const leafKind = p.styles.openings[o.style]?.leaf;
+        const swing = o.swing ?? defaultSwing(p, o);
+        if (swing === "slide" || swing === "none" || leafKind === "truot" || leafKind === "xep") {
+          const leaf = new THREE.Mesh(new THREE.BoxGeometry(o.width * 0.94 * MM, 42 * MM, o.height * MM), lambert(C.door));
+          leaf.position.set(mid, 0, (o.height / 2) * MM);
+          g.add(leaf);
+          continue;
+        }
+        // abatible: misma regla que la planta (lado "in" = +normal del muro; -L = bisagra en el inicio del vano)
+        const side = swing.startsWith("in") ? 1 : -1;
+        const x0 = o.offset + shift, x1 = x0 + o.width;
+        const leaves: Array<[number, number, number]> = leafKind === "2-canh"
+          ? [[x0, 1, o.width / 2], [x1, -1, o.width / 2]]
+          : [swing.endsWith("-L") ? [x0, 1, o.width] : [x1, -1, o.width]];
+        for (const [hx, dirX, r] of leaves) {
+          const pivot = new THREE.Group();
+          pivot.position.set(hx * MM, 0, 0);
+          const entry = { pivot, open: dirX * side * DOOR_OPEN };
+          pivot.rotation.z = this.doorsOpen ? entry.open : 0;
+          pivot.userData.door = entry;
+          this.doorPivots.add(entry);
+          const leaf = new THREE.Mesh(new THREE.BoxGeometry((r - 20) * MM, 40 * MM, (o.height - 10) * MM), lambert(C.door));
+          leaf.position.set((dirX * (r / 2)) * MM, 0, (o.height / 2) * MM);
+          pivot.add(leaf);
+          g.add(pivot);
+        }
       } else {
-        const glass = new THREE.Mesh(
-          new THREE.BoxGeometry(o.width * MM, 36 * MM, o.height * MM),
-          lambert(C.glass, { transparent: true, opacity: 0.45 }),
-        );
-        glass.position.set(mid, 0, (o.sill + o.height / 2) * MM);
-        g.add(glass);
+        this.buildWindow(g, o.offset + shift, o.width, o.sill, o.height, p.styles.openings[o.style]?.leaf === "truot");
       }
     }
     return g;
+  }
+
+  /**
+   * Ventana de aluminio (estilo moderno): marco perimetral y hojas con su perfil y vidrio.
+   * Corredera: 2 hojas en rieles distintos que se traslapan al centro. x0 = inicio del vano en el muro.
+   */
+  private buildWindow(g: THREE.Group, x0: number, w: number, sill: number, h: number, sliding: boolean): void {
+    const alu = lambert(ALU.color);
+    const glassMat = lambert(C.glass, { transparent: true, opacity: 0.35 });
+    const bar = (u0: number, u1: number, z0: number, z1: number, y: number, depth: number): void => {
+      const m = new THREE.Mesh(new THREE.BoxGeometry((u1 - u0) * MM, depth * MM, (z1 - z0) * MM), alu);
+      m.position.set(((u0 + u1) / 2) * MM, y * MM, ((z0 + z1) / 2) * MM);
+      g.add(m);
+    };
+    /** Rectángulo de perfiles de ancho t (marco o hoja) + vidrio interior. */
+    const sash = (u0: number, u1: number, z0: number, z1: number, t: number, y: number, depth: number, glass: boolean): void => {
+      bar(u0, u1, z0, z0 + t, y, depth);
+      bar(u0, u1, z1 - t, z1, y, depth);
+      bar(u0, u0 + t, z0 + t, z1 - t, y, depth);
+      bar(u1 - t, u1, z0 + t, z1 - t, y, depth);
+      if (!glass) return;
+      const pane = new THREE.Mesh(new THREE.BoxGeometry((u1 - u0 - 2 * t) * MM, 6 * MM, (z1 - z0 - 2 * t) * MM), glassMat);
+      pane.position.set(((u0 + u1) / 2) * MM, y * MM, ((z0 + z1) / 2) * MM);
+      g.add(pane);
+    };
+    const [z0, z1] = [sill, sill + h];
+    const F = ALU.frame, S = ALU.sash;
+    sash(x0, x0 + w, z0, z1, F, 0, ALU.depth, false); // marco
+    const [a, b, c0, c1] = [x0 + F, x0 + w - F, z0 + F, z1 - F];
+    if (sliding) {
+      const mid = (a + b) / 2, ov = Math.min(40, (b - a) * 0.04);
+      sash(a, mid + ov, c0, c1, S, 14, 24, true); // hoja exterior
+      sash(mid - ov, b, c0, c1, S, -14, 24, true); // hoja interior
+    } else {
+      sash(a, b, c0, c1, S, 0, 30, true);
+    }
   }
 
   private buildSlab(s: Slab, level: Level): THREE.Group {
@@ -310,10 +382,11 @@ export class Scene3D {
     return g;
   }
 
-  /** Mái dốc (P7): mesh từ faces của roofGeometry — cùng nguồn với 2D. */
-  private buildRoof(rf: Roof, level: Level): THREE.Group {
+  /** Mái dốc (P7): mesh từ faces của roofGeometry — cùng nguồn với 2D. Con frontón lleno en los muros exteriores. */
+  private buildRoof(p: Project, rf: Roof, level: Level): THREE.Group {
     const g = new THREE.Group();
     const geom = roofGeometry(rf, level);
+    if (rf.kind === "gable") this.buildGables(p, rf, level, geom, g);
     const mat = lambert(C.roof, { side: THREE.DoubleSide });
     const edgeMat = new THREE.LineBasicMaterial({ color: C.edge });
     for (const face of geom.faces) {
@@ -339,6 +412,53 @@ export class Scene3D {
       g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(outline), edgeMat));
     }
     return g;
+  }
+
+  /**
+   * Frontón: en cada muro exterior del piso del techo, el paño entre lo alto del muro y la cara
+   * inferior de la techumbre (con el quiebre en la cumbrera), con el espesor del muro.
+   */
+  private buildGables(p: Project, rf: Roof, level: Level, geom: ReturnType<typeof roofGeometry>, g: THREE.Group): void {
+    const mat = lambert(C.wall);
+    const edgeMat = new THREE.LineBasicMaterial({ color: C.edge });
+    const walls = p.walls.filter((w) => w.level === level.id && (w.height ?? level.height) === level.height);
+    const top = level.elevation + level.height;
+    for (const w of walls) {
+      const L = wallLength(w);
+      const n = wallNormal(w);
+      const exterior = [1, -1].some((sg) => [0.25, 0.5, 0.75].filter((t) => {
+        const q = pointOnWall(w, L * t);
+        return outdoorAt(p, level.id, [q[0] + n[0] * sg * (w.thickness / 2 + 150), q[1] + n[1] * sg * (w.thickness / 2 + 150)]);
+      }).length >= 2);
+      if (!exterior) continue;
+      // perfil del techo a lo largo del muro (s: distancia desde w.from)
+      const N = 24;
+      const prof: Array<[number, number]> = [];
+      for (let i = 0; i <= N; i++) {
+        const sv = (L * i) / N;
+        const q = pointOnWall(w, sv);
+        if (!pointInPolygon(q, rf.outline)) continue;
+        prof.push([sv, geom.zAt(q)]);
+      }
+      if (prof.length < 2 || Math.max(...prof.map(([, z]) => z)) - top < 30) continue;
+      // paño en coordenadas locales del muro (u = s, v = z) extruido con el espesor
+      const shape = new THREE.Shape();
+      shape.moveTo(prof[0]![0] * MM, top * MM);
+      for (const [sv, z] of prof) shape.lineTo(sv * MM, Math.max(top, z) * MM);
+      shape.lineTo(prof[prof.length - 1]![0] * MM, top * MM);
+      const geo = new THREE.ExtrudeGeometry(shape, { depth: w.thickness * MM, bevelEnabled: false });
+      geo.translate(0, 0, (-w.thickness / 2) * MM);
+      const mesh = new THREE.Mesh(geo, mat);
+      const holder = new THREE.Group();
+      holder.position.set(w.from[0] * MM, w.from[1] * MM, 0);
+      holder.rotation.z = Math.atan2(w.to[1] - w.from[1], w.to[0] - w.from[0]);
+      mesh.rotation.x = Math.PI / 2; // (u, v, espesor) → (x, z, -y)
+      holder.add(mesh);
+      const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo), edgeMat);
+      edges.rotation.x = Math.PI / 2;
+      holder.add(edges);
+      g.add(holder);
+    }
   }
 
   private buildStair(st: Stair, level: Level): THREE.Group {
@@ -461,6 +581,37 @@ export class Scene3D {
     this.grid = new THREE.GridHelper(size, Math.round(size), 0x2c323b, 0x262b32);
     this.grid.position.set(((minX + maxX) / 2) * MM, -0.02, -((minY + maxY) / 2) * MM);
     this.scene.add(this.grid);
+  }
+
+  // ── Visibilidad: quitar techo / ver por pisos ──────────────
+
+  /** Puertas abatibles abiertas (90°) o cerradas. */
+  setDoorsOpen(open: boolean): void {
+    this.doorsOpen = open;
+    for (const d of this.doorPivots) d.pivot.rotation.z = open ? d.open : 0;
+    this.invalidate();
+  }
+
+  /** Muestra u oculta la techumbre (con sus frontones). */
+  setRoofVisible(on: boolean): void {
+    this.roofVisible = on;
+    this.applyVisibility();
+  }
+
+  /** Ver por pisos: muestra hasta el piso dado, sin techo ni pisos superiores (null = todo). */
+  setLevelFilter(levelId: string | null): void {
+    this.levelFilter = levelId;
+    this.applyVisibility();
+  }
+
+  private applyVisibility(): void {
+    const maxZ = this.levelFilter != null ? this.levelZ.get(this.levelFilter) ?? Infinity : Infinity;
+    for (const [id, g] of this.groups) {
+      const z = this.levelZ.get(this.groupLevel.get(id) ?? "") ?? -Infinity;
+      const isRoof = this.roofIds.has(id);
+      g.visible = z <= maxZ && !(isRoof && (!this.roofVisible || this.levelFilter != null));
+    }
+    this.invalidate();
   }
 
   // ── Nhìn ───────────────────────────────────────────────────
@@ -682,19 +833,25 @@ export class Scene3D {
 
   // ── Quản lý group ──────────────────────────────────────────
 
-  private setGroup(id: string, g: THREE.Group): void {
+  private setGroup(id: string, g: THREE.Group, levelId?: string, roof = false): void {
     this.removeGroup(id);
     g.name = id;
     this.groups.set(id, g);
+    if (levelId) this.groupLevel.set(id, levelId);
+    if (roof) this.roofIds.add(id);
     this.root.add(g);
+    this.applyVisibility();
   }
 
   private removeGroup(id: string): void {
     const g = this.groups.get(id);
     if (!g) return;
+    g.traverse((obj) => { if (obj.userData.door) this.doorPivots.delete(obj.userData.door as { pivot: THREE.Group; open: number }); });
     disposeChildren(g);
     this.root.remove(g);
     this.groups.delete(id);
+    this.groupLevel.delete(id);
+    this.roofIds.delete(id);
   }
 }
 

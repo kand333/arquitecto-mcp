@@ -36,7 +36,7 @@ Límite: 20 MB por archivo, dentro de la carpeta del proyecto. **Importar no es 
 
 **2D (láminas A3 con viñeta chilena, código `ARQ-NN`)**
 - Planta por piso (1:50 o 1:100) con muros, puertas y ventanas, mobiliario, techumbre proyectada, ejes, cotas en **cm sin decimales** y recintos con su superficie.
-- Elevación principal y corte A-A. El corte solo existe si el modelo tiene escalera; un departamento de un piso no lleva corte.
+- Elevaciones de las 4 caras (por punto cardinal, con techumbre, revestimiento, niveles y cotas) y cortes A-A' (transversal) y B-B' (longitudinal) en una lámina; en casas de madera, con cerchas, costaneras, muro sándwich y detalle del muro.
 - Cuadro de recintos (superficie por recinto, subtotal por piso y total) y cuadro de vanos.
 - Presupuesto preliminar en UF, solo si cargas precios.
 - Formatos: **SVG** por lámina y **DXF R12** por lámina con geometría. El DXF abre en AutoCAD y LibreCAD, va por capas en español, sin rellenos y con cotas reales editables; para tener `.dwg`, ábrelo en AutoCAD y *Guardar como → DWG*.
@@ -88,7 +88,7 @@ En una sesión nueva de Claude Code, con el servidor registrado:
 
 - No reemplaza AutoCAD, Revit ni Archicad. No hace cálculo estructural ni instalaciones (MEP).
 - Los recintos se declaran como polígonos; no se detectan solos a partir de los muros.
-- No hay planta de techumbre como lámina propia ni elevaciones laterales.
+- No hay planta de techumbre como lámina propia.
 - El presupuesto no trae precios: los completas tú (`rules/don-gia.json` del proyecto, en UF/m²).
 
 ## Para desarrolladores

@@ -1,11 +1,13 @@
 import {
-  add, areaM2, furnitureObb, getAsset, getLevel, levelAbove, obbCorners, openingSpan,
-  floorSlabOf, pointOnWall, roofGeometry, roofsOfLevel, rotate, scale as vscale, stairLayout, sub, unverifiedRules,
+  add, areaM2, defaultSwing, furnitureObb, getAsset, getLevel, joinedWall, levelAbove, obbCorners, openingSpan,
+  floorSlabOf, pointInPolygon, pointOnWall, roofGeometry, roofsOf, roofsOfLevel, rotate, scale as vscale, stairLayout, sub, unverifiedRules,
   wallBand, wallDir, wallLength, wallNormal, type Furniture, type Level, type Opening,
-  type Point, type Project, type Wall,
+  type Point, type Project, type Room, type RoomUse, type Wall,
 } from "@arquitecto/core";
-import { cmText, dimTick, drawSheetFrame } from "./frame.js";
-import { LAYERS, W, type LayerName, type Prim, type Scene2D, type SceneItem } from "./scene.js";
+import { cmText, dimTick, drawSheetFrame, planTitle } from "./frame.js";
+import { principalAxes } from "./axes.js";
+import { slidingWindowPlan } from "./sliding.js";
+import { AXIS_COLOR, CUT_COLOR, LAYERS, W, type LayerName, type Prim, type Scene2D, type SceneItem } from "./scene.js";
 import { planTransform, type Bounds, type PlanTransform } from "./transform.js";
 
 export type PlanBuild = {
@@ -56,9 +58,9 @@ export function buildPlanScene(p: Project, levelId: string, opts: PlanOptions = 
   const underlay = opts.underlay && (!opts.underlay.level || opts.underlay.level === levelId)
     ? opts.underlay
     : undefined;
-  // la obra (sin calco) manda en ejes, cotas y marca de corte; el calco solo amplía el encuadre
-  const bounds = computeBounds(p, walls, undefined, levelId);
-  const tf = planTransform(underlay ? computeBounds(p, walls, underlay, levelId) : bounds, opts.scale);
+  // la obra (sin calco ni terreno) manda en ejes, cotas y marca de corte; terreno y calco solo amplían el encuadre
+  const bounds = computeBounds(p, walls, undefined, levelId, walls.length === 0);
+  const tf = planTransform(computeBounds(p, walls, underlay, levelId, true), opts.scale);
   const S = tf.scale;
   const mm = (paperMm: number): number => paperMm * S; // mm giấy → mm model
 
@@ -75,14 +77,15 @@ export function buildPlanScene(p: Project, levelId: string, opts: PlanOptions = 
   drawStairs(p, levelId, mm, push);
   drawFurniture(p, levelId, push);
   drawDims(p, walls, bounds, mm, push);
-  drawRoomDims(p, levelId, mm, push);
   drawSectionMark(p, levelId, bounds, mm, push);
-  drawRoomLabels(p, level, tf, paperVec, push);
+  // primero las etiquetas; las cotas interiores se ubican después, esquivándolas
+  const labelBoxes = drawRoomLabels(p, level, paperVec, mm, push);
+  drawRoomDims(p, levelId, mm, labelBoxes, push);
   drawSheetFrame(push, {
     unverified: unverifiedRules(p).length > 0,
     projectName: p.meta.name,
     app: p.meta.app,
-    title: `PLANTA ${level.name}`,
+    title: planTitle(level.name),
     sheetNo: opts.sheetNo ?? "ARQ-01",
     scaleLabel: `1:${S}`,
     ...(opts.date ? { date: opts.date } : {}),
@@ -97,8 +100,8 @@ export function buildPlanScene(p: Project, levelId: string, opts: PlanOptions = 
   };
 }
 
-function computeBounds(p: Project, walls: Wall[], underlay?: PlanUnderlay, levelId?: string): Bounds {
-  const pts: Point[] = [...p.site.boundary];
+function computeBounds(p: Project, walls: Wall[], underlay: PlanUnderlay | undefined, levelId: string, withSite: boolean): Bounds {
+  const pts: Point[] = withSite ? [...p.site.boundary] : [];
   for (const w of walls) pts.push(...wallBand(w));
   if (levelId) for (const rf of roofsOfLevel(p, levelId)) pts.push(...rf.outline);
   if (underlay) pts.push(...underlayCorners(underlay));
@@ -166,20 +169,24 @@ type Push = (layer: LayerName, prim: Prim, dataId?: string, space?: "model" | "p
 function drawAxes(p: Project, b: Bounds, mm: (v: number) => number, push: Push): void {
   const ext = mm(26); // bubble nằm ngoài 3 chuỗi dim
   const rBub = mm(4); // ⌀8mm giấy
-  for (const a of p.axes.x) {
+  // estándar: solo ejes principales (centro de muros perimetrales o que cruzan el piso), rojos,
+  // segmentados y finos: segundo plano que da trazabilidad sin competir con los muros
+  const axes = principalAxes(p);
+  const dash = "4 2";
+  for (const a of axes.x) {
     const y0 = b.minY - ext, y1 = b.maxY + ext;
-    push("EJES", { kind: "line", a: [a.offset, y0 + rBub], b: [a.offset, y1 - rBub], weight: W.hair, dash: "6 1.5 1 1.5" }, a.id);
+    push("EJES", { kind: "line", a: [a.offset, y0 + rBub], b: [a.offset, y1 - rBub], weight: W.hair, dash, color: AXIS_COLOR }, a.id);
     for (const y of [y0, y1]) {
-      push("EJES", { kind: "circle", c: [a.offset, y], r: rBub, weight: W.mid }, a.id);
-      push("EJES", { kind: "text", at: [a.offset, y], text: a.label ?? a.id, size: 3.2, anchor: "middle" }, a.id);
+      push("EJES", { kind: "circle", c: [a.offset, y], r: rBub, weight: W.thin, color: AXIS_COLOR }, a.id);
+      push("EJES", { kind: "text", at: [a.offset, y], text: a.label ?? a.id, size: 3.2, anchor: "middle", color: AXIS_COLOR }, a.id);
     }
   }
-  for (const a of p.axes.y) {
+  for (const a of axes.y) {
     const x0 = b.minX - ext, x1 = b.maxX + ext;
-    push("EJES", { kind: "line", a: [x0 + rBub, a.offset], b: [x1 - rBub, a.offset], weight: W.hair, dash: "6 1.5 1 1.5" }, a.id);
+    push("EJES", { kind: "line", a: [x0 + rBub, a.offset], b: [x1 - rBub, a.offset], weight: W.hair, dash, color: AXIS_COLOR }, a.id);
     for (const x of [x0, x1]) {
-      push("EJES", { kind: "circle", c: [x, a.offset], r: rBub, weight: W.mid }, a.id);
-      push("EJES", { kind: "text", at: [x, a.offset], text: a.label ?? a.id, size: 3.2, anchor: "middle" }, a.id);
+      push("EJES", { kind: "circle", c: [x, a.offset], r: rBub, weight: W.thin, color: AXIS_COLOR }, a.id);
+      push("EJES", { kind: "text", at: [x, a.offset], text: a.label ?? a.id, size: 3.2, anchor: "middle", color: AXIS_COLOR }, a.id);
     }
   }
 }
@@ -193,14 +200,19 @@ const WALL_FILL: Record<string, string | undefined> = {
   kinh: undefined,
 };
 
+/** Plano de corte de la planta (mm sobre el piso): un muro más bajo (jardinera, pretil) se dibuja en vista. */
+const PLAN_CUT_HEIGHT = 1200;
+
 function drawWallsAndOpenings(p: Project, walls: Wall[], mm: (v: number) => number, push: Push): void {
-  for (const w of walls) {
+  for (const w0 of walls) {
+    // encuentro de muros: el extremo que toca otro muro llega hasta su cara lejana (estándar de láminas)
+    const { wall: w, shift } = joinedWall(walls, w0);
     const len = wallLength(w);
     const n = wallNormal(w);
     const half = vscale(n, w.thickness / 2);
     const spans = p.openings
       .filter((o) => o.wall === w.id)
-      .map((o) => openingSpan(o))
+      .map((o): [number, number] => [openingSpan(o)[0] + shift, openingSpan(o)[1] + shift])
       .sort((a, b) => a[0] - b[0]);
 
     // các mảng tường đặc giữa những ô chờ
@@ -215,7 +227,9 @@ function drawWallsAndOpenings(p: Project, walls: Wall[], mm: (v: number) => numb
     for (const [s0, s1] of segs) {
       const a = pointOnWall(w, s0);
       const b = pointOnWall(w, s1);
-      if (w.kind === "kinh") {
+      if (w.height !== undefined && w.height < PLAN_CUT_HEIGHT) {
+        push("MUROS-VISTA", { kind: "polyline", pts: [add(a, half), add(b, half), sub(b, half), sub(a, half)], close: true, weight: W.mid }, w.id);
+      } else if (w.kind === "kinh") {
         const off = vscale(n, w.thickness / 4);
         push("MUROS-CORTE", { kind: "line", a: add(a, off), b: add(b, off), weight: W.mid }, w.id);
         push("MUROS-CORTE", { kind: "line", a: sub(a, off), b: sub(b, off), weight: W.mid }, w.id);
@@ -249,8 +263,9 @@ function drawOpening(p: Project, w: Wall, o: Opening, mm: (v: number) => number,
   }
 
   if (o.kind === "window") {
-    // 3 nét song song trong bề dày tường + bậu là 2 nét mép
-    for (const k of [-0.5, 0, 0.5]) {
+    if (p.styles.openings[o.style]?.leaf === "truot") {
+      slidingWindowPlan(jambL, jambR, n, w.thickness, o.id, push); // corredera: detalle del estándar
+    } else for (const k of [-0.5, 0, 0.5]) {
       const off = vscale(n, w.thickness * k);
       push("VANOS", { kind: "line", a: add(jambL, off), b: add(jambR, off), weight: W.mid }, o.id);
     }
@@ -261,7 +276,7 @@ function drawOpening(p: Project, w: Wall, o: Opening, mm: (v: number) => number,
 
   // cửa đi
   const style = p.styles.openings[o.style];
-  const swing = o.swing ?? "in-L";
+  const swing = o.swing ?? defaultSwing(p, o); // estándar: hacia el interior del recinto que sirve
   if (swing === "slide" || style?.leaf === "truot" || style?.leaf === "xep") {
     const d = wallDir(w);
     const mid = midOf(jambL, jambR);
@@ -282,6 +297,7 @@ function drawOpening(p: Project, w: Wall, o: Opening, mm: (v: number) => number,
       const a0 = deg(Math.atan2(closedDir[1], closedDir[0]));
       const a1 = deg(Math.atan2(side * n[1], side * n[0]));
       push("VANOS", { kind: "arc", c: hinge, r, a0, a1, weight: W.thin }, o.id);
+      push("VANOS", { kind: "door", hinge, r, a0, a1 }, o.id); // DXF: bloque PUERTA-<r>
     }
   }
   const labelSide = swing.startsWith("out") ? -1 : 1;
@@ -373,17 +389,26 @@ function zigzag(a: Point, b: Point, amp: number): Point[] {
 
 /* ---------------- nội thất ---------------- */
 
+/** Artefactos sanitarios y de cocina (capa ARTEFACTOS). */
+const FIXTURES = new Set(["bon-cau", "lavabo", "voi-sen", "bon-tam", "tu-bep-duoi", "tu-bep-tren", "tu-lanh", "bep", "binh-nong-lanh", "may-giat"]);
+/** Tono del mobiliario en planta: gris claro, por debajo de muros, cotas y textos. */
+export const FURNITURE_COLOR = "#b5b5b5";
+
 function drawFurniture(p: Project, levelId: string, push: Push): void {
   for (const f of p.furniture) {
     if (f.level !== levelId) continue;
     const asset = getAsset(f.asset);
     if (!asset) continue;
     const corners = obbCorners(furnitureObb(f, asset));
+    // estándar: artefactos y muebles en tono tenue (no compiten con muros ni rótulos); artefactos en su capa
+    const layer: LayerName = FIXTURES.has(asset.category) ? "ARTEFACTOS" : "MOBILIARIO";
     // đồ treo (tủ bếp trên, máy lạnh…) — nét đứt theo quy ước "trên cao"
     const hung = asset.mountHeight != null || (f.elevation ?? 0) > 0;
-    push("MOBILIARIO", { kind: "polyline", pts: corners, close: true, weight: W.thin, ...(hung ? { dash: "2 1" } : {}) }, f.id);
+    push(layer, { kind: "polyline", pts: corners, close: true, weight: W.hair, color: FURNITURE_COLOR, ...(hung ? { dash: "2 1" } : {}) }, f.id);
     for (const prim of furnitureGlyphPrims(asset.category, asset.footprint)) {
-      push("MOBILIARIO", transformPrim(prim, f.at, f.rotation), f.id);
+      const t = transformPrim(prim, f.at, f.rotation);
+      const tenue = t.kind === "line" || t.kind === "polyline" || t.kind === "circle" || t.kind === "ellipse" ? { ...t, weight: W.hair, color: FURNITURE_COLOR } : t;
+      push(layer, tenue, f.id);
     }
   }
 }
@@ -488,6 +513,9 @@ export function furnitureGlyphPrims(category: string, fp: { w: number; d: number
     case "tu-lanh":
       line(-hw, -hd + fp.d * 0.33, hw, -hd + fp.d * 0.33);
       break;
+    case "bep": // cocina: 4 platos
+      for (const sx of [-1, 1]) for (const sy of [-1, 1]) circle((sx * fp.w) / 4.4, (sy * fp.d) / 4.4, Math.min(fp.w, fp.d) / 7.5);
+      break;
     case "bon-cau":
       rect(-hw, -hd, hw, -hd + 170); // két nước
       ellipse(0, fp.d * 0.12, fp.w * 0.42, fp.d * 0.3);
@@ -576,14 +604,17 @@ function drawDims(p: Project, walls: Wall[], b: Bounds, mm: (v: number) => numbe
     for (const w of walls) {
       const d = wallDir(w);
       const alongSide = side.axis === "x" ? Math.abs(d[1]) < 1e-6 : Math.abs(d[0]) < 1e-6;
-      const band = wallBand(w);
+      // muro unido: sus extremos llegan a la cara del muro que encuentran (espesores completos)
+      const jw = joinedWall(walls, w).wall;
+      const band = wallBand(jw);
       const perpVals = band.map((pt) => (side.axis === "x" ? pt[1] : pt[0]));
       const touches = perpVals.some((v) => Math.abs(v - side.edge) <= eps);
       if (!touches) continue;
       const proj = (pt: Point): number => (side.axis === "x" ? pt[0] : pt[1]);
       if (alongSide) {
-        detail.add(proj(w.from));
-        detail.add(proj(w.to));
+        // extremos en las CARAS (muro unido), no en el eje: el espesor se acota completo (10, no 5)
+        detail.add(proj(jw.from));
+        detail.add(proj(jw.to));
         for (const o of p.openings.filter((x) => x.wall === w.id)) {
           detail.add(proj(pointOnWall(w, o.offset)));
           detail.add(proj(pointOnWall(w, o.offset + o.width)));
@@ -592,7 +623,8 @@ function drawDims(p: Project, walls: Wall[], b: Bounds, mm: (v: number) => numbe
         for (const v of band.map(proj)) detail.add(v);
       }
     }
-    const axes = (side.axis === "x" ? p.axes.x : p.axes.y).map((a) => a.offset);
+    const pa = principalAxes(p);
+    const axes = (side.axis === "x" ? pa.x : pa.y).map((a) => a.offset);
     const lo = side.axis === "x" ? b.minX : b.minY;
     const hi = side.axis === "x" ? b.maxX : b.maxY;
     detail.add(lo);
@@ -653,138 +685,366 @@ function pt(side: DimSide, along: number, perp: number): Point {
 
 /* ---------------- nhãn phòng + cao độ ---------------- */
 
-function drawRoomLabels(p: Project, level: Level, tf: PlanTransform, paperVec: (dx: number, dy: number) => Point, push: Push): void {
-  const rooms = p.rooms.filter((r) => r.level === level.id);
-  let biggest: { id: string; c: Point; area: number } | null = null;
+/** Recintos con cotas interiores (estándar: solo los importantes; nunca baños, circulaciones, patios…). */
+const DIM_USES = new Set<RoomUse>(["ngu", "khach", "bep-an", "lam-viec", "gara", "tho"]);
+
+type Box = { minX: number; minY: number; maxX: number; maxY: number };
+const boxOf = (pts: Point[]): Box => {
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const [x, y] of pts) { minX = Math.min(minX, x); minY = Math.min(minY, y); maxX = Math.max(maxX, x); maxY = Math.max(maxY, y); }
+  return { minX, minY, maxX, maxY };
+};
+const overlaps = (a: Box, b: Box): boolean => a.minX < b.maxX && a.maxX > b.minX && a.minY < b.maxY && a.maxY > b.minY;
+
+/** Centroide de ÁREA (no el promedio de vértices: con recintos en L o con ranuras caía afuera). */
+function areaCentroid(poly: Point[]): Point {
+  let a = 0, cx = 0, cy = 0;
+  for (let i = 0; i < poly.length; i++) {
+    const [x0, y0] = poly[i]!;
+    const [x1, y1] = poly[(i + 1) % poly.length]!;
+    const k = x0 * y1 - x1 * y0;
+    a += k; cx += (x0 + x1) * k; cy += (y0 + y1) * k;
+  }
+  if (Math.abs(a) < 1e-9) return centroidOf(poly);
+  return [cx / (3 * a), cy / (3 * a)];
+}
+
+/** Banda (mm de papel) que ocupa una cota interior: del lado de su texto y del lado opuesto. */
+const DIM_BAND = { text: 3.2, other: 0.8 };
+/** Posiciones candidatas de las cotas interiores (fracción del ancho/fondo), en orden de preferencia. */
+const DIM_FRACTIONS = [0.3, 0.2, 0.4, 0.7, 0.8, 0.6, 0.15, 0.85, 0.5];
+
+/**
+ * Cotas interiores de un recinto (null si no lleva): ancho y fondo, en la primera posición cuya
+ * banda no pise ninguna etiqueta (`avoid`). Si ninguna está libre, esa cota se omite (lámina limpia).
+ */
+function roomDimLines(r: Room, mm: (v: number) => number, avoid: Box[]): { h: [Point, Point] | null; v: [Point, Point] | null } | null {
+  if (!DIM_USES.has(r.use) || areaM2(r.polygon) < 2) return null;
+  const b = boxOf(r.polygon);
+  const w = b.maxX - b.minX, h = b.maxY - b.minY;
+  const [tp, op] = [mm(DIM_BAND.text), mm(DIM_BAND.other)];
+  const free = (band: Box): boolean => !avoid.some((o) => overlaps(band, o));
+  // el texto de la cota horizontal va en +y y el de la vertical en −x (ver drawRoomDims)
+  const y = DIM_FRACTIONS.map((f) => b.minY + h * f).find((y) => free({ minX: b.minX, maxX: b.maxX, minY: y - op, maxY: y + tp }));
+  const x = DIM_FRACTIONS.map((f) => b.minX + w * f).find((x) => free({ minX: x - tp, maxX: x + op, minY: b.minY, maxY: b.maxY }));
+  return {
+    h: y !== undefined && w >= mm(6) && h >= mm(5) ? [[b.minX, y], [b.maxX, y]] : null,
+    v: x !== undefined && h >= mm(6) && w >= mm(5) ? [[x, b.minY], [x, b.maxY]] : null,
+  };
+}
+
+/**
+ * Obstáculos de un piso para las etiquetas. `walls` = solo muros (último recurso). `hard` (muros, escaleras, barridos de puertas,
+ * línea de corte) nunca se pisan; `soft` (muebles) solo se evitan si hay lugar. Las cotas interiores no
+ * son obstáculo: se ubican después, esquivando las etiquetas.
+ */
+function labelObstacles(p: Project, level: Level, mm: (v: number) => number): { walls: Box[]; hard: Box[]; soft: Box[] } {
+  const out: Box[] = [];
+  const soft: Box[] = [];
+  for (const f of p.furniture) {
+    if (f.level !== level.id) continue;
+    const asset = getAsset(f.asset);
+    if (asset) soft.push(boxOf(obbCorners(furnitureObb(f, asset))));
+  }
+  for (const st of p.stairs) {
+    const base = getLevel(p, st.level);
+    if (!base || (st.level !== level.id && levelAbove(p, st.level)?.id !== level.id)) continue;
+    out.push(boxOf(stairLayout(st, base).footprint));
+  }
+  for (const o of p.openings) {
+    const w = p.walls.find((x) => x.id === o.wall);
+    if (!w || w.level !== level.id || o.kind !== "door") continue;
+    const swing = o.swing ?? defaultSwing(p, o);
+    if (swing === "slide" || swing === "none") continue;
+    // cuarto de círculo real del barrido (lado y mano del giro), no un cuadrado a ambos lados del muro
+    const right = swing.endsWith("-R");
+    const hinge = pointOnWall(w, right ? o.offset + o.width : o.offset);
+    const along = vscale(wallDir(w), right ? -o.width : o.width);
+    const side = vscale(wallNormal(w), (swing.startsWith("in") ? 1 : -1) * (o.width + w.thickness / 2));
+    out.push(boxOf([hinge, add(hinge, along), add(hinge, side), add(add(hinge, along), side)]));
+  }
+  // muros: el rótulo queda dentro de las caras interiores (los oblicuos se muestrean en cajas)
+  const walls: Box[] = [];
+  for (const w of p.walls) {
+    if (w.level !== level.id) continue;
+    const d = wallDir(w);
+    if (Math.abs(d[0]) < 1e-3 || Math.abs(d[1]) < 1e-3) { walls.push(boxOf(wallBand(w))); continue; }
+    const h = w.thickness / 2;
+    for (let s = 0; s <= wallLength(w); s += w.thickness) {
+      const [x, y] = pointOnWall(w, s);
+      walls.push({ minX: x - h, minY: y - h, maxX: x + h, maxY: y + h });
+    }
+  }
+  out.push(...walls);
+  // líneas de corte A-A' y B-B' (misma condición de visibilidad que drawSectionMark)
+  for (const c of sectionMarkVisible(p, level.id) ? sectionCuts(p) : []) {
+    out.push(c.axis === "x"
+      ? { minX: c.at - mm(1), maxX: c.at + mm(1), minY: -Infinity, maxY: Infinity }
+      : { minX: -Infinity, maxX: Infinity, minY: c.at - mm(1), maxY: c.at + mm(1) });
+  }
+  return { walls, hard: out, soft: [...out, ...soft] };
+}
+
+/** Punto de una grilla dentro de `poly` más cercano a `target` cuyo bloque (`corners`) cabe libre. */
+function findSpot(poly: Point[], corners: (c: Point) => Point[], obstacles: Box[], target: Point, ok: (box: Box) => boolean = () => true): { c: Point; box: Box } | null {
+  const rb = boxOf(poly);
+  const gs = Math.max(50, Math.min(rb.maxX - rb.minX, rb.maxY - rb.minY) / 16);
+  let best: { c: Point; box: Box; d: number } | null = null;
+  for (let x = rb.minX + gs / 2; x < rb.maxX; x += gs) {
+    for (let y = rb.minY + gs / 2; y < rb.maxY; y += gs) {
+      const c: Point = [x, y];
+      const cs = corners(c);
+      if (!cs.every((q) => pointInPolygon(q, poly))) continue;
+      const box = boxOf(cs);
+      if (obstacles.some((o) => overlaps(box, o)) || !ok(box)) continue;
+      const d = Math.hypot(x - target[0], y - target[1]);
+      if (!best || d < best.d) best = { c, box, d };
+    }
+  }
+  return best && { c: best.c, box: best.box };
+}
+
+/** Tamaños del rótulo (mm de papel): [nombre, superficie]. Todos usan el primero; el segundo solo si no cabe. */
+const LABEL_SIZES: Array<[number, number]> = [[3.0, 2.5], [2.5, 2.0], [2.0, 1.8]];
+
+/** Formas de partir el nombre: una línea, dos líneas equilibradas, una palabra por línea. */
+function nameLayouts(name: string): string[][] {
+  const words = name.split(/\s+/).filter(Boolean);
+  const out: string[][] = [[words.join(" ")]];
+  const longest = (l: string[]): number => Math.max(...l.map((s) => s.length));
+  if (words.length >= 2) {
+    let best: string[] | null = null;
+    for (let i = 1; i < words.length; i++) {
+      const l = [words.slice(0, i).join(" "), words.slice(i).join(" ")];
+      if (!best || longest(l) < longest(best)) best = l;
+    }
+    out.push(best!);
+  }
+  if (words.length >= 3) out.push(words);
+  return out;
+}
+
+/**
+ * Etiqueta de recinto (estándar): SIEMPRE horizontal. Nombre centrado (partido en líneas si no
+ * cabe) y la superficie debajo, centrada y un poco más chica; mismo tamaño en todos los recintos.
+ * Va en el punto libre más cercano al centroide de área, con el bloque completo dentro de las
+ * caras interiores de los muros, dejando lugar a las 2 cotas. Nunca pisa muros, puertas,
+ * escaleras, la línea de corte ni otra etiqueta; a muebles solo si no hay lugar. Devuelve las
+ * cajas ocupadas (las cotas interiores las esquivan).
+ */
+function drawRoomLabels(p: Project, level: Level, paperVec: (dx: number, dy: number) => Point, mm: (v: number) => number, push: Push): Box[] {
+  const rooms = p.rooms.filter((r) => r.level === level.id && r.use !== "cau-thang"); // la escalera se rotula sola
+  const tiers = labelObstacles(p, level, mm);
+  const taken: Box[] = [];
+  const placedAt = new Map<string, Point>();
+
+  type Block = { lines: string[]; size1: number; size2: number; lh: number; ya: number; halfW: number; top: number; bottom: number };
+  const block = (lines: string[], areaText: string, size1: number, size2: number): Block => {
+    const lh = size1 * 1.3;
+    const ya = (lines.length - 1) * lh + size1 * 0.55 + size2 * 0.75 + 0.4;
+    const halfW = Math.max(...lines.map((s) => s.length * size1 * 0.6), areaText.length * size2 * 0.6) / 2 + 1;
+    return { lines, size1, size2, lh, ya, halfW, top: size1 * 0.6 + 0.8, bottom: ya + size2 * 0.6 + 0.8 };
+  };
+  const draw = (r: Room, c: Point, b: Block, areaText: string): void => {
+    b.lines.forEach((line, i) => push("TEXTOS", { kind: "text", at: add(c, paperVec(0, i * b.lh)), text: line, size: b.size1, anchor: "middle" }, r.id));
+    push("TEXTOS", { kind: "text", at: add(c, paperVec(0, b.ya)), text: areaText, size: b.size2, anchor: "middle" }, r.id);
+  };
+
   for (const r of rooms) {
-    const c = centroidOf(r.polygon);
-    const area = areaM2(r.polygon);
-    if (!biggest || area > biggest.area) biggest = { id: r.id, c, area };
-    if (r.use === "cau-thang") continue; // thang tự nói lên mình (mũi tên + LÊN n BẬC)
-
-    const small = area < 4;
-    const size1 = small ? 2.4 : 3.5;
-    const size2 = small ? 2.0 : 2.5;
-    const name = r.name.toUpperCase();
-
-    // chữ mặc định nằm ngang GIẤY; phòng hẹp không đủ chỗ → xoay theo trục dài của phòng
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-    for (const [x, y] of r.polygon) {
-      minX = Math.min(minX, x); minY = Math.min(minY, y);
-      maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
+    const areaText = `${areaM2(r.polygon).toFixed(1)}m²`;
+    const center = areaCentroid(r.polygon);
+    const layouts = nameLayouts(r.name.toUpperCase());
+    // en recintos con cotas, primero se exige que el ancho y el fondo sigan cabiendo junto a la etiqueta
+    const full = roomDimLines(r, mm, []);
+    const dimsFit = (box: Box): boolean => {
+      const d = roomDimLines(r, mm, [box]);
+      return !full || ((!full.h || !!d?.h) && (!full.v || !!d?.v));
+    };
+    let placed = false;
+    const oks = full ? [dimsFit, () => true] : [() => true];
+    search: for (const ok of oks) {
+      // todos los tamaños sin pisar puertas/escaleras/corte; solo al final, pisándolos (nunca muros)
+      for (const [[size1, size2], obstacles] of [...LABEL_SIZES.flatMap((sz) => [[sz, tiers.soft], [sz, tiers.hard]] as const), ...LABEL_SIZES.map((sz) => [sz, tiers.walls] as const)]) {
+        if (obstacles === tiers.walls && ok !== oks[oks.length - 1]) continue; // pisar puertas: lo último de todo
+        for (const lines of layouts) {
+          const b = block(lines, areaText, size1, size2);
+          const corners = (c: Point): Point[] =>
+            [paperVec(-b.halfW, -b.top), paperVec(b.halfW, -b.top), paperVec(b.halfW, b.bottom), paperVec(-b.halfW, b.bottom)].map((v) => add(c, v));
+          const spot = findSpot(r.polygon, corners, [...obstacles, ...taken], center, ok);
+          if (!spot) continue;
+          draw(r, spot.c, b, areaText);
+          taken.push(spot.box);
+          placedAt.set(r.id, add(spot.c, paperVec(0, b.bottom)));
+          placed = true;
+          break search;
+        }
+      }
     }
-    const textLen = name.length * size1 * 0.62 * tf.scale; // ước lượng mm model
-    const paperXExtent = tf.rotated ? maxY - minY : maxX - minX;
-    let along: { from: Point; to: Point } | undefined;
-    let lineStep: Point;
-    if (textLen > paperXExtent * 0.92) {
-      along = maxX - minX >= maxY - minY
-        ? { from: [minX, c[1]], to: [maxX, c[1]] }
-        : { from: [c[0], minY], to: [c[0], maxY] };
-      const dir = norm(sub(along.to, along.from));
-      let perp = rotate(dir, 90);
-      const onPaper = tf.dirToPaper(perp);
-      if (onPaper[1] < 0 && Math.abs(onPaper[1]) >= Math.abs(onPaper[0])) perp = vscale(perp, -1);
-      if (onPaper[0] < 0 && Math.abs(onPaper[0]) > Math.abs(onPaper[1])) perp = vscale(perp, -1);
-      lineStep = vscale(perp, (small ? 3.4 : 4.6) * tf.scale);
-    } else {
-      lineStep = paperVec(0, small ? 3.4 : 4.6);
-    }
-
-    push("TEXTOS", { kind: "text", at: c, text: name, size: size1, anchor: "middle", ...(along ? { along } : {}) }, r.id);
-    push("TEXTOS", { kind: "text", at: add(c, lineStep), text: `${area.toFixed(1)}m²`, size: size2, anchor: "middle", ...(along ? { along } : {}) }, r.id);
+    if (placed) continue;
+    // sin lugar libre: al centroide, horizontal, en el tamaño menor y una palabra por línea
+    const [size1, size2] = LABEL_SIZES[LABEL_SIZES.length - 1]!;
+    draw(r, center, block(layouts[layouts.length - 1]!, areaText, size1, size2), areaText);
   }
+
+  // cota de nivel en el recinto más grande: bajo su etiqueta si cabe, si no en el lugar libre más cercano
+  const biggest = [...rooms].sort((a, b) => areaM2(b.polygon) - areaM2(a.polygon))[0];
   if (biggest) {
-    const at = add(biggest.c, paperVec(0, 9.5));
-    const e = level.elevation;
-    const label = e === 0 ? "±0.000" : `${e > 0 ? "+" : "−"}${(Math.abs(e) / 1000).toFixed(3)}`;
-    const s1 = paperVec(-1.4, 0), s2 = paperVec(1.4, 0), tip = paperVec(0, 1.6);
-    push("TEXTOS", { kind: "polyline", pts: [add(at, s1), add(at, s2), add(at, tip)], close: true, weight: W.thin });
-    push("TEXTOS", { kind: "text", at: add(at, paperVec(0, -1.2)), text: label, size: 2.5, anchor: "middle" });
+    const corners = (at: Point): Point[] => [paperVec(-5, -3.6), paperVec(5, -3.6), paperVec(5, 2.4), paperVec(-5, 2.4)].map((v) => add(at, v));
+    const target = placedAt.get(biggest.id) ?? areaCentroid(biggest.polygon);
+    const spot = findSpot(biggest.polygon, corners, [...tiers.hard, ...taken], add(target, paperVec(0, 4.6)));
+    if (spot) {
+      const at = spot.c;
+      const e = level.elevation;
+      const label = e === 0 ? "±0.000" : `${e > 0 ? "+" : "−"}${(Math.abs(e) / 1000).toFixed(3)}`;
+      const s1 = paperVec(-1.4, 0), s2 = paperVec(1.4, 0), tip = paperVec(0, 1.6);
+      push("TEXTOS", { kind: "polyline", pts: [add(at, s1), add(at, s2), add(at, tip)], close: true, weight: W.thin });
+      push("TEXTOS", { kind: "text", at: add(at, paperVec(0, -1.2)), text: label, size: 2.5, anchor: "middle" });
+      taken.push(spot.box);
+    }
   }
+  return taken;
 }
 
 /* ---------------- dim thông thủy trong nhà (P4, doc 08) ---------------- */
 
-/**
- * Mỗi phòng đủ lớn: hai dim thông thủy (ngang + dọc) theo bbox polygon —
- * đặt lệch 30% cạnh để né nhãn tên phòng ở tâm.
- */
-function drawRoomDims(p: Project, levelId: string, mm: (v: number) => number, push: Push): void {
+/** Cotas interiores (estándar: máx. ancho y fondo, solo recintos importantes), esquivando etiquetas. */
+function drawRoomDims(p: Project, levelId: string, mm: (v: number) => number, labels: Box[], push: Push): void {
+  const t = mm(1.1);
   for (const r of p.rooms) {
-    if (r.level !== levelId || r.use === "cau-thang") continue;
-    if (areaM2(r.polygon) < 2) continue;
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-    for (const [x, y] of r.polygon) {
-      minX = Math.min(minX, x); minY = Math.min(minY, y);
-      maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
+    if (r.level !== levelId) continue;
+    const d = roomDimLines(r, mm, labels);
+    if (!d) continue;
+    if (d.h) {
+      const [a, b] = d.h;
+      const y = a[1];
+      push("COTAS", { kind: "line", a, b, weight: W.hair });
+      dimTick(push, "COTAS", a, t);
+      dimTick(push, "COTAS", b, t);
+      const at: Point = [(a[0] + b[0]) / 2, y + mm(1.0)];
+      const text = cmText(b[0] - a[0]);
+      push("COTAS", { kind: "text", at, text, size: 2.5, anchor: "middle", along: { from: a, to: b } });
+      push("COTAS", { kind: "dim", a, b, line: b, rot: 0, text, textAt: at }, r.id);
     }
-    const w = maxX - minX;
-    const h = maxY - minY;
-    const t = mm(1.1);
-
-    // dim ngang — cần đủ chỗ cho chữ (≈6mm giấy)
-    if (w >= mm(6) && h >= mm(5)) {
-      const y = minY + h * 0.3;
-      push("COTAS", { kind: "line", a: [minX, y], b: [maxX, y], weight: W.hair });
-      dimTick(push, "COTAS", [minX, y], t);
-      dimTick(push, "COTAS", [maxX, y], t);
-      const at: Point = [(minX + maxX) / 2, y + mm(1.0)];
-      push("COTAS", {
-        kind: "text", at, text: cmText(w), size: 2.5,
-        anchor: "middle", along: { from: [minX, y], to: [maxX, y] },
-      });
-      push("COTAS", { kind: "dim", a: [minX, y], b: [maxX, y], line: [maxX, y], rot: 0, text: cmText(w), textAt: at });
-    }
-    if (h >= mm(6) && w >= mm(5)) {
-      const x = minX + w * 0.3;
-      push("COTAS", { kind: "line", a: [x, minY], b: [x, maxY], weight: W.hair });
-      dimTick(push, "COTAS", [x, minY], t);
-      dimTick(push, "COTAS", [x, maxY], t);
-      const at: Point = [x - mm(1.0), minY + h * 0.3];
-      push("COTAS", {
-        // chữ đặt ở 30% chiều dim — điểm giữa là chỗ nhãn tên phòng đứng
-        kind: "text", at, text: cmText(h), size: 2.5,
-        anchor: "middle", along: { from: [x, minY], to: [x, maxY] },
-      });
-      push("COTAS", { kind: "dim", a: [x, minY], b: [x, maxY], line: [x, maxY], rot: 90, text: cmText(h), textAt: at });
+    if (d.v) {
+      const [a, b] = d.v;
+      const x = a[0];
+      push("COTAS", { kind: "line", a, b, weight: W.hair });
+      dimTick(push, "COTAS", a, t);
+      dimTick(push, "COTAS", b, t);
+      const at: Point = [x - mm(1.0), a[1] + (b[1] - a[1]) * 0.3];
+      const text = cmText(b[1] - a[1]);
+      push("COTAS", { kind: "text", at, text, size: 2.5, anchor: "middle", along: { from: a, to: b } });
+      push("COTAS", { kind: "dim", a, b, line: b, rot: 90, text, textAt: at }, r.id);
     }
   }
 }
 
-/* ---------------- vết cắt A-A qua thang (P4, doc 08) ---------------- */
+/* ---------------- cortes A-A' y B-B' (estándar: siempre los dos) ---------------- */
 
-/** Tâm vế 1 của thang đầu tiên — mặt cắt A-A dọc nhà phải xuyên qua đây. */
-export function sectionCutX(p: Project): number | null {
+/**
+ * Un corte: plano axis = at (axis "x": x = at). v = sentido de la mirada (en planta).
+ * A-A' es transversal (corta la cumbrera); B-B' es longitudinal (paralelo a ella).
+ */
+export type SectionCut = { name: "A" | "B"; axis: "x" | "y"; at: number; v: Point };
+
+/** Eje largo del edificio: el de la cumbrera; sin techumbre, el lado mayor de los muros. */
+function longAxis(p: Project): "x" | "y" {
+  const rf = roofsOf(p).find((r) => r.kind === "gable") ?? roofsOf(p)[0];
+  const b = boxOf(rf ? rf.outline : p.walls.flatMap((w) => [w.from, w.to]));
+  return rf?.ridgeAxis ?? (b.maxX - b.minX >= b.maxY - b.minY ? "x" : "y");
+}
+
+/** Los dos cortes del estándar; [] sin muros. */
+export function sectionCuts(p: Project): SectionCut[] {
+  if (p.walls.length === 0) return [];
+  const L = longAxis(p);
+  const T: "x" | "y" = L === "x" ? "y" : "x";
+  // A-A' corta la cumbrera: su plano es perpendicular a ella (x = c si la cumbrera corre en x)
+  const view = (axis: "x" | "y"): Point => (axis === "x" ? [-1, 0] : [0, 1]);
+  return [
+    { name: "A", axis: L, at: cutPosition(p, L), v: view(L) },
+    { name: "B", axis: T, at: cutPosition(p, T), v: view(T) },
+  ];
+}
+
+/**
+ * Posición del plano axis = c. Con una escalera cuyo tramo corre a lo largo del corte, por el
+ * centro de ese tramo. Si no, por donde más detalle muestre: el c que corta más recintos (4 c/u),
+ * ventanas (2 + ancho en m c/u, por una hoja lejos de los rótulos) y puertas (1 c/u); candidatos:
+ * los vanos y el centro de cada recinto. Empate → el más cercano al centro de la obra. Nunca sobre
+ * el eje de un muro paralelo al corte.
+ */
+function cutPosition(p: Project, axis: "x" | "y"): number {
+  const k = axis === "x" ? 0 : 1;
   const st = p.stairs[0];
-  if (!st) return null;
-  const base = getLevel(p, st.level);
-  if (!base) return null;
-  const rect = stairLayout(st, base).flights[0]!.rect;
-  return rect.reduce((s, pt) => s + pt[0], 0) / rect.length;
+  const base = st && getLevel(p, st.level);
+  if (st && base) {
+    const f = stairLayout(st, base).flights[0]!;
+    if (Math.abs(f.dir[1 - k]!) > 0.7) return f.rect.reduce((acc, pt) => acc + pt[k]!, 0) / f.rect.length;
+  }
+  const crosses = (w: Wall): boolean => Math.abs(w.to[k]! - w.from[k]!) > 1;
+  const cs = p.walls.flatMap((w) => [w.from[k]!, w.to[k]!]);
+  const mid = (Math.min(...cs) + Math.max(...cs)) / 2;
+  const lo = (bb: Box): number => (k === 0 ? bb.minX : bb.minY);
+  const hi = (bb: Box): number => (k === 0 ? bb.maxX : bb.maxY);
+  const roomsAt = (c: number): Room[] => p.rooms.filter((r) => { const bb = boxOf(r.polygon); return c > lo(bb) && c < hi(bb); });
+  const clearance = (c: number): number => Math.min(Infinity, ...roomsAt(c).map((r) => Math.abs(areaCentroid(r.polygon)[k]! - c)));
+  let best: { c: number; score: number } | null = null;
+  const onParallelWall = (x: number): boolean => p.walls.some((v) => !crosses(v) && Math.abs(v.from[k]! - x) < v.thickness / 2 + 50);
+  const candidates: number[] = p.rooms.map((r) => areaCentroid(r.polygon)[k]!).filter((x) => !onParallelWall(x));
+  for (const o of p.openings) {
+    const w = p.walls.find((x) => x.id === o.wall);
+    if (!w || !crosses(w)) continue;
+    const c = (o.kind === "window" ? [0.15, 0.25, 0.35, 0.65, 0.75, 0.85] : [0.5])
+      .map((t) => pointOnWall(w, o.offset + o.width * t)[k]!)
+      .filter((x) => !onParallelWall(x))
+      .sort((a, b) => clearance(b) - clearance(a))[0];
+    if (c !== undefined) candidates.push(c);
+  }
+  for (const c of candidates) {
+    let score = 0;
+    for (const q of p.openings) {
+      const v = p.walls.find((y) => y.id === q.wall);
+      if (!v || !crosses(v)) continue;
+      const [a, b] = [pointOnWall(v, q.offset)[k]!, pointOnWall(v, q.offset + q.width)[k]!];
+      if (c > Math.min(a, b) && c < Math.max(a, b)) score += q.kind === "window" ? 2 + q.width / 1000 : 1;
+    }
+    score += 4 * roomsAt(c).length;
+    if (!best || score > best.score || (score === best.score && Math.abs(c - mid) < Math.abs(best.c - mid))) best = { c, score };
+  }
+  return best?.c ?? mid;
+}
+
+/** ¿Las marcas de corte se dibujan en este piso? Con escalera, en sus pisos; sin escalera, en todos. */
+function sectionMarkVisible(p: Project, levelId: string): boolean {
+  const st = p.stairs[0];
+  return st ? st.level === levelId || levelAbove(p, st.level)?.id === levelId : true;
 }
 
 function drawSectionMark(p: Project, levelId: string, b: Bounds, mm: (v: number) => number, push: Push): void {
-  const st = p.stairs[0];
-  if (!st) return;
-  const visible = st.level === levelId || levelAbove(p, st.level)?.id === levelId;
-  if (!visible) return;
-  const x = sectionCutX(p);
-  if (x == null) return;
-
-  const y0 = b.minY - mm(8);
-  const y1 = b.maxY + mm(8);
-  push("TEXTOS", { kind: "line", a: [x, y0], b: [x, y1], weight: W.hair, dash: "10 3 2 3" });
-  for (const [yEnd, dirY] of [[y0, 1], [y1, -1]] as Array<[number, number]>) {
-    // đoạn đậm ở đầu vết + mũi tên chỉ HƯỚNG NHÌN (−x, khớp section-scene) + chữ A
-    push("TEXTOS", { kind: "line", a: [x, yEnd], b: [x, yEnd + dirY * mm(4)], weight: W.frame });
-    const ax = x - mm(0.6);
-    push("TEXTOS", {
-      kind: "polygon",
-      pts: [[ax - mm(3), yEnd], [ax, yEnd + mm(1.1)], [ax, yEnd - mm(1.1)]],
-      fill: "#000",
-    });
-    push("TEXTOS", { kind: "text", at: [x + mm(2.6), yEnd], text: "A", size: 3.5, anchor: "middle", bold: true });
+  if (!sectionMarkVisible(p, levelId)) return;
+  for (const cut of sectionCuts(p)) {
+    // la línea recorre la obra a lo largo del corte; en planta: (along, at) según el eje
+    const P = (along: number): Point => (cut.axis === "x" ? [cut.at, along] : [along, cut.at]);
+    const [s0, s1] = cut.axis === "x" ? [b.minY - mm(4), b.maxY + mm(4)] : [b.minX - mm(4), b.maxX + mm(4)];
+    // estándar: línea de corte magenta, segmentada y gruesa; rótulos X (inicio) y X' (fin)
+    push("TEXTOS", { kind: "line", a: P(s0), b: P(s1), weight: W.strong, dash: "8 3", color: CUT_COLOR });
+    for (const [sEnd, dir, label] of [[s0, 1, cut.name], [s1, -1, `${cut.name}'`]] as Array<[number, number, string]>) {
+      // tramo grueso en el extremo + flecha que indica el SENTIDO DE LA MIRADA (cut.v)
+      push("TEXTOS", { kind: "line", a: P(sEnd), b: P(sEnd + dir * mm(2.5)), weight: W.frame, color: CUT_COLOR });
+      const e = P(sEnd);
+      const v = cut.v;
+      const side: Point = [-v[1], v[0]];
+      const tip: Point = [e[0] + v[0] * mm(3.6), e[1] + v[1] * mm(3.6)];
+      const base: Point = [e[0] + v[0] * mm(0.6), e[1] + v[1] * mm(0.6)];
+      push("TEXTOS", {
+        kind: "polygon",
+        pts: [tip, [base[0] + side[0] * mm(1.1), base[1] + side[1] * mm(1.1)], [base[0] - side[0] * mm(1.1), base[1] - side[1] * mm(1.1)]],
+        fill: CUT_COLOR,
+      });
+      const at: Point = [e[0] - v[0] * mm(2.6), e[1] - v[1] * mm(2.6)];
+      push("TEXTOS", { kind: "text", at, text: label, size: 3.5, anchor: "middle", bold: true, color: CUT_COLOR });
+    }
   }
 }
 

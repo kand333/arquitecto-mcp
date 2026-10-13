@@ -114,7 +114,7 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
     const msg = textOf(dxf);
     expect(msg).toContain("Láminas DXF R12 (4;");
     expect(msg).toContain("ARQ-01 PLANTA PISO 1");
-    expect(msg).toContain("ARQ-04 CORTE A-A");
+    expect(msg).toContain("ARQ-04 CORTES A-A' Y B-B'");
     expect(msg).not.toContain("CUADRO DE RECINTOS Y VANOS →"); // las láminas de cuadros no tienen DXF
     const { existsSync } = await import("node:fs");
     const path = await import("node:path");
@@ -194,7 +194,7 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
     const r = await client.callTool({ name: "export", arguments: { format: "svg", sheets: ["elevation"] } });
     const msg = textOf(r);
     expect(msg).toContain("Láminas SVG (1)");
-    expect(msg).toContain("ARQ-03 ELEVACIÓN PRINCIPAL");
+    expect(msg).toContain("ARQ-03 ELEVACIONES");
   });
 
   it("rutas de salida en español: render_plan, render_view y export pdf", async () => {
@@ -205,9 +205,9 @@ describe("MCP server — tools DoD P1 + P2 + P4", () => {
     expect(plan).toContain(path.join(store.exportDir, "planta-l1.svg"));
     expect(existsSync(path.join(store.exportDir, "planta-l1.svg"))).toBe(true);
     await client.callTool({ name: "render_view", arguments: { kind: "elevation" } });
-    expect(existsSync(path.join(store.exportDir, "elevacion.svg"))).toBe(true);
+    expect(existsSync(path.join(store.exportDir, "elevaciones.svg"))).toBe(true);
     await client.callTool({ name: "render_view", arguments: { kind: "section" } });
-    expect(existsSync(path.join(store.exportDir, "corte-a-a.svg"))).toBe(true);
+    expect(existsSync(path.join(store.exportDir, "cortes.svg"))).toBe(true);
     const pdfPath = path.join(store.exportDir, "expediente", `${store.current.meta.id}-expediente.pdf`);
     expect(textOf(await client.callTool({ name: "export", arguments: { format: "pdf" } }))).toContain(pdfPath);
     expect(existsSync(pdfPath)).toBe(true);

@@ -79,8 +79,17 @@ function projectBrief(p: Project): string {
   return `"${p.meta.name}" (revisión ${p.meta.revision}) — ${p.levels.length} pisos: ${perLevel}. Vanos: ${p.openings.length}, mobiliario: ${p.furniture.length}.`;
 }
 
+/** Reglas de trabajo del usuario que valen para todo proyecto (las lee el cliente MCP en cada sesión). */
+export const SERVER_INSTRUCTIONS = [
+  "Estándar de elevaciones (lámina de 4 caras con techumbre, PDF y DXF): antes de modelar desde un bosquejo, pregunta al usuario el revestimiento exterior y el tipo de cubierta si no los dijo; no los supongas.",
+  "Revestimiento exterior = apply_ops add finish con scope 'exterior' (p. ej. {label: 'Tinglado de madera exterior', material: 'tinglado'}): el tinglado se dibuja en las elevaciones.",
+  "Casas, por defecto: techumbre a dos aguas (roof kind 'gable') de planchas de zinc (material 'zinc'), pendiente 20° (≈36 %), alero de 50 cm incluido en el outline, espesor 150.",
+  "Artefactos en interiores (se ven en 3D; en planta salen tenues): pon solo lo esencial con medidas del catálogo (baño: WC + lavamanos, y ducha si cabe; cocina: lavaplatos (tu-bep-duoi-*) + cocina (bep-4) + refrigerador, en L o en línea, y mesa solo si cabe con sus holguras, si no en el estar o comedor; dormitorio: cama). Van contra los muros, fuera del barrido de las puertas, del círculo de giro en baños accesibles y de los rótulos; sin recargar.",
+  "Pregunta también el sistema constructivo. Si es madera (muros de 10 cm: pino 3\" + terciado ranurado por ambas caras), declara apply_ops add finish con scope 'structure' y material 'madera': los cortes A-A' y B-B' dibujan cerchas, costaneras, muro sándwich y el detalle del muro.",
+].join("\n");
+
 export function createArquitectoServer(store: ProjectStore, live: LiveServer = new LiveServer(store)): McpServer {
-  const server = new McpServer({ name: "arquitecto", version: "0.1.0" });
+  const server = new McpServer({ name: "arquitecto", version: "0.1.0" }, { instructions: SERVER_INSTRUCTIONS });
 
   server.registerTool(
     "project_new",
@@ -414,7 +423,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
     {
       title: "Dibujar elevación / corte (PNG + SVG)",
       description:
-        "Genera la ELEVACIÓN PRINCIPAL (proyección del frente site.front) o el CORTE A-A (longitudinal por la escalera; requiere escalera) a partir del modelo y devuelve un PNG para verlo en el chat. Úsala para revisar antes del checkpoint de la fase E (principio 5); la planta sigue siendo render_plan.",
+        "Genera las ELEVACIONES (las 4 caras en una lámina, por punto cardinal, con techumbre, revestimiento de la terminación exterior, niveles y cotas) o el CORTE A-A (por la escalera; sin escalera, por los vanos que más detalle muestran) a partir del modelo y devuelve un PNG para verlo en el chat. Úsala para revisar antes del checkpoint de la fase E (principio 5); la planta sigue siendo render_plan.",
       inputSchema: {
         kind: z.enum(["elevation", "section"]),
         scale: z.number().int().optional().describe("50/100 — por defecto se elige solo"),
@@ -429,7 +438,7 @@ export function createArquitectoServer(store: ProjectStore, live: LiveServer = n
         };
         const r = args.kind === "elevation" ? renderElevationSvg(p, opts) : renderSectionSvg(p, opts);
         mkdirSync(store.exportDir, { recursive: true });
-        const base = args.kind === "elevation" ? "elevacion" : "corte-a-a";
+        const base = args.kind === "elevation" ? "elevaciones" : "cortes";
         const svgPath = path.join(store.exportDir, `${base}.svg`);
         writeFileSync(svgPath, r.svg, "utf8");
         const pngPath = path.join(store.exportDir, `${base}.png`);
