@@ -31,4 +31,6 @@ jobs:
           mkdir -p "$RUNNER_TEMP/pkg"
           mv "packages/cli/$TGZ" "$RUNNER_TEMP/pkg/"
           cd "$RUNNER_TEMP/pkg" && npm init -y && npm i "./$TGZ"
+          # the installed package may resolve a newer Playwright than the workspace: fetch its Chromium
+          npx playwright install chromium
           cd "$GITHUB_WORKSPACE" && npx tsx packages/cli/smoke.mts "$RUNNER_TEMP/pkg/node_modules/arquitecto-mcp"
