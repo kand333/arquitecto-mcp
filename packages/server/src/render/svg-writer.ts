@@ -89,14 +89,14 @@ function primToSvg(prim: Prim, map: (p: Point) => Point, tf: PlanTransform, isPa
     case "circle": {
       const c = map(prim.c);
       const r = prim.rPaper || isPaper ? prim.r : prim.r / S;
-      return `<circle cx="${F(c[0])}" cy="${F(c[1])}" r="${F(r)}" fill="${prim.fill ?? "none"}"${stroke(prim.weight)}/>`;
+      return `<circle cx="${F(c[0])}" cy="${F(c[1])}" r="${F(r)}" fill="${prim.fill ?? "none"}"${stroke(prim.weight, undefined, prim.color)}/>`;
     }
     case "ellipse": {
       const c = map(prim.c);
       const rx = isPaper ? prim.rx : prim.rx / S;
       const ry = isPaper ? prim.ry : prim.ry / S;
       const ang = paperAngle(prim.rot, tf, isPaper);
-      return `<ellipse cx="${F(c[0])}" cy="${F(c[1])}" rx="${F(rx)}" ry="${F(ry)}" fill="none" transform="rotate(${F(ang)} ${F(c[0])} ${F(c[1])})"${stroke(prim.weight)}/>`;
+      return `<ellipse cx="${F(c[0])}" cy="${F(c[1])}" rx="${F(rx)}" ry="${F(ry)}" fill="none" transform="rotate(${F(ang)} ${F(c[0])} ${F(c[1])})"${stroke(prim.weight, undefined, prim.color)}/>`;
     }
     case "arc": {
       const r = isPaper ? prim.r : prim.r / tf.scale;
@@ -123,7 +123,7 @@ function primToSvg(prim: Prim, map: (p: Point) => Point, tf: PlanTransform, isPa
       const anchor = prim.anchor ?? "start";
       const cls = prim.bold ? ` class="b"` : "";
       const tr = rot !== 0 ? ` transform="rotate(${F(rot)} ${F(at[0])} ${F(at[1])})"` : "";
-      return `<text x="${F(at[0])}" y="${F(at[1])}" font-size="${F(prim.size)}" text-anchor="${anchor}" dominant-baseline="middle"${cls}${tr}>${esc(prim.text)}</text>`;
+      return `<text x="${F(at[0])}" y="${F(at[1])}" font-size="${F(prim.size)}" text-anchor="${anchor}" dominant-baseline="middle"${prim.color ? ` fill="${prim.color}"` : ""}${cls}${tr}>${esc(prim.text)}</text>`;
     }
     default:
       return null;

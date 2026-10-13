@@ -1,5 +1,5 @@
 import {
-  add, getAsset, pointOnWall, roofGeometry, roofsOf, rotate, scale as vscale, stairLayout, wallDir, wallLength,
+  add, getAsset, joinedWall, pointOnWall, roofGeometry, roofsOf, rotate, scale as vscale, stairLayout, wallDir, wallLength,
   wallNormal, wallPieces, type Point, type Polygon, type Project,
 } from "@arquitecto/core";
 
@@ -166,8 +166,11 @@ export function buildMeshes(p: Project): MeshData[] {
     const nv = wallNormal(w);
     const openings = p.openings.filter((o) => o.wall === w.id);
     const m = mesh(w.id, w.kind === "kinh" ? "glass" : "wall");
-    for (const piece of wallPieces(wallLength(w), h, openings)) {
-      const a = pointOnWall(w, piece.u0);
+    // encuentro de muros: esquinas cerradas en 3D (mismo criterio que la planta)
+    const { wall: wj, shift } = joinedWall(p.walls.filter((x) => x.level === w.level), w);
+    const holes = openings.map((o) => ({ ...o, offset: o.offset + shift }));
+    for (const piece of wallPieces(wallLength(wj), h, holes)) {
+      const a = pointOnWall(wj, piece.u0);
       const start = add(a, vscale(nv, -w.thickness / 2));
       pushBox(
         m,

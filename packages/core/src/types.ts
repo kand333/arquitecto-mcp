@@ -225,7 +225,7 @@ export type OpeningStyle = {
 
 export type Finish = {
   label: string;
-  scope?: "floor" | "wall" | "ceiling";
+  scope?: "floor" | "wall" | "ceiling" | "exterior" | "structure"; // exterior: revestimiento de fachada; structure: sistema constructivo (madera → cortes con detalle)
   material?: string;
   color?: string;
   note?: string;

@@ -74,7 +74,8 @@ function hasExteriorWindow(p: Project, room: Room): boolean {
     if (aIn === bIn) continue; // la ventana no separa este recinto de otro espacio
     const other = aIn ? pb : pa;
     if (isOutdoorPoint(p, room.level, other)) return true;
-    if (roomsAtPoint(p, room.level, other).some((x) => x.use === "gieng-troi")) return true;
+    // patio dentro del sitio (san) o patio de luz (gieng-troi): exterior según docs/oguc-sources.md
+    if (roomsAtPoint(p, room.level, other).some((x) => x.use === "gieng-troi" || x.use === "san")) return true;
   }
   return false;
 }

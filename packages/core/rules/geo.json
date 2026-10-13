@@ -58,6 +58,13 @@
       "severity": "error",
       "source": { "vanBan": "geometría intrínseca", "verified": true },
       "message": "El muro {wall} {detail}."
+    },
+    {
+      "id": "GEO-09",
+      "title": "Las puertas abren hacia el lado que fija la regla de apertura",
+      "severity": "warn",
+      "source": { "vanBan": "estándar de dibujo del proyecto (no es norma)", "verified": true },
+      "message": "La puerta {opening} abre hacia {hacia}; debería abrir hacia {recinto} (interiores: hacia el recinto; a patio, terraza o salida trasera: hacia afuera; principal: hacia adentro)."
     }
   ]
 }

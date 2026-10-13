@@ -186,6 +186,7 @@ state.on("validation", ({ issues }) => ui.setIssues(issues));
 
 state.on("level", ({ level }) => {
   ui.setActiveLevel(level);
+  if (byLevel) scene3d.setLevelFilter(level);
   void plan.show(level, state.revision);
 });
 
@@ -290,6 +291,29 @@ walkBtn.addEventListener("click", () => {
   });
   walkBtn.classList.add("is-active");
   hint3d.textContent = t("walk.hint");
+});
+
+// ── techo y pisos (estándar del usuario: revisar el interior en 3D) ──
+const doorsBtn = document.getElementById("doors3d") as HTMLButtonElement;
+let doorsOpen = false;
+doorsBtn.addEventListener("click", () => {
+  doorsOpen = !doorsOpen;
+  doorsBtn.classList.toggle("is-active", doorsOpen);
+  scene3d.setDoorsOpen(doorsOpen);
+});
+const roofBtn = document.getElementById("roof3d") as HTMLButtonElement;
+const levelsBtn = document.getElementById("levels3d") as HTMLButtonElement;
+let roofOff = false;
+let byLevel = false;
+roofBtn.addEventListener("click", () => {
+  roofOff = !roofOff;
+  roofBtn.classList.toggle("is-active", roofOff);
+  scene3d.setRoofVisible(!roofOff);
+});
+levelsBtn.addEventListener("click", () => {
+  byLevel = !byLevel;
+  levelsBtn.classList.toggle("is-active", byLevel);
+  scene3d.setLevelFilter(byLevel ? state.activeLevel : null);
 });
 
 let sunOn = false;

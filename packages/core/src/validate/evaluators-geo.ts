@@ -5,6 +5,7 @@ import { stairLayout } from "../geometry/stair.js";
 import {
   openingSpan, pointOnWall, wallBand, wallDir, wallLength, wallNormal, wallsParallel,
 } from "../geometry/wall.js";
+import { defaultSwing, preferredOpenSide } from "../doors.js";
 import { floorSlabOf, getLevel, getWall, levelAbove } from "../model.js";
 import type { Point, Polygon, Project } from "../types.js";
 import { add, dot, rotate, scale, sub } from "../geometry/vec.js";
@@ -121,11 +122,12 @@ export function geo05(p: Project): Finding[] {
 /** Quarter-disc cánh cửa quét — polygon lồi xấp xỉ mỗi 15°. */
 function swingDiscs(p: Project, o: (typeof p.openings)[number]): Polygon[] {
   const w = getWall(p, o.wall);
-  if (!w || o.kind !== "door" || !o.swing || o.swing === "slide" || o.swing === "none") return [];
+  const swing = o.swing ?? defaultSwing(p, o);
+  if (!w || o.kind !== "door" || swing === "slide" || swing === "none") return [];
   const style = p.styles.openings[o.style];
   const leaves = style?.leaf === "2-canh" ? 2 : 1;
   if (style?.leaf === "truot" || style?.leaf === "xep") return [];
-  const side = o.swing.startsWith("in") ? 1 : -1;
+  const side = swing.startsWith("in") ? 1 : -1;
   const n = scale(wallNormal(w), side);
   const jambL = pointOnWall(w, o.offset);
   const jambR = pointOnWall(w, o.offset + o.width);
@@ -142,7 +144,7 @@ function swingDiscs(p: Project, o: (typeof p.openings)[number]): Polygon[] {
   if (leaves === 2) {
     return [disc(jambL, jambR, o.width / 2), disc(jambR, jambL, o.width / 2)];
   }
-  const hingeAtL = o.swing.endsWith("-L");
+  const hingeAtL = swing.endsWith("-L");
   return [hingeAtL ? disc(jambL, jambR, o.width) : disc(jambR, jambL, o.width)];
 }
 
@@ -208,6 +210,21 @@ export function geo08(p: Project): Finding[] {
     const inside = band.every((pt) => pointInPolygon(pt, boundary)) && polygonInsidePolygon(band, boundary);
     if (!inside) {
       out.push({ entities: [w.id], values: { wall: w.id, detail: "se sale del deslinde del terreno" } });
+    }
+  }
+  return out;
+}
+
+/** GEO-09 — la puerta abre al lado contrario del que fija la regla de apertura (`preferredOpenSide`). */
+export function geo09(p: Project): Finding[] {
+  const out: Finding[] = [];
+  for (const o of p.openings) {
+    if (o.kind !== "door" || !o.swing || o.swing === "slide" || o.swing === "none") continue;
+    const want = preferredOpenSide(p, o);
+    if (!want) continue;
+    const opens = o.swing.startsWith("in") ? "plus" : "minus";
+    if (opens !== want.side) {
+      out.push({ entities: [o.id, o.wall], values: { opening: o.id, hacia: want.from, recinto: want.toward } });
     }
   }
   return out;

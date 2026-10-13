@@ -137,6 +137,32 @@ describe("E4 — CL-VEN-01 (OGUC 4.1.2, al menos una ventana al exterior en loca
     expect(i[0]!.severity).toBe("info");
   });
 
+  it("positivo: una ventana a un patio declarado como recinto (uso san) cuenta como exterior, como dice docs/oguc-sources.md", () => {
+    const p = chile();
+    // primera ventana de un recinto habitable que hoy da al exterior
+    let found: { room: string; other: [number, number] } | null = null;
+    for (const o of p.openings.filter((x) => x.kind === "window")) {
+      const w = getWall(p, o.wall)!;
+      const [pa, pb] = openingSidePoints(w, o);
+      const room = p.rooms.find((r) => r.level === w.level && ["ngu", "khach"].includes(r.use) && pointInPolygon(pa, r.polygon) !== pointInPolygon(pb, r.polygon));
+      if (room) { found = { room: room.id, other: (pointInPolygon(pa, room.polygon) ? pb : pa) as [number, number] }; break; }
+    }
+    expect(found).not.toBeNull();
+    const [x, y] = found!.other;
+    // ese exterior pasa a ser un patio declarado (con piso): sigue siendo exterior para la OGUC 4.1.2
+    p.rooms.push({ id: "RPATIO", level: p.levels[0]!.id, name: "Patio", use: "san", polygon: [[x - 400, y - 400], [x + 400, y - 400], [x + 400, y + 400], [x - 400, y + 400]] });
+    const target = p.rooms.find((r) => r.id === found!.room)!;
+    for (const o of p.openings.filter((x) => x.kind === "window")) {
+      // deja solo esa ventana en el recinto para que el resultado dependa de ella
+      const w = getWall(p, o.wall)!;
+      const [pa, pb] = openingSidePoints(w, o);
+      const touches = pointInPolygon(pa, target.polygon) !== pointInPolygon(pb, target.polygon);
+      const isIt = pointInPolygon([x, y], [[pa[0] - 1, pa[1] - 1], [pa[0] + 1, pa[1] - 1], [pa[0] + 1, pa[1] + 1], [pa[0] - 1, pa[1] + 1]]) || pointInPolygon([x, y], [[pb[0] - 1, pb[1] - 1], [pb[0] + 1, pb[1] - 1], [pb[0] + 1, pb[1] + 1], [pb[0] - 1, pb[1] + 1]]);
+      if (touches && !isIt) p.openings = p.openings.filter((z) => z.id !== o.id);
+    }
+    expect(hits(validateProject(p), "CL-VEN-01", target.id)).toEqual([]);
+  });
+
   it("negativo: la luz que llega solo por el vano de la escalera NO cuenta como ventana (a diferencia de STD-09)", () => {
     // casa-prueba-2p: R2 es el único recinto adyacente a la escalera R6, que tiene vano en la losa superior.
     // Se usa como living (habitable) para tener el caso que STD-09 da por iluminado vía la escalera.

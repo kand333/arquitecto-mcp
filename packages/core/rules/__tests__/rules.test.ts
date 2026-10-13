@@ -127,6 +127,33 @@ describe("GEO — geometría/topología (caso que infringe; el que cumple = fixt
     });
     expectRule(out, "GEO-08", "error");
   });
+
+  it("GEO-09: puerta de baño que abre hacia el pasillo (debe abrir hacia el baño)", () => {
+    const issues = violate((p) => { p.openings.find((o) => o.id === "D2")!.swing = "out-R"; });
+    const i = expectRule(issues, "GEO-09", "warn");
+    expect(i.message).toContain("Baño 1");
+    expect(i.message).toContain("Pasillo");
+  });
+
+  it("GEO-09: la puerta principal (fachada del frente) abre hacia adentro", () => {
+    const issues = violate((p) => { p.openings.find((o) => o.id === "D1")!.swing = "out-L"; });
+    expectRule(issues, "GEO-09", "warn");
+  });
+
+  it("GEO-09: puerta trasera o hacia patio/terraza abre hacia afuera", () => {
+    // D1 deja de ser principal: el frente pasa al fondo del terreno
+    const rear = violate((p) => { p.site.front = 2; });
+    expectRule(rear, "GEO-09", "warn");
+    // D1 da a un patio declarado como recinto (uso san)
+    const patio = violate((p) => {
+      p.rooms.push({ id: "R99", level: "L1", name: "Patio", use: "san", polygon: [[1500, -1500], [4000, -1500], [4000, 0], [1500, 0]] });
+    });
+    expect(expectRule(patio, "GEO-09", "warn").message).toContain("Patio");
+    expect(violate((p) => {
+      p.site.front = 2;
+      p.openings.find((o) => o.id === "D1")!.swing = "out-L";
+    }).some((i) => i.rule === "GEO-09")).toBe(false);
+  });
 });
 
 describe("CL-CIP — valores del CIP declarados (reutilizan PLN-01…05)", () => {

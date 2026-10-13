@@ -1,5 +1,5 @@
 import {
-  pointOnWall, roofGeometry, roofsOf, stairLayout, wallDir, wallLength,
+  joinedWall, pointOnWall, roofGeometry, roofsOf, stairLayout, wallDir, wallLength,
   type Point, type Polygon, type Project, type Vec3, type Wall,
 } from "@arquitecto/core";
 
@@ -139,9 +139,10 @@ export function modelToIfc(p: Project): string {
   for (const w of p.walls) {
     const lv = levels.find((l) => l.id === w.level);
     if (!lv) continue;
-    const len = wallLength(w);
-    const d = wallDir(w);
-    const mid = pointOnWall(w, len / 2);
+    const wj = joinedWall(p.walls.filter((x) => x.level === w.level), w).wall; // esquinas cerradas
+    const len = wallLength(wj);
+    const d = wallDir(wj);
+    const mid = pointOnWall(wj, len / 2);
     const h = w.height ?? lv.height;
     const solid = boxSolid(mid[0], mid[1], lv.elevation, len, w.thickness, h, d[0], d[1]);
     const ent = f.e("IFCWALL", [G(w.id), "$", str(w.id), "$", "$", worldPlacement, bodyRep(solid), "$", "$"]);

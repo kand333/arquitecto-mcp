@@ -12,9 +12,9 @@ Estado: ✅ completo · 🟡 parcial · ⛔ no disponible. No atribuyas a arquit
 **Modelo**: un `arquitecto.project.json` con pisos, muros (eje + espesor), vanos anclados al muro, losas con perforaciones, techumbres (`gable`/`hip`/`shed`), escaleras, recintos (polígono **declarado**, no se detecta de los muros), mobiliario de catálogo (86 piezas + 20 variantes), ejes y estilos. Cada `apply_ops` es una transacción con revisión; el editor se sincroniza por WebSocket.
 
 **Salidas 2D**
-- ✅ `render_plan` (planta, PNG + SVG; muros, vanos, mobiliario, techumbre en planta, ejes, cotas en cm, recintos con m²) y `render_view` (elevación principal o corte A-A, PNG + SVG).
-- ✅ `export`: juego de láminas A3 con viñeta chilena (`ARQ-NN`): planta por piso (1:50/1:100), elevación principal (fachada del borde `site.front`), corte A-A, cuadro de recintos y vanos, presupuesto. SVG por lámina; **DXF R12** por lámina con geometría (capas en español, sin rellenos, **cotas `DIMENSION` reales** con estilo `ESTANDAR-PLANO`, cm sin decimales).
-- 🟡 Corte A-A **solo si hay escalera** (un departamento de un piso no tiene corte). Una sola elevación (la principal). ⛔ Planta de techumbre como lámina propia, elevaciones laterales/posterior, PNG por lámina vía `export`.
+- ✅ `render_plan` (planta, PNG + SVG; muros, vanos, mobiliario, techumbre en planta, ejes, cotas en cm, recintos con m²) y `render_view` (elevaciones de las 4 caras o cortes A-A' y B-B', PNG + SVG).
+- ✅ `export`: juego de láminas A3 con viñeta chilena (`ARQ-NN`): planta por piso (1:50/1:100), elevaciones (las 4 caras en una lámina), cortes A-A' y B-B' (en una lámina), cuadro de recintos y vanos, presupuesto. SVG por lámina; **DXF R12** por lámina con geometría (capas en español, sin rellenos, **cotas `DIMENSION` reales** con estilo `ESTANDAR-PLANO`, cm sin decimales).
+- ✅ Cortes A-A' y B-B' siempre, en una lámina. ✅ Elevaciones: las 4 caras en una lámina con ocultamiento real de líneas. ⛔ Planta de techumbre como lámina propia, PNG por lámina vía `export`.
 
 **Salidas 3D**
 - ✅ Editor (`editor_open`): planta 2D + 3D Three.js, vista dividida, recorrido (WASD), asoleamiento por hora y mes, mover muros/vanos/muebles con medida exacta, ubicar mobiliario del catálogo, deshacer, link de solo lectura. ⛔ Dibujar muros, puertas, ventanas o recintos y medir desde el editor (marcado «próximamente»).
@@ -41,6 +41,43 @@ Estado: ✅ completo · 🟡 parcial · ⛔ no disponible. No atribuyas a arquit
 - `@arquitecto/core` es puro: sin imports `node:` ni DOM en `src/` (salvo tests). Disco, red y render van en `server`.
 - Reglas normativas = datos en `packages/core/rules/*.json`, cada regla con `source`. Toda regla nueva de Chile entra con `verified: false` y solo el usuario la pasa a `true` tras cotejarla (hoy validadas: `CL-ALT-01`, `CL-VEN-01`, `CL-CIP-*`); nunca inventes un artículo o un valor.
 - Packs Chile (`rules/cl.json` OGUC + `rules/cl-cip.json` CIP declarado por el usuario, región `cl`): toda regla `CL-*` debe tener su fila en `docs/oguc-sources.md` con cita literal cotejada contra la fuente oficial (`cl.test.ts` exige la correspondencia). Si falta un dato, el evaluador emite `CL-INDET` (`info`); nunca pases en silencio. No reutilices `STD-*` para Chile si su semántica difiere de la OGUC: escribe el evaluador en `evaluators-cl.ts`. Presupuesto: `rules/don-gia-cl.json` en UF/m² con precios `null` («por completar»); nunca inventes precios ni totales. Los tests de evaluadores `STD-*` usan un pack de test (región `lib`) dentro de `rules.test.ts`; la fixture de tests es `casa-prueba-2p` (plantilla oculta).
+
+## Estándar gráfico de láminas (vale para todo proyecto; lo fijó el usuario corrigiendo casa3 en AutoCAD)
+- Encuentros de muros: el extremo llega a la cara lejana del muro que encuentra (`joinedWall`, core); se usa en planta, DXF, glTF, IFC y 3D web. Los validadores usan la banda cruda (`wallBand`).
+- Ejes: solo los que pasan por el centro de un muro principal (perimetral, de fachada —se ve desde afuera o da a patio/terraza— o que cubre ≥ 60 % del piso), sin dos a < 600 mm (`server/src/render/axes.ts`). Rojos (`AXIS_COLOR`), segmentados y finos; en DXF, capa `EJES` color 1 con `LTYPE DASHED`.
+- Cotas interiores: máx. 2 (ancho y fondo) y solo en `DIM_USES` (`plan-scene.ts`); nunca en baños, circulaciones ni patios. Se ubican después de las etiquetas, en la primera posición que no las pise. Las cadenas exteriores miden la obra, no el terreno.
+- Etiqueta de recinto: SIEMPRE horizontal; nombre centrado (en 2 líneas o una palabra por línea si no cabe) y m² debajo, centrado y un poco más chico; mismo tamaño en todos los recintos (3,0/2,5 mm; achica solo si no cabe). Dentro de las caras interiores de los muros, en el punto libre más cercano al centroide, dejando lugar a las 2 cotas; nunca pisa muros, puertas (cuarto de giro real), escaleras, la línea de corte ni otra etiqueta.
+- Muro más bajo que el plano de corte (1,20 m: jardinera, pretil): en vista, solo contorno.
+- Cortes (`render/section-scene.ts`, plantilla «corte BB ejemplo standar» del usuario): SIEMPRE A-A' y B-B' en UNA lámina (lado a lado o apilados, a la mayor escala que quepa).
+  - Ubicación (`sectionCuts`, `plan-scene.ts`): A-A' transversal (corta la cumbrera; sin techo, el lado corto) y B-B' longitudinal. Por el tramo de escalera paralelo al corte si lo hay; si no, por donde corte más recintos y vanos (ventanas pesan más), lejos de los rótulos.
+  - Marcas en planta magenta, segmentadas y gruesas, con flecha en el sentido de la mirada; en DXF, `POLYLINE` con ancho.
+  - Usan el modelo 3D de las elevaciones con plano de corte: lo cortado con detalle y lo de atrás con ocultamiento real.
+  - Con estructura de madera (terminación `scope: "structure"`, material madera):
+    - muro sándwich (terciado de 12 mm por cara, soleras y cadenetas @50 como cajas con X);
+    - cerchas de 2 piezas 1"x4" @75 máx. y costaneras 2"x2" @40;
+    - lana de vidrio sobre el cielo;
+    - rótulos con línea de llamada y «DETALLE MURO e=10 cm Esc 1/5», una vez por lámina.
+  - Anotaciones: recintos en minúscula, niveles N.P.T. y N.T., cotas de la ventana más ancha y de la puerta, ejes con cota entre ejes y «CORTE A-A' Esc 1/50».
+- Cotas exteriores: miden de cara a cara (muros unidos): el espesor se acota completo (10, no 5).
+- Ventana corredera (estilo con hoja `truot`): detalle de `render/sliding.ts` en planta (marco + 2 hojas en rieles), alzado (hojas, flecha, manilla) y corte (perfiles + 2 hojas). Una ventana de piso (antepecho 0) a terraza es ventana (V), no puerta.
+- Elevaciones (`render/elevations.ts`, formato del DXF del usuario):
+  - las 4 caras en una lámina 2×2, nombradas por punto cardinal (`site.north`) y con el frente primero; título «ELEVACIÓN SUR Esc 1/100»; escala 1:50, 1:100 o 1:200 según quepa;
+  - techumbre con espesor, cumbrera y alero; con zinc, nervios cada 16 cm, canal en el alero y bajadas de aguas lluvias que esquivan los vanos; «PENDIENTE x%» en los frontones;
+  - revestimiento = terminación con `scope: "exterior"`; si es tinglado, líneas cada 16 cm que no pasan por los vanos;
+  - sobrecimiento de 20 cm sobre el N.T., fundación hasta −0,60, niveles (N.P.T., N.T., pisos y cumbrera) y cotas de alero y muro;
+  - en casas, por defecto: dos aguas de zinc a 20° (≈36 %) y alero de 50 cm. Antes de modelar, pregunta el revestimiento y la cubierta (está en `SERVER_INSTRUCTIONS` de `tools.ts`).
+- Mobiliario y artefactos en planta: tenues (gris `#b5b5b5`, trazo fino). Los artefactos (sanitarios y cocina) van en la capa `ARTEFACTOS` (DXF color 9) y el resto en `MOBILIARIO` (color 8). Solo los esenciales, contra los muros y fuera del barrido de puertas (regla en `SERVER_INSTRUCTIONS`).
+- Editor 3D:
+  - puertas abatibles cerradas por defecto; el botón «abrir puertas» las gira 90° hacia el lado de la regla; las dobles (`2-canh`) con 2 hojas;
+  - ventanas de aluminio antracita: marco perimetral y hojas con su perfil y vidrio; la corredera, con 2 hojas en rieles distintos;
+  - cocina: `tu-bep-duoi` con lavaplatos (≥1,5 m) y encimera (≥2,2 m); cocina `bep-4` (categoría `bep`);
+  - frontón lleno en los muros exteriores bajo la techumbre a dos aguas;
+  - botones «sin techo» y «por piso» (muestra hasta el piso activo, sin techo).
+- Puertas abatibles en DXF: `INSERT` del bloque `PUERTA-<ancho>` en la capa `PUERTAS`; el arco siempre es el corto (`shortArc`).
+- Apertura (`core/src/doors.ts`, aviso `GEO-09`):
+  - las interiores abren hacia el recinto privado, con la bisagra hacia la pared;
+  - las que dan a patio, terraza o balcón, y las traseras o laterales, abren hacia afuera;
+  - la principal (fachada de `site.front`) abre hacia adentro.
 
 ## Dependencias y build
 - Instalar siempre con `pnpm install --frozen-lockfile --ignore-scripts`.

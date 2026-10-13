@@ -60,3 +60,19 @@ describe("fixture casa-prueba-2p", () => {
     expect("phong_thuy" in p.brief).toBe(false); // el feng shui (Lỗ Ban) se eliminó en E4b
   });
 });
+
+describe("outdoorAt", () => {
+  it("afuera de la casa sí; dentro de un recinto cerrado no; en el patio de luz sí", async () => {
+    const { outdoorAt } = await import("./model.js");
+    const p = loadCasaPrueba2p();
+    expect(outdoorAt(p, "L1", [-500, -500])).toBe(true);
+    const closed = p.rooms.find((r) => r.level === "L1" && r.use === "khach")!;
+    const c = closed.polygon.reduce<[number, number]>((s, q) => [s[0] + q[0] / closed.polygon.length, s[1] + q[1] / closed.polygon.length], [0, 0]);
+    expect(outdoorAt(p, "L1", c)).toBe(false);
+    const patio = p.rooms.find((r) => r.level === "L1" && r.use === "gieng-troi");
+    if (patio) {
+      const q = patio.polygon.reduce<[number, number]>((s, v) => [s[0] + v[0] / patio.polygon.length, s[1] + v[1] / patio.polygon.length], [0, 0]);
+      expect(outdoorAt(p, "L1", q)).toBe(true);
+    }
+  });
+});

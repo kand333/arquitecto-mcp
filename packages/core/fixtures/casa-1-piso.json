@@ -54,7 +54,7 @@
     { "id": "S1", "wall": "W1", "kind": "window", "style": "SW", "offset": 2600, "width": 1400, "height": 1400, "sill": 900 },
     { "id": "S2", "wall": "W1", "kind": "window", "style": "SW", "offset": 5600, "width": 1400, "height": 1400, "sill": 900 },
     { "id": "D2", "wall": "W6", "kind": "door", "style": "DP", "offset": 1400, "width": 900, "height": 2100, "sill": 0, "swing": "in-L" },
-    { "id": "D3", "wall": "W6", "kind": "door", "style": "DP", "offset": 5800, "width": 800, "height": 2100, "sill": 0, "swing": "in-R" },
+    { "id": "D3", "wall": "W6", "kind": "door", "style": "DP", "offset": 5800, "width": 800, "height": 2100, "sill": 0, "swing": "out-R" },
     { "id": "D4", "wall": "W7", "kind": "door", "style": "DP", "offset": 1200, "width": 900, "height": 2100, "sill": 0, "swing": "in-L" },
     { "id": "D5", "wall": "W7", "kind": "door", "style": "DP", "offset": 5400, "width": 800, "height": 2100, "sill": 0, "swing": "in-R" },
     { "id": "D6", "wall": "W9", "kind": "door", "style": "DW", "offset": 500, "width": 700, "height": 2100, "sill": 0, "swing": "in-R" },

@@ -79,6 +79,12 @@ export function drawSheetFrame(push: FramePush, o: SheetFrameOptions): void {
   }
 }
 
+/** Título de lámina de planta: "PLANTA <piso>" sin duplicar si el piso ya se llama "Planta …". */
+export function planTitle(levelName: string): string {
+  const n = levelName.toUpperCase();
+  return n.startsWith("PLANTA") ? n : `PLANTA ${n}`;
+}
+
 /** Valor de cota mostrado: el modelo está en mm y las cotas se leen en cm sin decimales (ESTANDAR-PLANO). */
 export function cmText(mmLen: number): string {
   return String(Math.round(mmLen / 10));

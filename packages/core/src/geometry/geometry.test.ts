@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Level, Stair, Wall } from "../types.js";
 import { area, areaM2, isSimplePolygon, minPolygonWidth, pointInPolygon, polygonInsidePolygon } from "./polygon.js";
-import { openingRect, openingSidePoints, wallBand, wallLength, wallsParallel } from "./wall.js";
+import { joinedWall, openingRect, openingSidePoints, wallBand, wallLength, wallsParallel } from "./wall.js";
 import { convexOverlapDepth, obbCorners, obbOverlapDepth } from "./obb.js";
 import { stairLayout } from "./stair.js";
 import { rotate } from "./vec.js";
@@ -120,5 +120,32 @@ describe("stair 2-ve-U (quy ước rẽ trái)", () => {
     const p = rot.flights[0]!.rect[1]!;
     expect(p[0]).toBeCloseTo(rotate([950, 0], 90)[0], 6);
     expect(p[1]).toBeCloseTo(rotate([950, 0], 90)[1], 6);
+  });
+});
+
+describe("encuentro de muros (joinedWall)", () => {
+  const W = (id: string, from: [number, number], to: [number, number]): Wall => ({ id, level: "L1", from, to, thickness: 150, kind: "gach" });
+
+  it("esquina L: cada extremo llega a la cara lejana del otro muro", () => {
+    const a = W("A", [0, 0], [4000, 0]);
+    const b = W("B", [0, 0], [0, 3000]);
+    const ja = joinedWall([a, b], a);
+    expect(ja.wall.from[0]).toBeCloseTo(-75, 6);
+    expect(ja.wall.to).toEqual([4000, 0]);
+    expect(ja.shift).toBeCloseTo(75, 6);
+    expect(joinedWall([a, b], b).wall.from[1]).toBeCloseTo(-75, 6);
+  });
+
+  it("T: el tabique llega a la cara lejana; el muro pasante no cambia", () => {
+    const a = W("A", [0, 0], [4000, 0]);
+    const t = W("T", [2000, 0], [2000, 3000]);
+    expect(joinedWall([a, t], t).wall.from[1]).toBeCloseTo(-75, 6);
+    expect(joinedWall([a, t], a)).toEqual({ wall: a, shift: 0 });
+  });
+
+  it("muros sueltos o paralelos no se extienden", () => {
+    const a = W("A", [0, 0], [4000, 0]);
+    const c = W("C", [0, 1000], [4000, 1000]);
+    expect(joinedWall([a, c], a).shift).toBe(0);
   });
 });

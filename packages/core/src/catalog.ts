@@ -28,6 +28,7 @@ export type AssetCategory =
   | "tu-bep-duoi"
   | "tu-bep-tren"
   | "tu-lanh"
+  | "bep"
   | "bon-cau"
   | "lavabo"
   | "voi-sen"
@@ -120,6 +121,7 @@ export const CATALOG: Asset[] = [
   A("tu-bep-tren-12", "Mueble aéreo de cocina 1,2 m", "Wall kitchen cabinet 1.2m", "tu-bep-tren", 1200, 350, 700, { mountHeight: 1450 }),
   A("tu-bep-tren-18", "Mueble aéreo de cocina 1,8 m", "Wall kitchen cabinet 1.8m", "tu-bep-tren", 1800, 350, 700, { mountHeight: 1450 }),
   A("tu-bep-tren-24", "Mueble aéreo de cocina 2,4 m", "Wall kitchen cabinet 2.4m", "tu-bep-tren", 2400, 350, 700, { mountHeight: 1450 }),
+  A("bep-4", "Cocina 4 platos con horno", "Range 4 burners + oven", "bep", 600, 600, 900, { clearance: { front: 900 } }),
   A("tu-lanh-mini", "Frigobar", "Mini fridge", "tu-lanh", 500, 550, 850),
   A("tu-lanh", "Refrigerador 2 puertas", "Two-door fridge", "tu-lanh", 700, 700, 1700, { clearance: { front: 700 } }),
   A("tu-lanh-sbs", "Refrigerador side by side", "Side-by-side fridge", "tu-lanh", 900, 750, 1800, { clearance: { front: 700 } }),

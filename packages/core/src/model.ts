@@ -90,6 +90,11 @@ export function roomsAtPoint(p: Project, levelId: string, pt: Point): Room[] {
   return roomsOfLevel(p, levelId).filter((r) => pointInPolygon(pt, r.polygon));
 }
 
+/** El punto está afuera: ningún recinto cerrado lo contiene (patio, terraza y patio de luz cuentan como exterior). */
+export function outdoorAt(p: Project, levelId: string, pt: Point): boolean {
+  return roomsAtPoint(p, levelId, pt).every((r) => r.use === "san" || r.use === "ban-cong" || r.use === "gieng-troi");
+}
+
 /** Hai phòng có cạnh chung/chạm nhau không (xấp xỉ: đỉnh cách cạnh < tol). */
 export function roomsAdjacent(a: Room, b: Room, tol = 250): boolean {
   // đủ tốt cho v1: có cặp cạnh song song đối diện cách nhau < tol và chồng đoạn

@@ -3,45 +3,40 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { loadCasaPrueba2p, setDonGia } from "@arquitecto/core";
-import { buildElevationScene } from "./elevation-scene.js";
-import { buildSectionScene, cutIntervals } from "./section-scene.js";
+import { buildElevationsScene } from "./elevations.js";
+import { buildSectionsScene, cutIntervals } from "./section-scene.js";
 import { buildScheduleScene } from "./schedule-scene.js";
-import { buildPlanScene, sectionCutX } from "./plan-scene.js";
-import { sceneToDxf } from "./dxf-writer.js";
+import { buildPlanScene, sectionCuts } from "./plan-scene.js";
+import { sceneToDxf, shortArc } from "./dxf-writer.js";
+import { CUT_COLOR } from "./scene.js";
 import { buildSheetSet, sheetDxf, sheetSvg } from "./sheets.js";
 import { renderElevationSvg, renderScheduleSvg, renderSectionSvg } from "./render.js";
 
 const p = loadCasaPrueba2p();
 
-describe("P4 — mặt đứng", () => {
-  it("chiếu đúng mặt tiền: silhouette + cửa D1/S1/S3 + cao độ + trục", () => {
-    const b = buildElevationScene(p);
+describe("P4 — elevaciones", () => {
+  it("4 caras: vanos de fachada de los 2 pisos, niveles por piso, sin girar", () => {
+    const b = buildElevationsScene(p);
     const ids = new Set(b.items.map((i) => i.dataId).filter(Boolean));
     expect(ids.has("D1")).toBe(true);
     expect(ids.has("S1")).toBe(true);
-    expect(ids.has("S3")).toBe(true); // cửa sổ tầng 2 trên tường mặt tiền
-    expect(ids.has("D2")).toBe(false); // cửa trong nhà không thuộc mặt đứng
+    expect(ids.has("S3")).toBe(true); // ventana del piso 2 en la fachada
+    expect(ids.has("D2")).toBe(false); // puerta interior: no se ve desde afuera
     const texts = b.items.filter((i) => i.prim.kind === "text").map((i) => (i.prim as { text: string }).text);
-    expect(texts).toContain("±0.000");
-    expect(texts).toContain("+3.600");
-    expect(texts).toContain("+7.000");
-    expect(b.tf.rotated).toBe(false); // trục đứng là trọng lực — không bao giờ xoay
+    expect(texts).toContain("±0.00 N.P.T.");
+    expect(texts).toContain("+3.60");
+    expect(texts).toContain("+7.00");
+    expect(texts.filter((t) => t.startsWith("ELEVACIÓN "))).toHaveLength(4);
+    expect(b.tf.rotated).toBe(false); // el eje vertical es la gravedad: nunca se gira
   });
 
-  it("xóa tường sát ranh → mặt đứng LÙI vào cụm tường song song kế tiếp (quy ước v2 — P7); hết tường song song mới lỗi", () => {
+  it("sin el muro de fachada la elevación muestra lo que queda detrás (no falla)", () => {
     const empty = structuredClone(p);
     empty.walls = empty.walls.filter((w) => w.id !== "W1" && w.id !== "W9");
-    expect(() => buildElevationScene(empty)).not.toThrow(); // biệt thự lùi ranh vẫn có mặt đứng
-    const none = structuredClone(p);
-    none.walls = none.walls.filter((w) => {
-      const dx = Math.abs(w.to[0] - w.from[0]);
-      const dy = Math.abs(w.to[1] - w.from[1]);
-      return dx < dy; // bỏ mọi tường ngang (song song cạnh mặt tiền)
-    });
-    expect(() => buildElevationScene(none)).toThrow(/site\.front/);
+    expect(() => buildElevationsScene(empty)).not.toThrow();
   });
 
-  it("golden SVG mặt đứng", async () => {
+  it("golden SVG de las elevaciones", async () => {
     const svg = renderElevationSvg(p, { embedFont: false, date: "13/07/2026" }).svg;
     await expect(svg).toMatchFileSnapshot("__snapshots__/mat-dung.svg");
   });
@@ -55,11 +50,15 @@ describe("P4 — mặt cắt A-A", () => {
   });
 
   it("vết cắt xuyên tâm vế 1 thang; sàn L2 hở đúng lỗ thang; có profile bậc", () => {
-    const cutX = sectionCutX(p)!;
+    // casa de 4×16 m sin techumbre: A-A' transversal (y = cte); B-B' longitudinal pasa por la escalera
+    const [a, bb] = sectionCuts(p);
+    expect(a!.axis).toBe("y");
+    expect(bb!.axis).toBe("x");
+    const cutX = bb!.at;
     expect(cutX).toBeGreaterThan(2830); // vế 1 của ST1 nằm x∈[2830,3780]
     expect(cutX).toBeLessThan(3780);
 
-    const b = buildSectionScene(p);
+    const b = buildSectionsScene(p);
     const stairItems = b.items.filter((i) => i.layer === "ESCALERAS");
     expect(stairItems.length).toBeGreaterThan(2); // 2 vế + bản thang
 
@@ -72,13 +71,31 @@ describe("P4 — mặt cắt A-A", () => {
     const w1 = b.items.filter((i) => i.dataId === "W1" && i.prim.kind === "polygon");
     expect(w1.length).toBe(1);
     const zs = (w1[0]!.prim as { pts: Array<[number, number]> }).pts.map((pt) => pt[1]);
-    expect(Math.min(...zs)).toBeGreaterThan(2000); // chỉ còn lanh tô trên cửa cao 2360
+    expect(Math.max(...zs) - Math.min(...zs)).toBeLessThan(1300); // solo el dintel sobre la puerta de 2,36 m (piso de 3,60)
   });
 
-  it("model không thang → lỗi nêu quy ước", () => {
+  it("sin escalera igual hay corte: por la ventana que más detalle muestra, lejos de los rótulos", () => {
     const noStair = structuredClone(p);
     noStair.stairs = [];
-    expect(() => buildSectionScene(noStair)).toThrow(/escalera/);
+    const x = sectionCuts(noStair).find((c) => c.axis === "x")!.at;
+    expect(x).not.toBeNull();
+    // cruza al menos un vano y no cae sobre el eje de un muro paralelo al corte
+    const crossed = noStair.openings.filter((o) => {
+      const w = noStair.walls.find((v) => v.id === o.wall)!;
+      const [a, b] = [w.from[0] + ((w.to[0] - w.from[0]) * o.offset) / Math.hypot(w.to[0] - w.from[0], w.to[1] - w.from[1]),
+        w.from[0] + ((w.to[0] - w.from[0]) * (o.offset + o.width)) / Math.hypot(w.to[0] - w.from[0], w.to[1] - w.from[1])];
+      return x > Math.min(a, b) && x < Math.max(a, b);
+    });
+    expect(crossed.length).toBeGreaterThan(0);
+    expect(buildSectionsScene(noStair).meta.title).toBe("CORTES A-A' Y B-B'");
+    const titles = buildSectionsScene(noStair).items.filter((i) => i.prim.kind === "text" && /^CORTE [AB]-[AB]'/.test(i.prim.text));
+    expect(titles).toHaveLength(2);
+    // las marcas A-A' y B-B' salen en todas las plantas
+    for (const l of noStair.levels) {
+      const texts = buildPlanScene(noStair, l.id).items.filter((i) => i.prim.kind === "text").map((i) => (i.prim as { text: string }).text);
+      expect(texts).toContain("A'");
+      expect(texts).toContain("B'");
+    }
   });
 
   it("golden SVG mặt cắt", async () => {
@@ -125,23 +142,54 @@ describe("P4 — DXF writer (ADR-08: TS thuần)", () => {
   it("map 1-1 số lượng primitive model-space (doc 08: không bao giờ lệch SVG)", () => {
     const modelItems = build.items.filter((i) => i.space !== "paper");
     // las primitivas sueltas de la capa COTAS se reemplazan por DIMENSION reales
-    const drawn = modelItems.filter((i) => i.layer !== "COTAS");
+    // y la hoja + arco de cada puerta abatible, por un INSERT del bloque PUERTA-<r>
+    const doorIds = new Set(modelItems.filter((i) => i.prim.kind === "door").map((i) => i.dataId));
+    const doors = modelItems.filter((i) => i.prim.kind === "door").length; // una puerta doble = 2 hojas
+    const drawn = modelItems.filter((i) => i.layer !== "COTAS" && !(i.layer === "VANOS" && doorIds.has(i.dataId) && (i.prim.kind === "line" || i.prim.kind === "arc")));
+    // la marca de corte (magenta) sale como POLYLINE con ancho, no como LINE
+    const cut = drawn.filter((i) => i.prim.kind === "line" && i.prim.color === CUT_COLOR).length;
     const count = (kind: string): number => drawn.filter((i) => i.prim.kind === kind).length;
     const dims = modelItems.filter((i) => i.prim.kind === "dim").length;
+    const doorBlocks = new Set(modelItems.flatMap((i) => (i.prim.kind === "door" ? [i.prim.r] : []))).size;
     const entities = dxf.slice(dxf.indexOf("\n2\nENTITIES\n"));
     // cuenta inicios de entidad (0\nTIPO) en ENTITIES; "TEXT" aparece también dentro de nombres de capa
     const occurs = (needle: string, s = entities): number => s.split(`\n0\n${needle}\n`).length - 1;
     expect(dims).toBeGreaterThan(10);
     expect(occurs("DIMENSION")).toBe(dims);
-    expect(occurs("LINE")).toBe(count("line"));
-    expect(occurs("POLYLINE")).toBe(count("polyline") + count("polygon") + count("ellipse"));
+    expect(doors).toBeGreaterThan(0);
+    expect(occurs("INSERT")).toBe(doors);
+    expect(occurs("LINE")).toBe(count("line") - cut);
+    expect(occurs("POLYLINE")).toBe(count("polyline") + count("polygon") + count("ellipse") + cut);
     expect(occurs("SEQEND")).toBe(occurs("POLYLINE"));
     expect(occurs("TEXT")).toBe(count("text"));
     expect(occurs("ARC")).toBe(count("arc"));
     expect(occurs("CIRCLE")).toBe(count("circle"));
-    // un bloque anónimo *Dn por cota, con dos flechas (SOLID) y un texto cada uno
-    expect(occurs("BLOCK", dxf)).toBe(dims);
+    // un bloque anónimo *Dn por cota, con dos flechas (SOLID) y un texto cada uno, más un PUERTA-<r> por ancho
+    expect(occurs("BLOCK", dxf)).toBe(dims + doorBlocks);
     expect(occurs("SOLID", dxf)).toBe(2 * dims);
+  });
+
+  it("arco de puerta: siempre el arco corto (P2 de casa3 salía de −90° a 180° = 270°, «un círculo» en CAD)", () => {
+    expect(shortArc(-90, 180)).toEqual([180, 270]);
+    expect(shortArc(0, 90)).toEqual([0, 90]);
+    expect(shortArc(90, 0)).toEqual([0, 90]);
+    expect(shortArc(350, 80)).toEqual([350, 80]);
+  });
+
+  it("puertas abatibles: bloque de biblioteca PUERTA-<r> (hoja + arco de 90°) insertado en la capa PUERTAS", () => {
+    const blk = dxf.slice(dxf.indexOf("\n0\nBLOCK\n8\n0\n2\nPUERTA-"));
+    expect(blk).toMatch(/^\n0\nBLOCK\n8\n0\n2\nPUERTA-\d+\n/);
+    const body = blk.slice(0, blk.indexOf("\n0\nENDBLK\n"));
+    expect(body).toContain("\n0\nLINE\n");
+    expect(body).toMatch(/\n50\n0\n51\n90$/); // arco de 90°, nunca 270°
+    expect(dxf).toMatch(/\n0\nINSERT\n8\nPUERTAS\n2\nPUERTA-\d+\n/);
+    expect(dxf).toContain("\n2\nPUERTAS\n70\n0\n");
+  });
+
+  it("ejes en capa EJES roja y segmentada (LTYPE DASHED + $LTSCALE); corte A-A' magenta", () => {
+    expect(dxf).toContain("\n0\nLTYPE\n2\nDASHED\n");
+    expect(dxf).toMatch(/\n0\nLAYER\n2\nEJES\n70\n0\n62\n1\n6\nDASHED\n/);
+    expect(dxf).toContain("$LTSCALE");
   });
 
   it("cotas reales: DIMENSION con estilo ESTANDAR-PLANO, valor en cm (DIMLFAC 0.1, sin decimales)", () => {
@@ -202,7 +250,7 @@ describe("P4 — bộ tờ hồ sơ", () => {
     expect(duToan).toContain("SOBRAN");
   });
 
-  it("lọc tờ vẫn giữ đúng số trong bộ; model không thang → section vào skipped", () => {
+  it("lọc tờ vẫn giữ đúng số trong bộ; sin escalera el corte también entra al juego", () => {
     const one = buildSheetSet(p, { sheets: ["section"] });
     expect(one.sheets).toHaveLength(1);
     expect(one.sheets[0]!.no).toBe("ARQ-04");
@@ -210,10 +258,9 @@ describe("P4 — bộ tờ hồ sơ", () => {
     const noStair = structuredClone(p);
     noStair.stairs = [];
     const set = buildSheetSet(noStair);
-    expect(set.skipped.map((s) => s.id)).toContain("section");
-    // thống kê + dự toán dồn số lên thay chỗ mặt cắt
-    expect(set.sheets.find((s) => s.id === "schedule")!.no).toBe("ARQ-04");
-    expect(set.sheets.find((s) => s.id === "estimate")!.no).toBe("ARQ-05");
+    expect(set.skipped.map((s) => s.id)).not.toContain("section");
+    expect(set.sheets.find((s) => s.id === "section")!.no).toBe("ARQ-04");
+    expect(set.sheets.find((s) => s.id === "schedule")!.no).toBe("ARQ-05");
   });
 
   it("sheetDxf chỉ dành cho tờ có hình học model", () => {

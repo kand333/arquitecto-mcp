@@ -3,10 +3,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Project } from "@arquitecto/core";
 import { safeJoin } from "../safe-path.js";
-import { buildElevationScene, type ElevationOptions } from "./elevation-scene.js";
+import { buildElevationsScene, type ElevationsOptions } from "./elevations.js";
 import { buildPlanScene, type PlanOptions } from "./plan-scene.js";
 import { buildScheduleScene, type ScheduleOptions } from "./schedule-scene.js";
-import { buildSectionScene, type SectionOptions } from "./section-scene.js";
+import { buildSectionsScene, type SectionOptions } from "./section-scene.js";
 import { sceneToSvg } from "./svg-writer.js";
 
 // ARQUITECTO_FONT_DIR: bản đóng gói (arquitecto-mcp) trỏ font trong package — nguồn repo thì tự tìm cạnh src.
@@ -49,15 +49,15 @@ export function renderPlanSvg(p: Project, levelId: string, opts: RenderPlanOptio
 export type RenderedSheet = { svg: string; title: string; scaleLabel: string };
 
 /** Mặt đứng chính (P4). */
-export function renderElevationSvg(p: Project, opts: ElevationOptions & { embedFont?: boolean } = {}): RenderedSheet {
-  const { items, tf, meta } = buildElevationScene(p, opts);
+export function renderElevationSvg(p: Project, opts: ElevationsOptions & { embedFont?: boolean } = {}): RenderedSheet {
+  const { items, tf, meta } = buildElevationsScene(p, opts);
   const svg = sceneToSvg(items, tf, { fontCss: opts.embedFont === false ? "" : fontCss() });
   return { svg, title: meta.title, scaleLabel: meta.scaleLabel };
 }
 
 /** Mặt cắt A-A qua thang (P4). */
 export function renderSectionSvg(p: Project, opts: SectionOptions & { embedFont?: boolean } = {}): RenderedSheet {
-  const { items, tf, meta } = buildSectionScene(p, opts);
+  const { items, tf, meta } = buildSectionsScene(p, opts);
   const svg = sceneToSvg(items, tf, { fontCss: opts.embedFont === false ? "" : fontCss() });
   return { svg, title: meta.title, scaleLabel: meta.scaleLabel };
 }

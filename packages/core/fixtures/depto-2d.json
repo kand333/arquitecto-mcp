@@ -46,9 +46,9 @@
   ],
   "openings": [
     { "id": "D1", "wall": "W1", "kind": "door", "style": "DC", "offset": 800, "width": 1000, "height": 2200, "sill": 0, "swing": "in-L" },
-    { "id": "D2", "wall": "W5", "kind": "door", "style": "DP", "offset": 1200, "width": 800, "height": 2100, "sill": 0, "swing": "in-R" },
-    { "id": "D3", "wall": "W5", "kind": "door", "style": "DP", "offset": 4200, "width": 800, "height": 2100, "sill": 0, "swing": "in-R" },
-    { "id": "D4", "wall": "W5", "kind": "door", "style": "DW", "offset": 6700, "width": 700, "height": 2100, "sill": 0, "swing": "in-R" },
+    { "id": "D2", "wall": "W5", "kind": "door", "style": "DP", "offset": 1200, "width": 800, "height": 2100, "sill": 0, "swing": "out-R" },
+    { "id": "D3", "wall": "W5", "kind": "door", "style": "DP", "offset": 4200, "width": 800, "height": 2100, "sill": 0, "swing": "out-R" },
+    { "id": "D4", "wall": "W5", "kind": "door", "style": "DW", "offset": 6700, "width": 700, "height": 2100, "sill": 0, "swing": "out-R" },
     { "id": "S1", "wall": "W4", "kind": "window", "style": "SW", "offset": 2500, "width": 1800, "height": 1600, "sill": 900 },
     { "id": "S2", "wall": "W3", "kind": "window", "style": "SW", "offset": 5000, "width": 1400, "height": 1600, "sill": 900 },
     { "id": "S3", "wall": "W2", "kind": "window", "style": "SW", "offset": 1000, "width": 1600, "height": 1600, "sill": 900 },

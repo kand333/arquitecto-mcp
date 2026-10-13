@@ -1,94 +1,353 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 297" width="420mm" height="297mm" data-tf-scale="50" data-tf-rotated="0" data-tf-ox="170" data-tf-oy="78.5" data-tf-min-x="0" data-tf-min-y="0" data-tf-max-x="4000" data-tf-max-y="7000">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 297" width="420mm" height="297mm" data-tf-scale="100" data-tf-rotated="0" data-tf-ox="59.5" data-tf-oy="24" data-tf-min-x="0" data-tf-min-y="-22200" data-tf-max-x="30100" data-tf-max-y="0">
 <style>
 text{font-family:'Be Vietnam Pro','Segoe UI',Arial,sans-serif;fill:#000;stroke:none}
 .b{font-weight:700}
 </style>
 <rect width="420" height="297" fill="#ffffff"/>
-<g id="layer-EJES" data-layer="EJES">
-<line data-id="1" x1="172.2" y1="76.5" x2="172.2" y2="72.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 1.5 1 1.5"/>
-<circle data-id="1" cx="172.2" cy="68.5" r="4" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
-<text data-id="1" x="172.2" y="68.5" font-size="3.2" text-anchor="middle" dominant-baseline="middle">1</text>
-<line data-id="2" x1="247.8" y1="76.5" x2="247.8" y2="72.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 1.5 1 1.5"/>
-<circle data-id="2" cx="247.8" cy="68.5" r="4" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
-<text data-id="2" x="247.8" y="68.5" font-size="3.2" text-anchor="middle" dominant-baseline="middle">2</text>
-</g>
 <g id="layer-MUROS-CORTE" data-layer="MUROS-CORTE">
-<polygon points="170,218.5 250,218.5 250,78.5 170,78.5" fill="none" stroke="#000" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="162" y1="218.5" x2="258" y2="218.5" stroke="#000" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="75.5" y1="102" x2="129" y2="102" stroke="#000" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="169" y1="102" x2="342.5" y2="102" stroke="#000" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="75.5" y1="216" x2="129" y2="216" stroke="#000" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="169" y1="216" x2="342.5" y2="216" stroke="#000" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
 </g>
 <g id="layer-MUROS-VISTA" data-layer="MUROS-VISTA">
-<line x1="162" y1="218.5" x2="160.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="165" y1="218.5" x2="163.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="168" y1="218.5" x2="166.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="171" y1="218.5" x2="169.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="174" y1="218.5" x2="172.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="177" y1="218.5" x2="175.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="180" y1="218.5" x2="178.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="183" y1="218.5" x2="181.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="186" y1="218.5" x2="184.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="189" y1="218.5" x2="187.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="192" y1="218.5" x2="190.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="195" y1="218.5" x2="193.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="198" y1="218.5" x2="196.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="201" y1="218.5" x2="199.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="204" y1="218.5" x2="202.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="207" y1="218.5" x2="205.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="210" y1="218.5" x2="208.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="213" y1="218.5" x2="211.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="216" y1="218.5" x2="214.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="219" y1="218.5" x2="217.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="222" y1="218.5" x2="220.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="225" y1="218.5" x2="223.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="228" y1="218.5" x2="226.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="231" y1="218.5" x2="229.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="234" y1="218.5" x2="232.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="237" y1="218.5" x2="235.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="240" y1="218.5" x2="238.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="243" y1="218.5" x2="241.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="246" y1="218.5" x2="244.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="249" y1="218.5" x2="247.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="252" y1="218.5" x2="250.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="255" y1="218.5" x2="253.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="258" y1="218.5" x2="256.4" y2="220.1" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="82.25" y1="100" x2="102.25" y2="100" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="118.45" y1="100" x2="122.25" y2="100" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="122.25" y1="100" x2="122.25" y2="64" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="122.25" y1="64" x2="82.25" y2="64" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="82.25" y1="64" x2="82.25" y2="100" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="82.25" y1="102" x2="122.25" y2="102" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="122.25" y1="102" x2="122.25" y2="100" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="82.25" y1="100" x2="82.25" y2="102" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="81.5" y1="106" x2="123" y2="106" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="123" y1="106" x2="123" y2="102" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="123" y1="102" x2="81.5" y2="102" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="81.5" y1="102" x2="81.5" y2="106" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="122.25" y1="64" x2="122.25" y2="30" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="122.25" y1="30" x2="82.25" y2="30" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="82.25" y1="30" x2="82.25" y2="64" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="82.25" y1="100" x2="84.45" y2="100" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="84.45" y1="100" x2="84.45" y2="64" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="84.45" y1="64" x2="82.25" y2="64" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="120.05" y1="100" x2="122.25" y2="100" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="122.25" y1="64" x2="120.05" y2="64" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="120.05" y1="64" x2="120.05" y2="100" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="84.45" y1="64" x2="84.45" y2="30" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="84.45" y1="30" x2="82.25" y2="30" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="122.25" y1="30" x2="120.05" y2="30" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="120.05" y1="30" x2="120.05" y2="64" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="75.5" y1="102" x2="74.1" y2="103.4" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="78.5" y1="102" x2="77.1" y2="103.4" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="126.5" y1="102" x2="125.1" y2="103.4" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="175.75" y1="64" x2="175.75" y2="100" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="175.75" y1="100" x2="175.75" y2="102" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="175" y1="102" x2="175" y2="106" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="175.75" y1="100" x2="335.75" y2="100" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="335.75" y1="100" x2="335.75" y2="64" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="335.75" y1="64" x2="175.75" y2="64" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="175.75" y1="102" x2="335.75" y2="102" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="335.75" y1="102" x2="335.75" y2="100" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="175" y1="106" x2="336.5" y2="106" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="336.5" y1="106" x2="336.5" y2="102" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="336.5" y1="102" x2="175" y2="102" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="175.75" y1="30" x2="175.75" y2="64" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="335.75" y1="64" x2="335.75" y2="30" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="335.75" y1="30" x2="175.75" y2="30" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="177.95" y1="100" x2="175.75" y2="100" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="175.75" y1="64" x2="177.95" y2="64" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="177.95" y1="64" x2="177.95" y2="100" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="335.75" y1="100" x2="333.55" y2="100" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="333.55" y1="100" x2="333.55" y2="64" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="333.55" y1="64" x2="335.75" y2="64" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="175.75" y1="30" x2="177.95" y2="30" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="177.95" y1="30" x2="177.95" y2="64" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="333.55" y1="64" x2="333.55" y2="30" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="333.55" y1="30" x2="335.75" y2="30" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="169" y1="102" x2="167.6" y2="103.4" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="172" y1="102" x2="170.6" y2="103.4" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="175" y1="102" x2="173.6" y2="103.4" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="340" y1="102" x2="338.6" y2="103.4" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="82.25" y1="178" x2="82.25" y2="214" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="82.25" y1="214" x2="82.25" y2="216" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="81.5" y1="216" x2="81.5" y2="220" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="82.25" y1="214" x2="122.25" y2="214" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="122.25" y1="214" x2="122.25" y2="178" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="122.25" y1="178" x2="82.25" y2="178" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="82.25" y1="216" x2="122.25" y2="216" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="122.25" y1="216" x2="122.25" y2="214" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="81.5" y1="220" x2="123" y2="220" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="123" y1="220" x2="123" y2="216" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="123" y1="216" x2="81.5" y2="216" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="82.25" y1="144" x2="82.25" y2="178" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="122.25" y1="178" x2="122.25" y2="144" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="122.25" y1="144" x2="82.25" y2="144" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="122.25" y1="214" x2="120.05" y2="214" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="120.05" y1="214" x2="120.05" y2="178" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="120.05" y1="178" x2="122.25" y2="178" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="84.45" y1="214" x2="82.25" y2="214" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="82.25" y1="178" x2="84.45" y2="178" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="84.45" y1="178" x2="84.45" y2="214" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="120.05" y1="178" x2="120.05" y2="144" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="120.05" y1="144" x2="122.25" y2="144" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="82.25" y1="144" x2="84.45" y2="144" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="84.45" y1="144" x2="84.45" y2="178" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="75.5" y1="216" x2="74.1" y2="217.4" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="78.5" y1="216" x2="77.1" y2="217.4" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="81.5" y1="216" x2="80.1" y2="217.4" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="126.5" y1="216" x2="125.1" y2="217.4" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="175.75" y1="214" x2="335.75" y2="214" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="335.75" y1="214" x2="335.75" y2="178" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="335.75" y1="178" x2="175.75" y2="178" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="175.75" y1="178" x2="175.75" y2="214" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="175.75" y1="216" x2="335.75" y2="216" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="335.75" y1="216" x2="335.75" y2="214" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="175.75" y1="214" x2="175.75" y2="216" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="175" y1="220" x2="336.5" y2="220" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="336.5" y1="220" x2="336.5" y2="216" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="336.5" y1="216" x2="175" y2="216" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="175" y1="216" x2="175" y2="220" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="335.75" y1="178" x2="335.75" y2="144" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="335.75" y1="144" x2="175.75" y2="144" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="175.75" y1="144" x2="175.75" y2="178" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="333.55" y1="214" x2="335.75" y2="214" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="335.75" y1="178" x2="333.55" y2="178" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="333.55" y1="178" x2="333.55" y2="214" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="175.75" y1="214" x2="177.95" y2="214" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="177.95" y1="214" x2="177.95" y2="178" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="177.95" y1="178" x2="175.75" y2="178" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="335.75" y1="144" x2="333.55" y2="144" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="333.55" y1="144" x2="333.55" y2="178" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="177.95" y1="178" x2="177.95" y2="144" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="177.95" y1="144" x2="175.75" y2="144" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="169" y1="216" x2="167.6" y2="217.4" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="172" y1="216" x2="170.6" y2="217.4" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="340" y1="216" x2="338.6" y2="217.4" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 </g>
 <g id="layer-VANOS" data-layer="VANOS">
-<polygon data-id="D1" points="210,218.5 242.4,218.5 242.4,171.3 210,171.3" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon data-id="D1" points="211,217.5 241.4,217.5 241.4,172.3 211,172.3" fill="none" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line data-id="D1" x1="226.2" y1="217.5" x2="226.2" y2="172.3" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<text data-id="D1" x="226.2" y="194.9" font-size="2.2" text-anchor="middle" dominant-baseline="middle">D1</text>
-<polygon data-id="S1" points="180,200.5 204.8,200.5 204.8,172.5 180,172.5" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon data-id="S1" points="181,199.5 203.8,199.5 203.8,173.5 181,173.5" fill="none" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line data-id="S1" x1="192.4" y1="199.5" x2="192.4" y2="173.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<text data-id="S1" x="192.4" y="186.5" font-size="2.2" text-anchor="middle" dominant-baseline="middle">S1</text>
-<polygon data-id="S3" points="194,128.5 226,128.5 226,100.5 194,100.5" fill="none" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
-<polygon data-id="S3" points="195,127.5 225,127.5 225,101.5 195,101.5" fill="none" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line data-id="S3" x1="210" y1="127.5" x2="210" y2="101.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<text data-id="S3" x="210" y="114.5" font-size="2.2" text-anchor="middle" dominant-baseline="middle">S3</text>
+<text data-id="S1" x="90.672" y="84" font-size="2.2" text-anchor="middle" dominant-baseline="middle">S1</text>
+<text data-id="S3" x="98.575" y="48" font-size="2.2" text-anchor="middle" dominant-baseline="middle">S3</text>
+<line data-id="D1" x1="102.25" y1="100" x2="118.45" y2="100" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="D1" x1="118.45" y1="100" x2="118.45" y2="76.4" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="D1" x1="118.45" y1="76.4" x2="102.25" y2="76.4" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="D1" x1="102.25" y1="76.4" x2="102.25" y2="100" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="D1" x1="110.35" y1="100" x2="110.35" y2="76.4" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="D1" x1="102.75" y1="100" x2="109.85" y2="100" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="D1" x1="109.85" y1="100" x2="109.85" y2="76.9" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="D1" x1="109.85" y1="76.9" x2="102.75" y2="76.9" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="D1" x1="102.75" y1="76.9" x2="102.75" y2="100" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="D1" x1="108.75" y1="90" x2="109.55" y2="90" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="D1" x1="110.85" y1="100" x2="117.95" y2="100" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="D1" x1="117.95" y1="100" x2="117.95" y2="76.9" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="D1" x1="117.95" y1="76.9" x2="110.85" y2="76.9" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="D1" x1="110.85" y1="76.9" x2="110.85" y2="100" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="D1" x1="111.15" y1="90" x2="111.95" y2="90" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="87.25" y1="91" x2="99.65" y2="91" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="99.65" y1="91" x2="99.65" y2="77" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="99.65" y1="77" x2="87.25" y2="77" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="87.25" y1="77" x2="87.25" y2="91" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="87.746" y1="90.504" x2="99.154" y2="90.504" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="99.154" y1="90.504" x2="99.154" y2="77.496" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="99.154" y1="77.496" x2="87.746" y2="77.496" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="87.746" y1="77.496" x2="87.746" y2="90.504" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="93.45" y1="90.504" x2="93.45" y2="77.496" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="88.044" y1="90.206" x2="93.301" y2="90.206" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="93.301" y1="90.206" x2="93.301" y2="77.794" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="93.301" y1="77.794" x2="88.044" y2="77.794" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="88.044" y1="77.794" x2="88.044" y2="90.206" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="88.416" y1="89.834" x2="92.929" y2="89.834" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="92.929" y1="89.834" x2="92.929" y2="78.166" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="92.929" y1="78.166" x2="88.416" y2="78.166" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="88.416" y1="78.166" x2="88.416" y2="89.834" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="93.599" y1="90.206" x2="98.856" y2="90.206" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="98.856" y1="90.206" x2="98.856" y2="77.794" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="98.856" y1="77.794" x2="93.599" y2="77.794" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="93.599" y1="77.794" x2="93.599" y2="90.206" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="93.971" y1="89.834" x2="98.484" y2="89.834" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="98.484" y1="89.834" x2="98.484" y2="78.166" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="98.484" y1="78.166" x2="93.971" y2="78.166" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="93.971" y1="78.166" x2="93.971" y2="89.834" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="97.279" y1="84" x2="95.176" y2="84" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="95.176" y1="84" x2="95.597" y2="83.706" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="95.176" y1="84" x2="95.597" y2="84.294" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="98.484" y1="84.84" x2="98.67" y2="84.84" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="98.67" y1="84.84" x2="98.67" y2="83.16" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="98.67" y1="83.16" x2="98.484" y2="83.16" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S1" x1="98.484" y1="83.16" x2="98.484" y2="84.84" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="94.25" y1="55" x2="110.25" y2="55" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="110.25" y1="55" x2="110.25" y2="41" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="110.25" y1="41" x2="94.25" y2="41" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="94.25" y1="41" x2="94.25" y2="55" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="94.75" y1="54.5" x2="109.75" y2="54.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="109.75" y1="54.5" x2="109.75" y2="41.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="109.75" y1="41.5" x2="94.75" y2="41.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="94.75" y1="41.5" x2="94.75" y2="54.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="102.25" y1="54.5" x2="102.25" y2="41.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="95.05" y1="54.2" x2="102.1" y2="54.2" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="102.1" y1="54.2" x2="102.1" y2="41.8" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="102.1" y1="41.8" x2="95.05" y2="41.8" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="95.05" y1="41.8" x2="95.05" y2="54.2" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="95.45" y1="53.8" x2="101.7" y2="53.8" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="101.7" y1="53.8" x2="101.7" y2="42.2" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="101.7" y1="42.2" x2="95.45" y2="42.2" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="95.45" y1="42.2" x2="95.45" y2="53.8" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="102.4" y1="54.2" x2="109.45" y2="54.2" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="109.45" y1="54.2" x2="109.45" y2="41.8" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="109.45" y1="41.8" x2="102.4" y2="41.8" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="102.4" y1="41.8" x2="102.4" y2="54.2" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="102.8" y1="53.8" x2="109.05" y2="53.8" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="109.05" y1="53.8" x2="109.05" y2="42.2" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="109.05" y1="42.2" x2="102.8" y2="42.2" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="102.8" y1="42.2" x2="102.8" y2="53.8" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="107.335" y1="48" x2="104.515" y2="48" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="104.515" y1="48" x2="105.079" y2="47.605" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="104.515" y1="48" x2="105.079" y2="48.395" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="109.05" y1="48.84" x2="109.25" y2="48.84" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="109.25" y1="48.84" x2="109.25" y2="47.16" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="109.25" y1="47.16" x2="109.05" y2="47.16" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line data-id="S3" x1="109.05" y1="47.16" x2="109.05" y2="48.84" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
 </g>
 <g id="layer-COTAS" data-layer="COTAS">
-<line x1="162" y1="218.5" x2="162" y2="78.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="168.5" y1="218.5" x2="160.8" y2="218.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="160.9" y1="219.6" x2="163.1" y2="217.4" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="168.5" y1="146.5" x2="160.8" y2="146.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="160.9" y1="147.6" x2="163.1" y2="145.4" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="168.5" y1="78.5" x2="160.8" y2="78.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="160.9" y1="79.6" x2="163.1" y2="77.4" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="161" y="182.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 161 182.5)">360</text>
-<text x="161" y="112.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 161 112.5)">340</text>
-<line x1="156" y1="218.5" x2="156" y2="78.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="168.5" y1="218.5" x2="154.8" y2="218.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="154.9" y1="219.6" x2="157.1" y2="217.4" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="168.5" y1="78.5" x2="154.8" y2="78.5" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="154.9" y1="79.6" x2="157.1" y2="77.4" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="155" y="148.5" font-size="2.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 155 148.5)">700</text>
+<line x1="72.5" y1="102" x2="72.5" y2="30" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="79.5" y1="102" x2="71.3" y2="102" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="71.4" y1="103.1" x2="73.6" y2="100.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="79.5" y1="100" x2="71.3" y2="100" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="71.4" y1="101.1" x2="73.6" y2="98.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="79.5" y1="64" x2="71.3" y2="64" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="71.4" y1="65.1" x2="73.6" y2="62.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="79.5" y1="30" x2="71.3" y2="30" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="71.4" y1="31.1" x2="73.6" y2="28.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="70.7" y="101.8" font-size="2.2" text-anchor="end" dominant-baseline="middle">20</text>
+<text x="71.3" y="82" font-size="2.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 71.3 82)">360</text>
+<text x="71.3" y="47" font-size="2.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 71.3 47)">340</text>
+<line x1="82.25" y1="113" x2="122.25" y2="113" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="82.25" y1="111.5" x2="82.25" y2="114.2" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="81.15" y1="114.1" x2="83.35" y2="111.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="122.25" y1="111.5" x2="122.25" y2="114.2" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="121.15" y1="114.1" x2="123.35" y2="111.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="102.25" y="111.8" font-size="2.2" text-anchor="middle" dominant-baseline="middle">400</text>
+<line x1="166" y1="102" x2="166" y2="30" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="173" y1="102" x2="164.8" y2="102" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="164.9" y1="103.1" x2="167.1" y2="100.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="173" y1="100" x2="164.8" y2="100" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="164.9" y1="101.1" x2="167.1" y2="98.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="173" y1="64" x2="164.8" y2="64" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="164.9" y1="65.1" x2="167.1" y2="62.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="173" y1="30" x2="164.8" y2="30" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="164.9" y1="31.1" x2="167.1" y2="28.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="164.2" y="101.8" font-size="2.2" text-anchor="end" dominant-baseline="middle">20</text>
+<text x="164.8" y="82" font-size="2.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 164.8 82)">360</text>
+<text x="164.8" y="47" font-size="2.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 164.8 47)">340</text>
+<line x1="175.75" y1="113" x2="335.75" y2="113" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="175.75" y1="111.5" x2="175.75" y2="114.2" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="174.65" y1="114.1" x2="176.85" y2="111.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="335.75" y1="111.5" x2="335.75" y2="114.2" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="334.65" y1="114.1" x2="336.85" y2="111.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="255.75" y="111.8" font-size="2.2" text-anchor="middle" dominant-baseline="middle">1600</text>
+<line x1="72.5" y1="216" x2="72.5" y2="144" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="79.5" y1="216" x2="71.3" y2="216" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="71.4" y1="217.1" x2="73.6" y2="214.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="79.5" y1="214" x2="71.3" y2="214" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="71.4" y1="215.1" x2="73.6" y2="212.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="79.5" y1="178" x2="71.3" y2="178" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="71.4" y1="179.1" x2="73.6" y2="176.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="79.5" y1="144" x2="71.3" y2="144" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="71.4" y1="145.1" x2="73.6" y2="142.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="70.7" y="215.8" font-size="2.2" text-anchor="end" dominant-baseline="middle">20</text>
+<text x="71.3" y="196" font-size="2.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 71.3 196)">360</text>
+<text x="71.3" y="161" font-size="2.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 71.3 161)">340</text>
+<line x1="82.25" y1="227" x2="122.25" y2="227" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="82.25" y1="225.5" x2="82.25" y2="228.2" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="81.15" y1="228.1" x2="83.35" y2="225.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="122.25" y1="225.5" x2="122.25" y2="228.2" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="121.15" y1="228.1" x2="123.35" y2="225.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="102.25" y="225.8" font-size="2.2" text-anchor="middle" dominant-baseline="middle">400</text>
+<line x1="166" y1="216" x2="166" y2="144" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="173" y1="216" x2="164.8" y2="216" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="164.9" y1="217.1" x2="167.1" y2="214.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="173" y1="214" x2="164.8" y2="214" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="164.9" y1="215.1" x2="167.1" y2="212.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="173" y1="178" x2="164.8" y2="178" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="164.9" y1="179.1" x2="167.1" y2="176.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="173" y1="144" x2="164.8" y2="144" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="164.9" y1="145.1" x2="167.1" y2="142.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="164.2" y="215.8" font-size="2.2" text-anchor="end" dominant-baseline="middle">20</text>
+<text x="164.8" y="196" font-size="2.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 164.8 196)">360</text>
+<text x="164.8" y="161" font-size="2.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 164.8 161)">340</text>
+<line x1="175.75" y1="227" x2="335.75" y2="227" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="175.75" y1="225.5" x2="175.75" y2="228.2" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="174.65" y1="228.1" x2="176.85" y2="225.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="335.75" y1="225.5" x2="335.75" y2="228.2" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="334.65" y1="228.1" x2="336.85" y2="225.9" stroke="#000" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="255.75" y="225.8" font-size="2.2" text-anchor="middle" dominant-baseline="middle">1600</text>
 </g>
 <g id="layer-TEXTOS" data-layer="TEXTOS">
-<polygon points="252.6,216.9 255.4,216.9 254,218.5" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="255.8" y="215.9" font-size="2.5" text-anchor="start" dominant-baseline="middle">±0.000</text>
-<polygon points="252.6,144.9 255.4,144.9 254,146.5" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="255.8" y="143.9" font-size="2.5" text-anchor="start" dominant-baseline="middle">+3.600</text>
-<polygon points="252.6,76.9 255.4,76.9 254,78.5" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="255.8" y="75.9" font-size="2.5" text-anchor="start" dominant-baseline="middle">+7.000</text>
+<polygon points="126.6,28.4 129.4,28.4 128,30" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="124" y1="30" x2="141" y2="30" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="130" y="29.1" font-size="2.2" text-anchor="start" dominant-baseline="middle">+7.00</text>
+<polygon points="126.6,62.4 129.4,62.4 128,64" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="124" y1="64" x2="141" y2="64" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="130" y="63.1" font-size="2.2" text-anchor="start" dominant-baseline="middle">+3.60</text>
+<polygon points="126.6,98.4 129.4,98.4 128,100" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="124" y1="100" x2="141" y2="100" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="130" y="99.1" font-size="2.2" text-anchor="start" dominant-baseline="middle">±0.00 N.P.T.</text>
+<polygon points="126.6,100.4 129.4,100.4 128,102" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="124" y1="102" x2="141" y2="102" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="130" y="105.2" font-size="2.2" text-anchor="start" dominant-baseline="middle">−0.20 N.T.</text>
+<polygon points="126.6,104.4 129.4,104.4 128,106" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="124" y1="106" x2="141" y2="106" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="130" y="109.2" font-size="2.2" text-anchor="start" dominant-baseline="middle">−0.60</text>
+<text x="102.25" y="124" font-size="3.5" text-anchor="middle" dominant-baseline="middle" class="b">ELEVACIÓN PONIENTE Esc 1/100</text>
+<polygon points="340.1,28.4 342.9,28.4 341.5,30" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="337.5" y1="30" x2="354.5" y2="30" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="343.5" y="29.1" font-size="2.2" text-anchor="start" dominant-baseline="middle">+7.00</text>
+<polygon points="340.1,62.4 342.9,62.4 341.5,64" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="337.5" y1="64" x2="354.5" y2="64" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="343.5" y="63.1" font-size="2.2" text-anchor="start" dominant-baseline="middle">+3.60</text>
+<polygon points="340.1,98.4 342.9,98.4 341.5,100" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="337.5" y1="100" x2="354.5" y2="100" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="343.5" y="99.1" font-size="2.2" text-anchor="start" dominant-baseline="middle">±0.00 N.P.T.</text>
+<polygon points="340.1,100.4 342.9,100.4 341.5,102" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="337.5" y1="102" x2="354.5" y2="102" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="343.5" y="105.2" font-size="2.2" text-anchor="start" dominant-baseline="middle">−0.20 N.T.</text>
+<polygon points="340.1,104.4 342.9,104.4 341.5,106" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="337.5" y1="106" x2="354.5" y2="106" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="343.5" y="109.2" font-size="2.2" text-anchor="start" dominant-baseline="middle">−0.60</text>
+<text x="255.75" y="124" font-size="3.5" text-anchor="middle" dominant-baseline="middle" class="b">ELEVACIÓN SUR Esc 1/100</text>
+<polygon points="126.6,142.4 129.4,142.4 128,144" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="124" y1="144" x2="141" y2="144" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="130" y="143.1" font-size="2.2" text-anchor="start" dominant-baseline="middle">+7.00</text>
+<polygon points="126.6,176.4 129.4,176.4 128,178" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="124" y1="178" x2="141" y2="178" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="130" y="177.1" font-size="2.2" text-anchor="start" dominant-baseline="middle">+3.60</text>
+<polygon points="126.6,212.4 129.4,212.4 128,214" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="124" y1="214" x2="141" y2="214" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="130" y="213.1" font-size="2.2" text-anchor="start" dominant-baseline="middle">±0.00 N.P.T.</text>
+<polygon points="126.6,214.4 129.4,214.4 128,216" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="124" y1="216" x2="141" y2="216" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="130" y="219.2" font-size="2.2" text-anchor="start" dominant-baseline="middle">−0.20 N.T.</text>
+<polygon points="126.6,218.4 129.4,218.4 128,220" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="124" y1="220" x2="141" y2="220" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="130" y="223.2" font-size="2.2" text-anchor="start" dominant-baseline="middle">−0.60</text>
+<text x="102.25" y="238" font-size="3.5" text-anchor="middle" dominant-baseline="middle" class="b">ELEVACIÓN ORIENTE Esc 1/100</text>
+<polygon points="340.1,142.4 342.9,142.4 341.5,144" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="337.5" y1="144" x2="354.5" y2="144" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="343.5" y="143.1" font-size="2.2" text-anchor="start" dominant-baseline="middle">+7.00</text>
+<polygon points="340.1,176.4 342.9,176.4 341.5,178" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="337.5" y1="178" x2="354.5" y2="178" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="343.5" y="177.1" font-size="2.2" text-anchor="start" dominant-baseline="middle">+3.60</text>
+<polygon points="340.1,212.4 342.9,212.4 341.5,214" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="337.5" y1="214" x2="354.5" y2="214" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="343.5" y="213.1" font-size="2.2" text-anchor="start" dominant-baseline="middle">±0.00 N.P.T.</text>
+<polygon points="340.1,214.4 342.9,214.4 341.5,216" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="337.5" y1="216" x2="354.5" y2="216" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="343.5" y="219.2" font-size="2.2" text-anchor="start" dominant-baseline="middle">−0.20 N.T.</text>
+<polygon points="340.1,218.4 342.9,218.4 341.5,220" fill="none" stroke="#000" stroke-width="0.18" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="337.5" y1="220" x2="354.5" y2="220" stroke="#000" stroke-width="0.13" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="343.5" y="223.2" font-size="2.2" text-anchor="start" dominant-baseline="middle">−0.60</text>
+<text x="255.75" y="238" font-size="3.5" text-anchor="middle" dominant-baseline="middle" class="b">ELEVACIÓN NORTE Esc 1/100</text>
+<text x="12" y="13" font-size="2.2" text-anchor="start" dominant-baseline="middle">Revestimiento exterior: por definir</text>
+<text x="12" y="16.6" font-size="2.2" text-anchor="start" dominant-baseline="middle">Cubierta: sin techumbre en el modelo</text>
+<text x="12" y="20.2" font-size="2.2" text-anchor="start" dominant-baseline="middle">Sobrecimiento y fundación de hormigón; N.T. a 0.20 m bajo el N.P.T.</text>
 </g>
 <g id="layer-VINETA" data-layer="VINETA">
 <polygon points="7,7 413,7 413,290 7,290" fill="none" stroke="#000" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -98,9 +357,9 @@ text{font-family:'Be Vietnam Pro','Segoe UI',Arial,sans-serif;fill:#000;stroke:n
 <line x1="263" y1="280" x2="413" y2="280" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
 <line x1="367" y1="248" x2="367" y2="290" stroke="#000" stroke-width="0.35" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="266" y="255.6" font-size="3.4" text-anchor="start" dominant-baseline="middle" class="b">CASA DE PRUEBA 4×16 M — 2 PISOS, 3 DORMITORIOS</text>
-<text x="370" y="255.6" font-size="3.4" text-anchor="start" dominant-baseline="middle" class="b">ARQ-03</text>
-<text x="266" y="266.6" font-size="3" text-anchor="start" dominant-baseline="middle" class="b">ELEVACIÓN PRINCIPAL</text>
-<text x="370" y="266.6" font-size="2.8" text-anchor="start" dominant-baseline="middle">ESCALA 1:50</text>
+<text x="370" y="255.6" font-size="3.4" text-anchor="start" dominant-baseline="middle" class="b">ARQ-02</text>
+<text x="266" y="266.6" font-size="3" text-anchor="start" dominant-baseline="middle" class="b">ELEVACIONES</text>
+<text x="370" y="266.6" font-size="2.8" text-anchor="start" dominant-baseline="middle">ESCALA 1:100</text>
 <text x="266" y="276.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">Arquitecto (nombre y firma): ....................................</text>
 <text x="370" y="276.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">Fecha: 13/07/2026</text>
 <text x="266" y="286.6" font-size="2.4" text-anchor="start" dominant-baseline="middle">Propietario (nombre y firma): ..................................</text>
